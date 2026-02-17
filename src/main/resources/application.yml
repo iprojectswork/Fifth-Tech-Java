@@ -1,0 +1,35 @@
+# MyBatis-Plus配置
+mybatis-plus:
+  configuration:
+    map-underscore-to-camel-case: true
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+  global-config:
+    db-config:
+      id-type: auto
+      logic-delete-field: deleted
+      logic-delete-value: 1
+      logic-not-delete-value: 0
+#  mapper-locations: classpath:mapper/**/*.xml
+
+spring:
+  application:
+    name: demo
+  datasource:
+    driver-class-name: org.postgresql.Driver
+    url: jdbc:postgresql://localhost:5432/postgres
+    username: postgres
+    password: 123456
+  sql:
+    init:
+      dependency-check: false
+
+server:
+  port: 8080
+
+logging:
+  level:
+    com.baomidou.mybatisplus: DEBUG
+    org.mybatis: DEBUG
+
+
+#debug: true
