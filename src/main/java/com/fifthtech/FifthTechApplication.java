@@ -9,10 +9,10 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 @SpringBootApplication
 @MapperScan("com.fifthtech.dao.mapper")
 @EnableConfigurationProperties(MybatisPlusProperties.class)
-public class DemoApplication {
+public class FifthTechApplication {
 
     public static void main(String[] args) {
-        SpringApplication.run(DemoApplication.class, args);
+        SpringApplication.run(FifthTechApplication.class, args);
     }
 
 }

@@ -23,4 +23,12 @@ CREATE INDEX idx_status ON sys_user(status);
 
 -- 插入测试数据
 INSERT INTO sys_user (id, username, password, nickname, email, phone, status) VALUES
-(1, 'admin', '123456', '管理员', 'admin@example.com', '13800138000', 1);
+(1, 'admin', '123456', '管理员', 'admin@example.com', '13800138000', 2),
+(2, 'zhangsan', '123456', '张三', 'zhangsan@example.com', '13800138001', 0),
+(3, 'lisi', '123456', '李四', 'lisi@example.com', '13800138002', 1),
+(4, 'wangwu', '123456', '王五', 'wangwu@example.com', '13800138003', 2),
+(5, 'zhaoliu', '123456', '赵六', 'zhaoliu@example.com', '13800138004', 10),
+(6, 'sunqi', '123456', '孙七', 'sunqi@example.com', '13800138005', 0),
+(7, 'zhouba', '123456', '周八', 'zhouba@example.com', '13800138006', 1),
+(8, 'wujiu', '123456', '吴九', 'wujiu@example.com', '13800138007', 2),
+(9, 'zhengshi', '123456', '郑十', 'zhengshi@example.com', '13800138008', 10);

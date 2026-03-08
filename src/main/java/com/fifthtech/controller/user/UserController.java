@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.*;
  * UserController
  *
  * @author RH
- * @description 用户控制�? * @date 2026-01-25
+ * @description 用户控制�? * @date 2026-01-25
  * @version 1.0
  */
 @RestController
@@ -60,7 +60,7 @@ public class UserController {
             UserVO vo = ConvertUtils.toVO(entity, UserVO.class);
             return Result.success("查询成功", vo);
         } else {
-            return Result.error("用户不存�?);
+            return Result.error("用户不存在！");
         }
     }
 
