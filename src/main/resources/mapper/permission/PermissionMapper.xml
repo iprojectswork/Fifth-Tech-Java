@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.fifthtech.dao.mapper.permission.PermissionMapper">
+
+    <!-- 根据用户ID查询权限列表 -->
+    <select id="selectByUserId" resultType="com.fifthtech.dao.entity.permission.Permission">
+        SELECT DISTINCT p.*
+        FROM sys_permission p
+        INNER JOIN sys_role_permission rp ON p.id = rp.permission_id
+        INNER JOIN sys_user_role ur ON rp.role_id = ur.role_id
+        WHERE ur.user_id = #{userId}
+          AND p.deleted = 0
+          AND p.status = 1
+        ORDER BY p.sort ASC
+    </select>
+
+    <!-- 根据用户ID查询菜单权限列表（只查询菜单类型） -->
+    <select id="selectMenuByUserId" resultType="com.fifthtech.dao.entity.permission.Permission">
+        SELECT DISTINCT p.*
+        FROM sys_permission p
+        INNER JOIN sys_role_permission rp ON p.id = rp.permission_id
+        INNER JOIN sys_user_role ur ON rp.role_id = ur.role_id
+        WHERE ur.user_id = #{userId}
+          AND p.deleted = 0
+          AND p.status = 1
+          AND p.permission_type = 1
+        ORDER BY p.sort ASC
+    </select>
+
+    <!-- 查询所有权限列表 -->
+    <select id="selectAllPermissions" resultType="com.fifthtech.dao.entity.permission.Permission">
+        SELECT *
+        FROM sys_permission
+        WHERE deleted = 0
+        ORDER BY sort ASC
+    </select>
+
+</mapper>
