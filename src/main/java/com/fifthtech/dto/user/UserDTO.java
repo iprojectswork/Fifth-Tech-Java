@@ -1,8 +1,6 @@
-package com.fifthtech.controller.user;
+package com.fifthtech.dto.user;
 
 import lombok.Data;
-
-import java.time.LocalDateTime;
 
 /**
  * UserDTO

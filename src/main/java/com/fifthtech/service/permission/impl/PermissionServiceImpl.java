@@ -4,8 +4,8 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.fifthtech.common.utils.ConvertUtils;
-import com.fifthtech.controller.permission.PermissionDTO;
-import com.fifthtech.controller.permission.PermissionTreeVO;
+import com.fifthtech.dto.permission.PermissionDTO;
+import com.fifthtech.vo.permission.PermissionTreeVO;
 import com.fifthtech.dao.entity.permission.Permission;
 import com.fifthtech.dao.mapper.permission.PermissionMapper;
 import com.fifthtech.security.UserContext;
@@ -15,7 +15,6 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 
 /**

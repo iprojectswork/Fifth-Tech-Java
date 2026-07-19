@@ -3,7 +3,7 @@ package com.fifthtech.service.role;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.fifthtech.dao.entity.role.Role;
-import com.fifthtech.controller.role.RoleDTO;
+import com.fifthtech.dto.role.RoleDTO;
 
 import java.util.List;
 

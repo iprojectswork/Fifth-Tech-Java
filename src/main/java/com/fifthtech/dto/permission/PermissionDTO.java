@@ -1,4 +1,4 @@
-package com.fifthtech.controller.permission;
+package com.fifthtech.dto.permission;
 
 import lombok.Data;
 

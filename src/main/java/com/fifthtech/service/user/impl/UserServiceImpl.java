@@ -1,21 +1,24 @@
 package com.fifthtech.service.user.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.fifthtech.dao.entity.user.User;
-
-
 import com.fifthtech.dao.mapper.user.UserMapper;
 import com.fifthtech.service.user.UserService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
+import java.util.List;
+
 /**
  * UserServiceImpl
  *
  * @author RH
- * @description 用户服务实现�? * @date 2026-01-25
+ * @description 用户服务实现类
+ * @date 2026-01-25
  * @version 1.0
  */
 @Service
@@ -72,5 +75,18 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         LambdaQueryWrapper<User> wrapper = new LambdaQueryWrapper<>();
         wrapper.eq(User::getUsername, username);
         return getOne(wrapper);
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public boolean updateStatus(List<Long> ids, Integer status) {
+        if (ids == null || ids.isEmpty() || status == null) {
+            return false;
+        }
+        LambdaUpdateWrapper<User> wrapper = new LambdaUpdateWrapper<>();
+        wrapper.in(User::getId, ids)
+                .set(User::getStatus, status)
+                .set(User::getUpdateTime, LocalDateTime.now());
+        return update(wrapper);
     }
 }

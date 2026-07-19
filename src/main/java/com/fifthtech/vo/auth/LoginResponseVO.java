@@ -1,4 +1,4 @@
-package com.fifthtech.controller.auth;
+package com.fifthtech.vo.auth;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

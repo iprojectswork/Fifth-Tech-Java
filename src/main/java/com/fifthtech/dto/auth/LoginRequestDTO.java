@@ -1,4 +1,4 @@
-package com.fifthtech.controller.auth;
+package com.fifthtech.dto.auth;
 
 import jakarta.validation.constraints.NotBlank;
 import lombok.Data;

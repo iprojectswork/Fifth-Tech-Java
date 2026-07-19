@@ -1,17 +1,19 @@
-package com.fifthtech.controller.role;
+package com.fifthtech.vo.role;
 
 import lombok.Data;
 
+import java.time.LocalDateTime;
+
 /**
- * RoleDTO
+ * RoleVO
  *
  * @author RH
- * @description 角色数据传输对象
+ * @description 角色视图对象
  * @date 2026-03-22
  * @version 1.0
  */
 @Data
-public class RoleDTO {
+public class RoleVO {
 
     /**
      * 角色ID
@@ -42,4 +44,14 @@ public class RoleDTO {
      * 排序号
      */
     private Integer sort;
+
+    /**
+     * 创建时间
+     */
+    private LocalDateTime createTime;
+
+    /**
+     * 更新时间
+     */
+    private LocalDateTime updateTime;
 }

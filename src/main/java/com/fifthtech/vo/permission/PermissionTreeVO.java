@@ -1,19 +1,19 @@
-package com.fifthtech.controller.permission;
+package com.fifthtech.vo.permission;
 
 import lombok.Data;
 
-import java.time.LocalDateTime;
+import java.util.List;
 
 /**
- * PermissionVO
+ * PermissionTreeVO
  *
  * @author RH
- * @description 权限视图对象
+ * @description 权限树视图对象
  * @date 2026-03-22
  * @version 1.0
  */
 @Data
-public class PermissionVO {
+public class PermissionTreeVO {
 
     /**
      * 权限ID
@@ -66,12 +66,7 @@ public class PermissionVO {
     private Integer sort;
 
     /**
-     * 创建时间
+     * 子权限列表
      */
-    private LocalDateTime createTime;
-
-    /**
-     * 更新时间
-     */
-    private LocalDateTime updateTime;
+    private List<PermissionTreeVO> children;
 }

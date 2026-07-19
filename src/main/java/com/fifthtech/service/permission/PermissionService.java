@@ -2,9 +2,9 @@ package com.fifthtech.service.permission;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.IService;
-import com.fifthtech.controller.permission.PermissionTreeVO;
+import com.fifthtech.vo.permission.PermissionTreeVO;
 import com.fifthtech.dao.entity.permission.Permission;
-import com.fifthtech.controller.permission.PermissionDTO;
+import com.fifthtech.dto.permission.PermissionDTO;
 
 import java.util.List;
 

@@ -4,7 +4,7 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.fifthtech.common.utils.ConvertUtils;
-import com.fifthtech.controller.role.RoleDTO;
+import com.fifthtech.dto.role.RoleDTO;
 import com.fifthtech.dao.entity.role.Role;
 import com.fifthtech.dao.mapper.role.RoleMapper;
 import com.fifthtech.dao.mapper.role.RolePermissionMapper;

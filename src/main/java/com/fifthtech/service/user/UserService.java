@@ -4,6 +4,8 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.fifthtech.dao.entity.user.User;
 
+import java.util.List;
+
 /**
  * UserService
  *
@@ -25,4 +27,6 @@ public interface UserService extends IService<User> {
     Page<User> list(Integer current, Integer size, User query);
 
     User selectByUsername(String username);
+
+    boolean updateStatus(List<Long> ids, Integer status);
 }

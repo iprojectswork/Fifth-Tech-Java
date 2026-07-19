@@ -1,4 +1,4 @@
-package com.fifthtech.controller.user;
+package com.fifthtech.vo.user;
 
 import lombok.Data;
 

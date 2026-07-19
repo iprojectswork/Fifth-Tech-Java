@@ -4,17 +4,14 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.fifthtech.common.utils.ConvertUtils;
 import com.fifthtech.common.Result;
 import com.fifthtech.dao.entity.user.User;
+import com.fifthtech.dto.user.UserDTO;
+import com.fifthtech.vo.user.UserVO;
 import com.fifthtech.service.user.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
-/**
- * UserController
- *
- * @author RH
- * @description 用户控制�? * @date 2026-01-25
- * @version 1.0
- */
+import java.util.List;
+
 @RestController
 @RequestMapping("/user")
 public class UserController {
@@ -35,9 +32,8 @@ public class UserController {
         boolean success = userService.delete(id);
         if (success) {
             return Result.success("删除成功", null);
-        } else {
-            return Result.error("删除失败，用户不存在");
         }
+        return Result.error("删除失败，用户不存在");
     }
 
     @PutMapping
@@ -48,9 +44,17 @@ public class UserController {
             User updatedEntity = userService.selectById(entity.getId());
             UserVO vo = ConvertUtils.toVO(updatedEntity, UserVO.class);
             return Result.success("更新成功", vo);
-        } else {
-            return Result.error("更新失败，用户不存在");
         }
+        return Result.error("更新失败，用户不存在");
+    }
+
+    @PutMapping("/status")
+    public Result<Void> updateStatus(@RequestBody List<Long> ids, @RequestParam Integer status) {
+        boolean success = userService.updateStatus(ids, status);
+        if (success) {
+            return Result.success("状态更新成功", null);
+        }
+        return Result.error("状态更新失败");
     }
 
     @GetMapping("/{id}")
@@ -59,9 +63,8 @@ public class UserController {
         if (entity != null) {
             UserVO vo = ConvertUtils.toVO(entity, UserVO.class);
             return Result.success("查询成功", vo);
-        } else {
-            return Result.error("用户不存在！");
         }
+        return Result.error("用户不存在！");
     }
 
     @GetMapping("/list")
