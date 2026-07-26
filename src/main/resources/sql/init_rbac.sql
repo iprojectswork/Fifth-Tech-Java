@@ -1,45 +1,52 @@
+-- B2 对齐：列表 component 逻辑 key + list/add/edit/view/delete 分码
 -- 清空表数据
 DELETE FROM sys_role_permission;
 DELETE FROM sys_user_role;
 DELETE FROM sys_permission;
 DELETE FROM sys_role;
 
--- 重置序列
-ALTER SEQUENCE sys_role_id_seq RESTART WITH 1;
-ALTER SEQUENCE sys_permission_id_seq RESTART WITH 1;
+-- 重置序列（若使用序列；雪花 ID 环境可忽略失败）
+-- ALTER SEQUENCE sys_role_id_seq RESTART WITH 1;
+-- ALTER SEQUENCE sys_permission_id_seq RESTART WITH 1;
 
 -- 插入角色数据
-INSERT INTO sys_role (id, role_name, role_code, description, sort) VALUES
-(1, '超级管理员', 'super_admin', '拥有所有权限', 1),
-(2, '管理员', 'admin', '拥有管理权限', 2),
-(3, '普通用户', 'user', '基础查看权限', 3);
+INSERT INTO sys_role (id, role_name, role_code, description, sort, status) VALUES
+(1, '超级管理员', 'super_admin', '拥有所有权限', 1, 1),
+(2, '管理员', 'admin', '拥有管理权限', 2, 1),
+(3, '普通用户', 'user', '基础查看权限', 3, 1);
 
--- 插入菜单权限（系统管理是目录，path为空）
-INSERT INTO sys_permission (id, permission_name, permission_code, permission_type, parent_id, path, component, icon, sort) VALUES
-(1, '系统管理', 'system', 1, 0, '', '', 'Setting', 1);
+-- 目录 + 列表菜单（permission_type=1）
+INSERT INTO sys_permission (id, permission_name, permission_code, permission_type, parent_id, path, component, icon, sort, status) VALUES
+(1, '系统管理', 'system', 1, 0, '', '', 'Setting', 1, 1),
+(2, '用户管理', 'system:user:list', 1, 1, '/system/user/list', 'user/list', 'User', 1, 1),
+(3, '角色管理', 'system:role:list', 1, 1, '/system/role/list', 'system/role/list', 'UserFilled', 2, 1),
+(4, '权限管理', 'system:permission:list', 1, 1, '/system/permission/list', 'system/permission/list', 'Lock', 3, 1);
 
--- 插入子菜单权限
-INSERT INTO sys_permission (id, permission_name, permission_code, permission_type, parent_id, path, component, icon, sort) VALUES
-(2, '用户管理', 'user:view', 1, 1, '/system/user/list', 'views/user/list', 'User', 1),
-(3, '角色管理', 'role:view', 1, 1, '/system/role/list', 'views/role/list', 'UserFilled', 2),
-(4, '权限管理', 'permission:view', 1, 1, '/system/permission/list', 'views/permission/list', 'Lock', 3);
+-- 用户按钮
+INSERT INTO sys_permission (id, permission_name, permission_code, permission_type, parent_id, path, component, icon, sort, status) VALUES
+(101, '用户新增', 'system:user:add', 2, 2, NULL, NULL, NULL, 1, 1),
+(102, '用户编辑', 'system:user:edit', 2, 2, NULL, NULL, NULL, 2, 1),
+(103, '用户查看', 'system:user:view', 2, 2, NULL, NULL, NULL, 3, 1),
+(104, '用户删除', 'system:user:delete', 2, 2, NULL, NULL, NULL, 4, 1);
 
--- 插入按钮权限
-INSERT INTO sys_permission (id, permission_name, permission_code, permission_type, parent_id, sort) VALUES
-(101, '用户新增', 'user:create', 2, 2, 1),
-(102, '用户编辑', 'user:update', 2, 2, 2),
-(103, '用户删除', 'user:delete', 2, 2, 3),
-(201, '角色新增', 'role:create', 2, 3, 1),
-(202, '角色编辑', 'role:update', 2, 3, 2),
-(203, '角色删除', 'role:delete', 2, 3, 3),
-(301, '权限新增', 'permission:create', 2, 4, 1),
-(302, '权限编辑', 'permission:update', 2, 4, 2),
-(303, '权限删除', 'permission:delete', 2, 4, 3);
+-- 角色按钮
+INSERT INTO sys_permission (id, permission_name, permission_code, permission_type, parent_id, path, component, icon, sort, status) VALUES
+(201, '角色新增', 'system:role:add', 2, 3, NULL, NULL, NULL, 1, 1),
+(202, '角色编辑', 'system:role:edit', 2, 3, NULL, NULL, NULL, 2, 1),
+(203, '角色查看', 'system:role:view', 2, 3, NULL, NULL, NULL, 3, 1),
+(204, '角色删除', 'system:role:delete', 2, 3, NULL, NULL, NULL, 4, 1);
 
--- 超级管理员拥有所有权限
+-- 权限按钮
+INSERT INTO sys_permission (id, permission_name, permission_code, permission_type, parent_id, path, component, icon, sort, status) VALUES
+(301, '权限新增', 'system:permission:add', 2, 4, NULL, NULL, NULL, 1, 1),
+(302, '权限编辑', 'system:permission:edit', 2, 4, NULL, NULL, NULL, 2, 1),
+(303, '权限查看', 'system:permission:view', 2, 4, NULL, NULL, NULL, 3, 1),
+(304, '权限删除', 'system:permission:delete', 2, 4, NULL, NULL, NULL, 4, 1);
+
 INSERT INTO sys_role_permission (id, role_id, permission_id)
-SELECT nextval('sys_role_permission_id_seq'), 1, id FROM sys_permission;
+SELECT id, 1, id FROM sys_permission;
 
--- 给默认用户分配超级管理员角色
+-- 给默认用户分配超级管理员角色（user_id=1）
 INSERT INTO sys_user_role (id, user_id, role_id) VALUES
-(nextval('sys_user_role_id_seq'), 1, 1);
+(1, 1, 1)
+ON CONFLICT DO NOTHING;

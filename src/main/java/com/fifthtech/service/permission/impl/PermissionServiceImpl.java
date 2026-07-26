@@ -14,7 +14,10 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 /**
@@ -147,7 +150,45 @@ public class PermissionServiceImpl extends ServiceImpl<PermissionMapper, Permiss
     @Override
     public List<PermissionTreeVO> getMenuTreeByUserId(Long userId) {
         List<Permission> menuPermissions = getMenuPermissionsByUserId(userId);
-        List<PermissionTreeVO> voList = ConvertUtils.toVOList(menuPermissions, PermissionTreeVO.class);
+        if (menuPermissions == null || menuPermissions.isEmpty()) {
+            return Collections.emptyList();
+        }
+        List<Permission> withAncestors = expandMenuAncestors(menuPermissions);
+        List<PermissionTreeVO> voList = ConvertUtils.toVOList(withAncestors, PermissionTreeVO.class);
         return buildTree(voList, 0L);
+    }
+
+    private List<Permission> expandMenuAncestors(List<Permission> grantedMenus) {
+        List<Permission> allMenus = lambdaQuery()
+                .eq(Permission::getPermissionType, 1)
+                .eq(Permission::getStatus, 1)
+                .list();
+        Map<Long, Permission> byId = new LinkedHashMap<>();
+        for (Permission p : allMenus) {
+            if (p.getId() != null) {
+                byId.put(p.getId(), p);
+            }
+        }
+
+        Map<Long, Permission> expanded = new LinkedHashMap<>();
+        for (Permission leaf : grantedMenus) {
+            if (leaf.getId() == null) {
+                continue;
+            }
+            expanded.put(leaf.getId(), leaf);
+            Long parentId = leaf.getParentId();
+            while (parentId != null && parentId != 0L) {
+                if (expanded.containsKey(parentId)) {
+                    break;
+                }
+                Permission parent = byId.get(parentId);
+                if (parent == null) {
+                    break;
+                }
+                expanded.put(parent.getId(), parent);
+                parentId = parent.getParentId();
+            }
+        }
+        return new ArrayList<>(expanded.values());
     }
 }
