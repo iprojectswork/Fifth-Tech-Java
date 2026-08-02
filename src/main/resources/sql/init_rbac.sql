@@ -54,6 +54,17 @@ INSERT INTO sys_permission (id, permission_name, permission_code, permission_typ
 (403, '缓存查看', 'system:cache:view', 2, 5, NULL, NULL, NULL, 3, 1),
 (404, '缓存删除', 'system:cache:delete', 2, 5, NULL, NULL, NULL, 4, 1);
 
+-- C2 编码管理菜单（parent_id=1 系统管理）
+INSERT INTO sys_permission (id, permission_name, permission_code, permission_type, parent_id, path, component, icon, sort, status) VALUES
+(6, '编码管理', 'system:code:list', 1, 1, '/system/code/list', 'system/code/list', 'PriceTag', 5, 1);
+
+-- C2 编码管理按钮（parent_id=6）
+INSERT INTO sys_permission (id, permission_name, permission_code, permission_type, parent_id, path, component, icon, sort, status) VALUES
+(501, '编码新增', 'system:code:add', 2, 6, NULL, NULL, NULL, 1, 1),
+(502, '编码编辑', 'system:code:edit', 2, 6, NULL, NULL, NULL, 2, 1),
+(503, '编码查看', 'system:code:view', 2, 6, NULL, NULL, NULL, 3, 1),
+(504, '编码删除', 'system:code:delete', 2, 6, NULL, NULL, NULL, 4, 1);
+
 INSERT INTO sys_role_permission (id, role_id, permission_id)
 SELECT id, 1, id FROM sys_permission;
 

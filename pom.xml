@@ -29,6 +29,7 @@
     <properties>
         <java.version>21</java.version>
         <mybatis-spring.version>3.0.4</mybatis-spring.version>
+        <redisson.version>3.36.0</redisson.version>
     </properties>
 
     <dependencies>
@@ -36,6 +37,13 @@
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-data-redis</artifactId>
+        </dependency>
+
+        <!-- C2: 仅用 redisson 核心做分布式锁；不用 starter，避免劫持 Spring Data RedisConnectionFactory 导致 expire 栈溢出 -->
+        <dependency>
+            <groupId>org.redisson</groupId>
+            <artifactId>redisson</artifactId>
+            <version>${redisson.version}</version>
         </dependency>
 
         <dependency>

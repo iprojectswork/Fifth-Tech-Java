@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.fifthtech.dao.mapper.code.CodeSequenceMapper">
+
+    <!-- 行锁选择：分配号段时进入事务的第一条 SQL；找不到返回空由调用方判别。 -->
+    <select id="selectForUpdate" resultType="com.fifthtech.dao.entity.code.CodeSequence">
+        SELECT id, rule_code, rule_id, period_key, current_max, create_time, update_time
+        FROM sys_code_sequence
+        WHERE rule_id = #{ruleId}
+          AND period_key = #{periodKey}
+        FOR UPDATE
+    </select>
+
+    <!-- 首次分配：current_max = start - 1；并发下可能 0 行（唯一键冲突） -->
+    <insert id="insertInitial">
+        INSERT INTO sys_code_sequence (id, rule_id, rule_code, period_key, current_max, create_time, update_time)
+        VALUES (#{id}, #{ruleId}, #{ruleCode}, #{periodKey}, #{initialMax}, NOW(), NOW())
+        ON CONFLICT (rule_id, period_key) DO NOTHING
+    </insert>
+
+    <!-- 预支：在事务内（行锁已握）将 current_max 自增 -->
+    <update id="incrementCurrentMax">
+        UPDATE sys_code_sequence
+        SET current_max = current_max + #{increment},
+            update_time = NOW()
+        WHERE rule_id = #{ruleId}
+          AND period_key = #{periodKey}
+    </update>
+
+</mapper>

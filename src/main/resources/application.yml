@@ -45,6 +45,19 @@ cache:
     max-scan-keys: 5000
     max-value-bytes: 262144
 
+# C2 业务编码 / 号段池
+code:
+  generate:
+    # 单次 generate API 最多取多少个号（含 count 字段上限）
+    max-batch-count: 100
+    # 规则未显式配置 batch_size 时的默认
+    default-pool-batch-size: 100
+    # 号段池锁：等待 + 租约（秒）。Redisson 看门狗可续约，留 lease 兜底。
+    lock-wait-seconds: 5
+    lock-lease-seconds: 30
+  # 业务时间默认时区；DATE 片段按时区解析
+  timezone: Asia/Shanghai
+
 logging:
   level:
     com.baomidou.mybatisplus: DEBUG
