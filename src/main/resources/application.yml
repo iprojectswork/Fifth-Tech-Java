@@ -40,6 +40,11 @@ auth:
     expiration: 86400
     white-list: /auth/login
 
+cache:
+  admin:
+    max-scan-keys: 5000
+    max-value-bytes: 262144
+
 logging:
   level:
     com.baomidou.mybatisplus: DEBUG
