@@ -20,9 +20,9 @@ VALUES
 ON CONFLICT (id) DO NOTHING;
 
 -- 3) 绑定到 super_admin（role_id=1）
--- 仅绑定刚刚新增的 5 条权限（菜单 1 + 按钮 4），role_permission.id 由 PG 默认序列生成
-INSERT INTO sys_role_permission (role_id, permission_id)
-SELECT 1, p.id
+-- id 与 permission_id 对齐（同 init_rbac）；UK (role_id, permission_id)
+INSERT INTO sys_role_permission (id, role_id, permission_id)
+SELECT p.id, 1, p.id
 FROM sys_permission p
 WHERE p.id IN (5, 401, 402, 403, 404)
 ON CONFLICT (role_id, permission_id) DO NOTHING;
