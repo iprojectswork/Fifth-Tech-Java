@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.fifthtech.dao.mapper.dict.DictNodeMapper">
+
+    <!-- 全量未删节点（tree）：每条 SQL 写全列，禁止 sql 片段抽取 / resultMap -->
+    <select id="selectActiveList" resultType="com.fifthtech.dao.entity.dict.DictNode">
+        SELECT
+            id,
+            parent_id    AS parentId,
+            code,
+            name,
+            sort,
+            status,
+            remark,
+            create_id    AS createId,
+            create_name  AS createName,
+            create_time  AS createTime,
+            update_id    AS updateId,
+            update_name  AS updateName,
+            update_time  AS updateTime,
+            deleted,
+            delete_id    AS deleteId,
+            delete_name  AS deleteName,
+            delete_time  AS deleteTime
+        FROM sys_dict_node
+        WHERE deleted = 0
+        ORDER BY sort ASC, code ASC, id ASC
+    </select>
+
+    <!-- 指定 parent 的直接子（children / list）：每条 SQL 写全列 -->
+    <select id="selectChildrenByParentId" resultType="com.fifthtech.dao.entity.dict.DictNode">
+        SELECT
+            id,
+            parent_id    AS parentId,
+            code,
+            name,
+            sort,
+            status,
+            remark,
+            create_id    AS createId,
+            create_name  AS createName,
+            create_time  AS createTime,
+            update_id    AS updateId,
+            update_name  AS updateName,
+            update_time  AS updateTime,
+            deleted,
+            delete_id    AS deleteId,
+            delete_name  AS deleteName,
+            delete_time  AS deleteTime
+        FROM sys_dict_node
+        WHERE deleted = 0
+          AND parent_id = #{parentId}
+        ORDER BY sort ASC, code ASC, id ASC
+    </select>
+
+    <!-- 批量 hasChildren：返回 parent_id 中「有未删子」的子集 -->
+    <select id="selectActiveParentIdsWithChildren" resultType="java.lang.Long">
+        SELECT DISTINCT parent_id
+        FROM sys_dict_node
+        WHERE deleted = 0
+          AND parent_id IN
+            <foreach collection="parentIds" item="pid" open="(" separator="," close=")">
+                #{pid}
+            </foreach>
+    </select>
+
+</mapper>

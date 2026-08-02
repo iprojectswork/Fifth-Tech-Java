@@ -9,7 +9,8 @@ import java.util.List;
  * Convert
  *
  * @author RH
- * @description 通用转换工具�? * @date 2026-01-25
+ * @description 通用转换工具类
+ * @date 2026-01-25
  * @version 1.0
  */
 public class ConvertUtils {

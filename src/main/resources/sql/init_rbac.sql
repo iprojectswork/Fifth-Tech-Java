@@ -65,6 +65,17 @@ INSERT INTO sys_permission (id, permission_name, permission_code, permission_typ
 (503, '编码查看', 'system:code:view', 2, 6, NULL, NULL, NULL, 3, 1),
 (504, '编码删除', 'system:code:delete', 2, 6, NULL, NULL, NULL, 4, 1);
 
+-- C3 数据字典菜单（parent_id=1 系统管理）
+INSERT INTO sys_permission (id, permission_name, permission_code, permission_type, parent_id, path, component, icon, sort, status) VALUES
+(7, '数据字典', 'system:dict:list', 1, 1, '/system/dict/list', 'system/dict/list', 'Notebook', 6, 1);
+
+-- C3 数据字典按钮（parent_id=7）
+INSERT INTO sys_permission (id, permission_name, permission_code, permission_type, parent_id, path, component, icon, sort, status) VALUES
+(601, '字典新增', 'system:dict:add', 2, 7, NULL, NULL, NULL, 1, 1),
+(602, '字典编辑', 'system:dict:edit', 2, 7, NULL, NULL, NULL, 2, 1),
+(603, '字典查看', 'system:dict:view', 2, 7, NULL, NULL, NULL, 3, 1),
+(604, '字典删除', 'system:dict:delete', 2, 7, NULL, NULL, NULL, 4, 1);
+
 INSERT INTO sys_role_permission (id, role_id, permission_id)
 SELECT id, 1, id FROM sys_permission;
 
