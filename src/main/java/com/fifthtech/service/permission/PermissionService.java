@@ -3,6 +3,7 @@ package com.fifthtech.service.permission;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.fifthtech.vo.permission.PermissionTreeVO;
+import com.fifthtech.vo.permission.PermissionVO;
 import com.fifthtech.dao.entity.permission.Permission;
 import com.fifthtech.dto.permission.PermissionDTO;
 
@@ -17,6 +18,8 @@ public interface PermissionService extends IService<Permission> {
     List<Permission> selectAll();
 
     List<PermissionTreeVO> selectTree();
+
+    List<PermissionVO> listChildren(Long parentId);
 
     Permission insert(PermissionDTO dto);
 

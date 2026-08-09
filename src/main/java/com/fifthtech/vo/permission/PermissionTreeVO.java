@@ -1,5 +1,7 @@
 package com.fifthtech.vo.permission;
 
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
 import lombok.Data;
 
 import java.util.List;
@@ -18,6 +20,7 @@ public class PermissionTreeVO {
     /**
      * 权限ID
      */
+    @JsonSerialize(using = ToStringSerializer.class)
     private Long id;
 
     /**
@@ -38,6 +41,7 @@ public class PermissionTreeVO {
     /**
      * 父级ID
      */
+    @JsonSerialize(using = ToStringSerializer.class)
     private Long parentId;
 
     /**
@@ -64,6 +68,8 @@ public class PermissionTreeVO {
      * 排序号
      */
     private Integer sort;
+
+    private Boolean hasChildren;
 
     /**
      * 子权限列表

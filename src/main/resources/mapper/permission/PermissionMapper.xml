@@ -35,4 +35,41 @@
         ORDER BY sort ASC
     </select>
 
+    <select id="selectByParentId" resultType="com.fifthtech.dao.entity.permission.Permission">
+        SELECT id,
+               permission_name,
+               permission_code,
+               permission_type,
+               parent_id,
+               path,
+               component,
+               icon,
+               status,
+               sort,
+               create_id,
+               create_name,
+               create_time,
+               update_id,
+               update_name,
+               update_time,
+               deleted,
+               delete_id,
+               delete_name,
+               delete_time
+        FROM sys_permission
+        WHERE deleted = 0
+          AND parent_id = #{parentId}
+        ORDER BY sort ASC, id ASC
+    </select>
+
+    <select id="selectParentIdsHavingChildren" resultType="long">
+        SELECT DISTINCT parent_id
+        FROM sys_permission
+        WHERE deleted = 0
+          AND parent_id IN
+        <foreach collection="parentIds" item="pid" open="(" separator="," close=")">
+            #{pid}
+        </foreach>
+    </select>
+
 </mapper>

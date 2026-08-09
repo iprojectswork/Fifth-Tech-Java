@@ -52,6 +52,11 @@ public class PermissionController {
         return Result.success("查询成功", tree);
     }
 
+    @GetMapping("/children")
+    public Result<List<PermissionVO>> children(@RequestParam(defaultValue = "0") Long parentId) {
+        return Result.success("查询成功", permissionService.listChildren(parentId));
+    }
+
     /**
      * 获取权限详情
      */

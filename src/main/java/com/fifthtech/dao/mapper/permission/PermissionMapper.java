@@ -15,4 +15,8 @@ public interface PermissionMapper extends BaseMapper<Permission> {
     List<Permission> selectMenuByUserId(@Param("userId") Long userId);
 
     List<Permission> selectAllPermissions();
+
+    List<Permission> selectByParentId(@Param("parentId") Long parentId);
+
+    List<Long> selectParentIdsHavingChildren(@Param("parentIds") List<Long> parentIds);
 }
