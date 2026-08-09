@@ -2,6 +2,8 @@ package com.fifthtech.service.user;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.fifthtech.dao.entity.permission.Permission;
+import com.fifthtech.dao.entity.role.Role;
 import com.fifthtech.dao.entity.user.User;
 
 import java.util.List;
@@ -29,4 +31,8 @@ public interface UserService extends IService<User> {
     User selectByUsername(String username);
 
     boolean updateStatus(List<Long> ids, Integer status);
+
+    Page<Role> listRoles(Long userId, Integer current, Integer size);
+
+    Page<Permission> listPermissions(Long userId, Integer current, Integer size);
 }

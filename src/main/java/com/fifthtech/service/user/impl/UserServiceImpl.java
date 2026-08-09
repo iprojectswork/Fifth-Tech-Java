@@ -4,9 +4,14 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.fifthtech.dao.entity.permission.Permission;
+import com.fifthtech.dao.entity.role.Role;
 import com.fifthtech.dao.entity.user.User;
+import com.fifthtech.dao.mapper.permission.PermissionMapper;
+import com.fifthtech.dao.mapper.role.RoleMapper;
 import com.fifthtech.dao.mapper.user.UserMapper;
 import com.fifthtech.service.user.UserService;
+import jakarta.annotation.Resource;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -23,6 +28,12 @@ import java.util.List;
  */
 @Service
 public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements UserService {
+
+    @Resource
+    private RoleMapper roleMapper;
+
+    @Resource
+    private PermissionMapper permissionMapper;
 
     @Override
     @Transactional(rollbackFor = Exception.class)
@@ -88,5 +99,27 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
                 .set(User::getStatus, status)
                 .set(User::getUpdateTime, LocalDateTime.now());
         return update(wrapper);
+    }
+
+    @Override
+    public Page<Role> listRoles(Long userId, Integer current, Integer size) {
+        int c = current == null || current < 1 ? 1 : current;
+        int s = size == null || size < 1 ? 10 : size;
+        Page<Role> page = new Page<>(c, s);
+        if (userId == null) {
+            return page;
+        }
+        return (Page<Role>) roleMapper.listRelatedByUserId(page, userId);
+    }
+
+    @Override
+    public Page<Permission> listPermissions(Long userId, Integer current, Integer size) {
+        int c = current == null || current < 1 ? 1 : current;
+        int s = size == null || size < 1 ? 10 : size;
+        Page<Permission> page = new Page<>(c, s);
+        if (userId == null) {
+            return page;
+        }
+        return (Page<Permission>) permissionMapper.listRelatedByUserId(page, userId);
     }
 }

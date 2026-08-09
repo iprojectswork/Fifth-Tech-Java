@@ -3,8 +3,12 @@ package com.fifthtech.controller.user;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.fifthtech.common.utils.ConvertUtils;
 import com.fifthtech.common.Result;
+import com.fifthtech.dao.entity.permission.Permission;
+import com.fifthtech.dao.entity.role.Role;
 import com.fifthtech.dao.entity.user.User;
 import com.fifthtech.dto.user.UserDTO;
+import com.fifthtech.vo.permission.PermissionVO;
+import com.fifthtech.vo.role.RoleVO;
 import com.fifthtech.vo.user.UserVO;
 import com.fifthtech.service.user.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -65,6 +69,34 @@ public class UserController {
             return Result.success("查询成功", vo);
         }
         return Result.error("用户不存在！");
+    }
+
+    @GetMapping("/{id}/roles")
+    public Result<Page<RoleVO>> listRoles(
+            @PathVariable Long id,
+            @RequestParam(defaultValue = "1") Integer current,
+            @RequestParam(defaultValue = "10") Integer size) {
+        if (userService.selectById(id) == null) {
+            return Result.error("用户不存在！");
+        }
+        Page<Role> entityPage = userService.listRoles(id, current, size);
+        Page<RoleVO> voPage = new Page<>(entityPage.getCurrent(), entityPage.getSize(), entityPage.getTotal());
+        voPage.setRecords(ConvertUtils.toVOList(entityPage.getRecords(), RoleVO.class));
+        return Result.success("查询成功", voPage);
+    }
+
+    @GetMapping("/{id}/permissions")
+    public Result<Page<PermissionVO>> listPermissions(
+            @PathVariable Long id,
+            @RequestParam(defaultValue = "1") Integer current,
+            @RequestParam(defaultValue = "10") Integer size) {
+        if (userService.selectById(id) == null) {
+            return Result.error("用户不存在！");
+        }
+        Page<Permission> entityPage = userService.listPermissions(id, current, size);
+        Page<PermissionVO> voPage = new Page<>(entityPage.getCurrent(), entityPage.getSize(), entityPage.getTotal());
+        voPage.setRecords(ConvertUtils.toVOList(entityPage.getRecords(), PermissionVO.class));
+        return Result.success("查询成功", voPage);
     }
 
     @GetMapping("/list")

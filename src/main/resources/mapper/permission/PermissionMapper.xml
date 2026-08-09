@@ -2,7 +2,7 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.fifthtech.dao.mapper.permission.PermissionMapper">
 
-    <!-- 根据用户ID查询权限列表 -->
+    <!-- 根据用户ID查询权限列表（启用，鉴权用） -->
     <select id="selectByUserId" resultType="com.fifthtech.dao.entity.permission.Permission">
         SELECT DISTINCT p.*
         FROM sys_permission p
@@ -12,6 +12,37 @@
           AND p.deleted = 0
           AND p.status = 1
         ORDER BY p.sort ASC
+    </select>
+
+    <!-- 用户详情：关联权限子表（经角色汇总，含禁用） -->
+    <select id="listRelatedByUserId" resultType="com.fifthtech.dao.entity.permission.Permission">
+        SELECT DISTINCT p.id,
+               p.permission_name,
+               p.permission_code,
+               p.permission_type,
+               p.parent_id,
+               p.path,
+               p.component,
+               p.icon,
+               p.status,
+               p.sort,
+               p.create_id,
+               p.create_name,
+               p.create_time,
+               p.update_id,
+               p.update_name,
+               p.update_time,
+               p.deleted,
+               p.delete_id,
+               p.delete_name,
+               p.delete_time
+        FROM sys_permission p
+        INNER JOIN sys_role_permission rp ON p.id = rp.permission_id
+        INNER JOIN sys_user_role ur ON rp.role_id = ur.role_id
+        INNER JOIN sys_role r ON r.id = ur.role_id AND r.deleted = 0
+        WHERE ur.user_id = #{userId}
+          AND p.deleted = 0
+        ORDER BY p.sort ASC, p.id ASC
     </select>
 
     <!-- 根据用户ID查询菜单权限列表（只查询菜单类型） -->

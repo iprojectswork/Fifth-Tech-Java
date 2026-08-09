@@ -2,7 +2,7 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.fifthtech.dao.mapper.role.RoleMapper">
 
-    <!-- 根据用户ID查询角色列表 -->
+    <!-- 根据用户ID查询角色列表（启用，鉴权用） -->
     <select id="selectByUserId" resultType="com.fifthtech.dao.entity.role.Role">
         SELECT r.*
         FROM sys_role r
@@ -11,6 +11,31 @@
           AND r.deleted = 0
           AND r.status = 1
         ORDER BY r.sort ASC
+    </select>
+
+    <!-- 用户详情：关联角色子表（含禁用） -->
+    <select id="listRelatedByUserId" resultType="com.fifthtech.dao.entity.role.Role">
+        SELECT r.id,
+               r.role_name,
+               r.role_code,
+               r.description,
+               r.status,
+               r.sort,
+               r.create_id,
+               r.create_name,
+               r.create_time,
+               r.update_id,
+               r.update_name,
+               r.update_time,
+               r.deleted,
+               r.delete_id,
+               r.delete_name,
+               r.delete_time
+        FROM sys_role r
+        INNER JOIN sys_user_role ur ON r.id = ur.role_id
+        WHERE ur.user_id = #{userId}
+          AND r.deleted = 0
+        ORDER BY r.sort ASC, r.id ASC
     </select>
 
     <!-- 根据角色ID查询权限ID列表 -->
