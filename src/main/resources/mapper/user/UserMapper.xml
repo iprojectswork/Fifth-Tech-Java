@@ -8,48 +8,48 @@
     -->
     <select id="listPage" resultType="com.fifthtech.dao.entity.user.User">
         SELECT
-            u.id,
-            u.username,
-            u.password,
-            u.nickname,
-            u.email,
-            u.phone,
-            u.status,
-            u.create_time  AS createTime,
-            u.update_time  AS updateTime,
-            u.deleted,
-            u.delete_time  AS deleteTime
-        FROM sys_user u
+            sysUser.id,
+            sysUser.username,
+            sysUser.password,
+            sysUser.nickname,
+            sysUser.email,
+            sysUser.phone,
+            sysUser.status,
+            sysUser.create_time  AS createTime,
+            sysUser.update_time  AS updateTime,
+            sysUser.deleted,
+            sysUser.delete_time  AS deleteTime
+        FROM sys_user sysUser
         <where>
-            u.deleted = 0
+            sysUser.deleted = 0
             <if test="query.username != null and query.username != ''">
-                AND u.username LIKE CONCAT('%', #{query.username}, '%')
+                AND sysUser.username LIKE CONCAT('%', #{query.username}, '%')
             </if>
             <if test="query.nickname != null and query.nickname != ''">
-                AND u.nickname LIKE CONCAT('%', #{query.nickname}, '%')
+                AND sysUser.nickname LIKE CONCAT('%', #{query.nickname}, '%')
             </if>
             <if test="query.email != null and query.email != ''">
-                AND u.email LIKE CONCAT('%', #{query.email}, '%')
+                AND sysUser.email LIKE CONCAT('%', #{query.email}, '%')
             </if>
             <if test="query.phone != null and query.phone != ''">
-                AND u.phone LIKE CONCAT('%', #{query.phone}, '%')
+                AND sysUser.phone LIKE CONCAT('%', #{query.phone}, '%')
             </if>
             <if test="query.status != null">
-                AND u.status = #{query.status}
+                AND sysUser.status = #{query.status}
             </if>
             <if test="query.orgIds != null and query.orgIds.size() &gt; 0">
                 AND EXISTS (
                     SELECT 1
-                    FROM sys_user_org uo
-                    WHERE uo.user_id = u.id
-                      AND uo.org_id IN
-                      <foreach collection="query.orgIds" item="oid" open="(" separator="," close=")">
-                          #{oid}
+                    FROM sys_user_org sysUserOrg
+                    WHERE sysUserOrg.user_id = sysUser.id
+                      AND sysUserOrg.org_id IN
+                      <foreach collection="query.orgIds" item="orgId" open="(" separator="," close=")">
+                          #{orgId}
                       </foreach>
                 )
             </if>
         </where>
-        ORDER BY u.create_time DESC, u.id DESC
+        ORDER BY sysUser.create_time DESC, sysUser.id DESC
     </select>
 
 </mapper>

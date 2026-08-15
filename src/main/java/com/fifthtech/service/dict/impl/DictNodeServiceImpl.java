@@ -2,6 +2,7 @@ package com.fifthtech.service.dict.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.fifthtech.common.BizConstants;
 import com.fifthtech.dao.entity.dict.DictNode;
 import com.fifthtech.dao.mapper.dict.DictNodeMapper;
 import com.fifthtech.dto.dict.DictNodeDTO;
@@ -32,7 +33,7 @@ import java.util.regex.Pattern;
  * <ul>
  *   <li>D4/D5：同父未删 code 唯一（DB 部分唯一索引兜底）；code 禁含 /，trim 后非空，
  *   长度 1~64，建议 {@code [A-Za-z0-9_\-\.]+}。</li>
- *   <li>D6：path 不落库，运行时按链拼接；getParent 步数超过 {@link #MAX_DEPTH} 视为坏数据。</li>
+ *   <li>D6：path 不落库，运行时按链拼接；getParent 步数超过 {@link #BizConstants.MAX_TREE_DEPTH} 视为坏数据。</li>
  *   <li>D7：列表/树子节点顺序 {@code sort ASC, code ASC, id ASC}。</li>
  *   <li>D8：业务读仅返回 status=1。</li>
  *   <li>D9/D14/D17：删除与 move 要求源无未删子；move 目标必须存在或为 0、id != targetParentId。</li>
@@ -48,14 +49,11 @@ import java.util.regex.Pattern;
 @Service
 public class DictNodeServiceImpl extends ServiceImpl<DictNodeMapper, DictNode> implements DictNodeService {
 
-    /** 最大允许深度（C3 D18，根下第一层 depth=1） */
-    private static final int MAX_DEPTH = 16;
+    /** 沿 parent 链多走几步，用于识别坏链 */
+    private static final int TREE_WALK_SLACK = 4;
 
     /** code 字符合法集（C3 D5：禁 /；trim 后非空；长度 1~64） */
     private static final Pattern CODE_PATTERN = Pattern.compile("^[A-Za-z0-9_\\-\\.]+$");
-
-    /** 根节点 parent_id */
-    private static final long ROOT_ID = 0L;
 
     @Resource
     private DictNodeMapper dictNodeMapper;
@@ -75,28 +73,27 @@ public class DictNodeServiceImpl extends ServiceImpl<DictNodeMapper, DictNode> i
     }
 
     private List<DictNodeVO> listDirectChildren(Long parentId) {
-        Long pid = parentId == null ? ROOT_ID : parentId;
-        List<DictNode> children = dictNodeMapper.selectChildrenByParentId(pid);
+        Long resolvedParentId = parentId == null ? BizConstants.ROOT_PARENT_ID : parentId;
+        List<DictNode> children = dictNodeMapper.selectChildrenByParentId(resolvedParentId);
         if (children == null || children.isEmpty()) {
             return new ArrayList<>();
         }
-        // 父 path（仅当 parentId != 0 时走链）
-        String[] parentPath = pid == ROOT_ID ? new String[]{"", ""} : computePathById(pid);
-        // 批量 hasChildren
+        String[] parentPath = resolvedParentId == BizConstants.ROOT_PARENT_ID
+                ? new String[]{"", ""} : computePathById(resolvedParentId);
         List<Long> childIds = new ArrayList<>(children.size());
-        for (DictNode c : children) {
-            childIds.add(c.getId());
+        for (DictNode child : children) {
+            childIds.add(child.getId());
         }
         Set<Long> hasChildrenSet = new HashSet<>(dictNodeMapper.selectActiveParentIdsWithChildren(childIds));
 
         List<DictNodeVO> vos = new ArrayList<>(children.size());
-        for (DictNode c : children) {
-            DictNodeVO vo = toFlatVO(c);
-            String pc = parentPath[0];
-            String pn = parentPath[1];
-            vo.setPathCode(pc.isEmpty() ? c.getCode() : pc + "/" + c.getCode());
-            vo.setPathName(pn.isEmpty() ? c.getName() : pn + "/" + c.getName());
-            vo.setHasChildren(hasChildrenSet.contains(c.getId()));
+        for (DictNode child : children) {
+            DictNodeVO vo = toFlatVO(child);
+            String pathCode = parentPath[0];
+            String pathName = parentPath[1];
+            vo.setPathCode(pathCode.isEmpty() ? child.getCode() : pathCode + "/" + child.getCode());
+            vo.setPathName(pathName.isEmpty() ? child.getName() : pathName + "/" + child.getName());
+            vo.setHasChildren(hasChildrenSet.contains(child.getId()));
             vos.add(vo);
         }
         return vos;
@@ -113,14 +110,14 @@ public class DictNodeServiceImpl extends ServiceImpl<DictNodeMapper, DictNode> i
             return new ArrayList<>();
         }
         Map<Long, List<DictNode>> childrenByParent = new HashMap<>();
-        for (DictNode n : all) {
-            List<DictNode> bucket = childrenByParent.computeIfAbsent(n.getParentId(), k -> new ArrayList<>());
-            bucket.add(n);
+        for (DictNode node : all) {
+            List<DictNode> bucket = childrenByParent.computeIfAbsent(node.getParentId(), ignored -> new ArrayList<>());
+            bucket.add(node);
         }
-        List<DictNode> roots = childrenByParent.getOrDefault(ROOT_ID, Collections.emptyList());
+        List<DictNode> roots = childrenByParent.getOrDefault(BizConstants.ROOT_PARENT_ID, Collections.emptyList());
         List<DictNodeTreeVO> tree = new ArrayList<>(roots.size());
-        for (DictNode r : roots) {
-            tree.add(buildTreeNode(r, "", "", childrenByParent));
+        for (DictNode root : roots) {
+            tree.add(buildTreeNode(root, "", "", childrenByParent));
         }
         return tree;
     }
@@ -131,14 +128,14 @@ public class DictNodeServiceImpl extends ServiceImpl<DictNodeMapper, DictNode> i
                                          Map<Long, List<DictNode>> childrenByParent) {
         DictNodeTreeVO vo = new DictNodeTreeVO();
         copyFlatFields(node, vo);
-        String pc = parentPathCode.isEmpty() ? node.getCode() : parentPathCode + "/" + node.getCode();
-        String pn = parentPathName.isEmpty() ? node.getName() : parentPathName + "/" + node.getName();
-        vo.setPathCode(pc);
-        vo.setPathName(pn);
-        List<DictNode> kids = childrenByParent.getOrDefault(node.getId(), Collections.emptyList());
-        vo.setHasChildren(!kids.isEmpty());
-        for (DictNode k : kids) {
-            vo.getChildren().add(buildTreeNode(k, pc, pn, childrenByParent));
+        String pathCode = parentPathCode.isEmpty() ? node.getCode() : parentPathCode + "/" + node.getCode();
+        String pathName = parentPathName.isEmpty() ? node.getName() : parentPathName + "/" + node.getName();
+        vo.setPathCode(pathCode);
+        vo.setPathName(pathName);
+        List<DictNode> childNodes = childrenByParent.getOrDefault(node.getId(), Collections.emptyList());
+        vo.setHasChildren(!childNodes.isEmpty());
+        for (DictNode child : childNodes) {
+            vo.getChildren().add(buildTreeNode(child, pathCode, pathName, childrenByParent));
         }
         return vo;
     }
@@ -185,23 +182,23 @@ public class DictNodeServiceImpl extends ServiceImpl<DictNodeMapper, DictNode> i
         String code = normalizeCode(dto.getCode());
         String name = normalizeName(dto.getName());
         Integer status = dto.getStatus();
-        if (status != null && status != 0 && status != 1) {
+        if (status != null && status != BizConstants.STATUS_DISABLED && status != BizConstants.STATUS_ENABLED) {
             throw new IllegalArgumentException("status 仅支持 0/1");
         }
-        Long parentId = dto.getParentId() == null ? ROOT_ID : dto.getParentId();
-        if (parentId != ROOT_ID) {
+        Long parentId = dto.getParentId() == null ? BizConstants.ROOT_PARENT_ID : dto.getParentId();
+        if (parentId != BizConstants.ROOT_PARENT_ID) {
             DictNode parent = dictNodeMapper.selectById(parentId);
             if (parent == null) {
                 throw new IllegalArgumentException("父节点不存在");
             }
         }
         // 深度校验：parent.depth + 1 <= 16；坏链 depth=-1 直接拒绝
-        int parentDepth = parentId == ROOT_ID ? 0 : computeDepth(parentId);
+        int parentDepth = parentId == BizConstants.ROOT_PARENT_ID ? 0 : computeDepth(parentId);
         if (parentDepth < 0) {
             throw new IllegalArgumentException("父节点链路异常，无法新增");
         }
-        if (parentDepth + 1 > MAX_DEPTH) {
-            throw new IllegalArgumentException("超过最大深度 " + MAX_DEPTH);
+        if (parentDepth + 1 > BizConstants.MAX_TREE_DEPTH) {
+            throw new IllegalArgumentException("超过最大深度 " + BizConstants.MAX_TREE_DEPTH);
         }
         // 同父 code 唯一（DB 部分唯一索引兜底）
         if (existsSameCode(parentId, code, null)) {
@@ -212,15 +209,15 @@ public class DictNodeServiceImpl extends ServiceImpl<DictNodeMapper, DictNode> i
         entity.setCode(code);
         entity.setName(name);
         entity.setSort(dto.getSort() == null ? 0 : dto.getSort());
-        entity.setStatus(status == null ? 1 : status);
+        entity.setStatus(status == null ? BizConstants.STATUS_ENABLED : status);
         entity.setRemark(dto.getRemark() == null ? null : dto.getRemark().trim());
         LocalDateTime now = LocalDateTime.now();
         entity.setCreateTime(now);
         entity.setUpdateTime(now);
-        Long uid = currentUserIdOrNull();
-        if (uid != null) {
-            entity.setCreateId(uid);
-            entity.setUpdateId(uid);
+        Long userId = currentUserIdOrNull();
+        if (userId != null) {
+            entity.setCreateId(userId);
+            entity.setUpdateId(userId);
         }
         dictNodeMapper.insert(entity);
         return info(entity.getId());
@@ -257,7 +254,7 @@ public class DictNodeServiceImpl extends ServiceImpl<DictNodeMapper, DictNode> i
             existing.setSort(dto.getSort());
         }
         if (dto.getStatus() != null) {
-            if (dto.getStatus() != 0 && dto.getStatus() != 1) {
+            if (dto.getStatus() != BizConstants.STATUS_DISABLED && dto.getStatus() != BizConstants.STATUS_ENABLED) {
                 throw new IllegalArgumentException("status 仅支持 0/1");
             }
             existing.setStatus(dto.getStatus());
@@ -266,9 +263,9 @@ public class DictNodeServiceImpl extends ServiceImpl<DictNodeMapper, DictNode> i
             existing.setRemark(dto.getRemark());
         }
         existing.setUpdateTime(LocalDateTime.now());
-        Long uid = currentUserIdOrNull();
-        if (uid != null) {
-            existing.setUpdateId(uid);
+        Long userId = currentUserIdOrNull();
+        if (userId != null) {
+            existing.setUpdateId(userId);
         }
         updateById(existing);
         return info(existing.getId());
@@ -300,14 +297,13 @@ public class DictNodeServiceImpl extends ServiceImpl<DictNodeMapper, DictNode> i
             throw new IllegalArgumentException("节点不存在");
         }
         // 源必须无未删子
-        List<Long> sourceKids = dictNodeMapper.selectActiveParentIdsWithChildren(Collections.singletonList(id));
-        if (sourceKids != null && !sourceKids.isEmpty()) {
+        List<Long> sourceChildParentIds = dictNodeMapper.selectActiveParentIdsWithChildren(Collections.singletonList(id));
+        if (sourceChildParentIds != null && !sourceChildParentIds.isEmpty()) {
             throw new IllegalArgumentException("存在子节点，不允许移动");
         }
-        // 目标存在或为 0
-        if (targetParentId != ROOT_ID) {
-            DictNode tp = dictNodeMapper.selectById(targetParentId);
-            if (tp == null) {
+        if (targetParentId != BizConstants.ROOT_PARENT_ID) {
+            DictNode targetParent = dictNodeMapper.selectById(targetParentId);
+            if (targetParent == null) {
                 throw new IllegalArgumentException("目标父节点不存在");
             }
         }
@@ -316,20 +312,20 @@ public class DictNodeServiceImpl extends ServiceImpl<DictNodeMapper, DictNode> i
             throw new IllegalArgumentException("目标父下 code 已存在");
         }
         // 深度校验
-        int targetDepth = targetParentId == ROOT_ID ? 0 : computeDepth(targetParentId);
+        int targetDepth = targetParentId == BizConstants.ROOT_PARENT_ID ? 0 : computeDepth(targetParentId);
         if (targetDepth < 0) {
             throw new IllegalArgumentException("目标父节点链路异常，无法移动");
         }
-        if (targetDepth + 1 > MAX_DEPTH) {
-            throw new IllegalArgumentException("超过最大深度 " + MAX_DEPTH);
+        if (targetDepth + 1 > BizConstants.MAX_TREE_DEPTH) {
+            throw new IllegalArgumentException("超过最大深度 " + BizConstants.MAX_TREE_DEPTH);
         }
         DictNode upd = new DictNode();
         upd.setId(id);
         upd.setParentId(targetParentId);
         upd.setUpdateTime(LocalDateTime.now());
-        Long uid = currentUserIdOrNull();
-        if (uid != null) {
-            upd.setUpdateId(uid);
+        Long userId = currentUserIdOrNull();
+        if (userId != null) {
+            upd.setUpdateId(userId);
         }
         updateById(upd);
     }
@@ -348,15 +344,15 @@ public class DictNodeServiceImpl extends ServiceImpl<DictNodeMapper, DictNode> i
         if (existing == null) {
             return;
         }
-        List<Long> kids = dictNodeMapper.selectActiveParentIdsWithChildren(Collections.singletonList(id));
-        if (kids != null && !kids.isEmpty()) {
+        List<Long> childParentIds = dictNodeMapper.selectActiveParentIdsWithChildren(Collections.singletonList(id));
+        if (childParentIds != null && !childParentIds.isEmpty()) {
             throw new IllegalArgumentException("存在子节点，不允许删除");
         }
-        Long uid = currentUserIdOrNull();
+        Long userId = currentUserIdOrNull();
         DictNode upd = new DictNode();
         upd.setId(id);
-        if (uid != null) {
-            upd.setDeleteId(uid);
+        if (userId != null) {
+            upd.setDeleteId(userId);
         }
         upd.setDeleteTime(LocalDateTime.now());
         updateById(upd);
@@ -376,17 +372,17 @@ public class DictNodeServiceImpl extends ServiceImpl<DictNodeMapper, DictNode> i
         }
         String[] parts = pathCode.split("/");
         // 沿 parent 链匹配 code 段；同步累积 (code, name) 以便后续拼 child.path
-        Long parentId = ROOT_ID;
+        Long parentId = BizConstants.ROOT_PARENT_ID;
         List<String[]> chain = new ArrayList<>(parts.length);
         for (String part : parts) {
             if (part.isEmpty()) {
                 continue;
             }
-            LambdaQueryWrapper<DictNode> w = new LambdaQueryWrapper<>();
-            w.eq(DictNode::getParentId, parentId)
+            LambdaQueryWrapper<DictNode> wrapper = new LambdaQueryWrapper<>();
+            wrapper.eq(DictNode::getParentId, parentId)
                     .eq(DictNode::getCode, part)
-                    .eq(DictNode::getDeleted, 0);
-            DictNode node = dictNodeMapper.selectOne(w);
+                    .eq(DictNode::getDeleted, BizConstants.NOT_DELETED);
+            DictNode node = dictNodeMapper.selectOne(wrapper);
             if (node == null) {
                 throw new IllegalArgumentException("字典路径不存在");
             }
@@ -397,37 +393,36 @@ public class DictNodeServiceImpl extends ServiceImpl<DictNodeMapper, DictNode> i
             throw new IllegalArgumentException("字典路径不存在");
         }
         Long targetId = parentId;
-        StringBuilder parentPc = new StringBuilder();
-        StringBuilder parentPn = new StringBuilder();
+        StringBuilder parentPathCode = new StringBuilder();
+        StringBuilder parentPathName = new StringBuilder();
         for (int i = 0; i < chain.size(); i++) {
             if (i > 0) {
-                parentPc.append('/');
-                parentPn.append('/');
+                parentPathCode.append('/');
+                parentPathName.append('/');
             }
-            parentPc.append(chain.get(i)[0]);
-            parentPn.append(chain.get(i)[1]);
+            parentPathCode.append(chain.get(i)[0]);
+            parentPathName.append(chain.get(i)[1]);
         }
         List<DictNode> children = dictNodeMapper.selectChildrenByParentId(targetId);
         if (children == null || children.isEmpty()) {
             return new ArrayList<>();
         }
-        // 只返回 status=1 的直接子
         List<DictNodeVO> vos = new ArrayList<>(children.size());
         List<Long> childIds = new ArrayList<>(children.size());
-        for (DictNode c : children) {
-            if (c.getStatus() == null || c.getStatus() != 1) {
+        for (DictNode child : children) {
+            if (child.getStatus() == null || child.getStatus() != BizConstants.STATUS_ENABLED) {
                 continue;
             }
-            DictNodeVO vo = toFlatVO(c);
-            vo.setPathCode(parentPc.toString() + "/" + c.getCode());
-            vo.setPathName(parentPn.toString() + "/" + c.getName());
-            childIds.add(c.getId());
+            DictNodeVO vo = toFlatVO(child);
+            vo.setPathCode(parentPathCode.toString() + "/" + child.getCode());
+            vo.setPathName(parentPathName.toString() + "/" + child.getName());
+            childIds.add(child.getId());
             vos.add(vo);
         }
         if (!vos.isEmpty()) {
-            Set<Long> hasKids = new HashSet<>(dictNodeMapper.selectActiveParentIdsWithChildren(childIds));
+            Set<Long> parentsWithChildren = new HashSet<>(dictNodeMapper.selectActiveParentIdsWithChildren(childIds));
             for (DictNodeVO vo : vos) {
-                vo.setHasChildren(hasKids.contains(vo.getId()));
+                vo.setHasChildren(parentsWithChildren.contains(vo.getId()));
             }
         }
         return vos;
@@ -438,7 +433,7 @@ public class DictNodeServiceImpl extends ServiceImpl<DictNodeMapper, DictNode> i
     // ---------------------------------------------------------------------
 
     /**
-     * 走 parent 链拼 pathCode / pathName（不超过 MAX_DEPTH 步数；步数超限或成环返回 null）。
+     * 走 parent 链拼 pathCode / pathName（不超过 BizConstants.MAX_TREE_DEPTH 步数；步数超限或成环返回 null）。
      * 用于 info 与 listDataByPathCode 的兜底；tree 走内存构建不走这里。
      */
     private String[] computePathById(Long id) {
@@ -449,11 +444,11 @@ public class DictNodeServiceImpl extends ServiceImpl<DictNodeMapper, DictNode> i
         Set<Long> visited = new HashSet<>();
         Long current = id;
         int hops = 0;
-        while (current != null && current != ROOT_ID) {
+        while (current != null && current != BizConstants.ROOT_PARENT_ID) {
             if (!visited.add(current)) {
                 return null; // 成环
             }
-            if (++hops > MAX_DEPTH + 4) {
+            if (++hops > BizConstants.MAX_TREE_DEPTH + TREE_WALK_SLACK) {
                 return null;
             }
             DictNode node = dictNodeMapper.selectById(current);
@@ -466,34 +461,34 @@ public class DictNodeServiceImpl extends ServiceImpl<DictNodeMapper, DictNode> i
         if (segs.isEmpty()) {
             return null;
         }
-        StringBuilder pc = new StringBuilder();
-        StringBuilder pn = new StringBuilder();
+        StringBuilder pathCode = new StringBuilder();
+        StringBuilder pathName = new StringBuilder();
         for (int i = 0; i < segs.size(); i++) {
             if (i > 0) {
-                pc.append('/');
-                pn.append('/');
+                pathCode.append('/');
+                pathName.append('/');
             }
-            pc.append(segs.get(i)[0]);
-            pn.append(segs.get(i)[1]);
+            pathCode.append(segs.get(i)[0]);
+            pathName.append(segs.get(i)[1]);
         }
-        return new String[]{pc.toString(), pn.toString()};
+        return new String[]{pathCode.toString(), pathName.toString()};
     }
 
     /**
-     * 计算节点深度（根下第一层 = 1；根 = 0）。走 parent 链遇 NULL / 成环 / 超 MAX_DEPTH 返回 -1。
+     * 计算节点深度（根下第一层 = 1；根 = 0）。走 parent 链遇 NULL / 成环 / 超 BizConstants.MAX_TREE_DEPTH 返回 -1。
      */
     private int computeDepth(Long id) {
-        if (id == null || id == ROOT_ID) {
+        if (id == null || id == BizConstants.ROOT_PARENT_ID) {
             return 0;
         }
         Set<Long> visited = new HashSet<>();
         Long current = id;
         int depth = 0;
-        while (current != null && current != ROOT_ID) {
+        while (current != null && current != BizConstants.ROOT_PARENT_ID) {
             if (!visited.add(current)) {
                 return -1;
             }
-            if (++depth > MAX_DEPTH) {
+            if (++depth > BizConstants.MAX_TREE_DEPTH) {
                 return -1;
             }
             DictNode node = dictNodeMapper.selectById(current);
@@ -509,14 +504,14 @@ public class DictNodeServiceImpl extends ServiceImpl<DictNodeMapper, DictNode> i
      * 同 parent 下未删 code 唯一性校验（{@code excludeId} 可选：edit 时排除自身）。
      */
     private boolean existsSameCode(Long parentId, String code, Long excludeId) {
-        LambdaQueryWrapper<DictNode> w = new LambdaQueryWrapper<>();
-        w.eq(DictNode::getParentId, parentId)
+        LambdaQueryWrapper<DictNode> wrapper = new LambdaQueryWrapper<>();
+        wrapper.eq(DictNode::getParentId, parentId)
                 .eq(DictNode::getCode, code)
-                .eq(DictNode::getDeleted, 0);
+                .eq(DictNode::getDeleted, BizConstants.NOT_DELETED);
         if (excludeId != null) {
-            w.ne(DictNode::getId, excludeId);
+            wrapper.ne(DictNode::getId, excludeId);
         }
-        return dictNodeMapper.selectCount(w) > 0;
+        return dictNodeMapper.selectCount(wrapper) > 0;
     }
 
     /**

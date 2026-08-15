@@ -5,115 +5,115 @@
     <!-- 全量未删组织（tree）：每条 SQL 写全列，禁止 sql 片段抽取 / resultMap -->
     <select id="selectActiveList" resultType="com.fifthtech.dao.entity.org.Org">
         SELECT
-            id,
-            parent_id    AS parentId,
-            org_code     AS orgCode,
-            org_name     AS orgName,
-            org_type     AS orgType,
-            sort,
-            status,
-            remark,
-            create_id    AS createId,
-            create_name  AS createName,
-            create_time  AS createTime,
-            update_id    AS updateId,
-            update_name  AS updateName,
-            update_time  AS updateTime,
-            deleted,
-            delete_id    AS deleteId,
-            delete_name  AS deleteName,
-            delete_time  AS deleteTime
-        FROM sys_org
-        WHERE deleted = 0
-        ORDER BY sort ASC, org_code ASC, id ASC
+            sysOrg.id,
+            sysOrg.parent_id    AS parentId,
+            sysOrg.org_code     AS orgCode,
+            sysOrg.org_name     AS orgName,
+            sysOrg.org_type     AS orgType,
+            sysOrg.sort,
+            sysOrg.status,
+            sysOrg.remark,
+            sysOrg.create_id    AS createId,
+            sysOrg.create_name  AS createName,
+            sysOrg.create_time  AS createTime,
+            sysOrg.update_id    AS updateId,
+            sysOrg.update_name  AS updateName,
+            sysOrg.update_time  AS updateTime,
+            sysOrg.deleted,
+            sysOrg.delete_id    AS deleteId,
+            sysOrg.delete_name  AS deleteName,
+            sysOrg.delete_time  AS deleteTime
+        FROM sys_org sysOrg
+        WHERE sysOrg.deleted = 0
+        ORDER BY sysOrg.sort ASC, sysOrg.org_code ASC, sysOrg.id ASC
     </select>
 
     <!-- 全量启用未删组织（options）：status=1，按 sort/code/id 升序 -->
     <select id="selectEnabledOptions" resultType="com.fifthtech.dao.entity.org.Org">
         SELECT
-            id,
-            parent_id    AS parentId,
-            org_code     AS orgCode,
-            org_name     AS orgName,
-            org_type     AS orgType,
-            sort,
-            status,
-            remark,
-            create_id    AS createId,
-            create_name  AS createName,
-            create_time  AS createTime,
-            update_id    AS updateId,
-            update_name  AS updateName,
-            update_time  AS updateTime,
-            deleted,
-            delete_id    AS deleteId,
-            delete_name  AS deleteName,
-            delete_time  AS deleteTime
-        FROM sys_org
-        WHERE deleted = 0
-          AND status = 1
-        ORDER BY sort ASC, org_code ASC, id ASC
+            sysOrg.id,
+            sysOrg.parent_id    AS parentId,
+            sysOrg.org_code     AS orgCode,
+            sysOrg.org_name     AS orgName,
+            sysOrg.org_type     AS orgType,
+            sysOrg.sort,
+            sysOrg.status,
+            sysOrg.remark,
+            sysOrg.create_id    AS createId,
+            sysOrg.create_name  AS createName,
+            sysOrg.create_time  AS createTime,
+            sysOrg.update_id    AS updateId,
+            sysOrg.update_name  AS updateName,
+            sysOrg.update_time  AS updateTime,
+            sysOrg.deleted,
+            sysOrg.delete_id    AS deleteId,
+            sysOrg.delete_name  AS deleteName,
+            sysOrg.delete_time  AS deleteTime
+        FROM sys_org sysOrg
+        WHERE sysOrg.deleted = 0
+          AND sysOrg.status = 1
+        ORDER BY sysOrg.sort ASC, sysOrg.org_code ASC, sysOrg.id ASC
     </select>
 
     <!-- 指定 parent 的直接子（children / list）：每条 SQL 写全列 -->
     <select id="selectChildrenByParentId" resultType="com.fifthtech.dao.entity.org.Org">
         SELECT
-            id,
-            parent_id    AS parentId,
-            org_code     AS orgCode,
-            org_name     AS orgName,
-            org_type     AS orgType,
-            sort,
-            status,
-            remark,
-            create_id    AS createId,
-            create_name  AS createName,
-            create_time  AS createTime,
-            update_id    AS updateId,
-            update_name  AS updateName,
-            update_time  AS updateTime,
-            deleted,
-            delete_id    AS deleteId,
-            delete_name  AS deleteName,
-            delete_time  AS deleteTime
-        FROM sys_org
-        WHERE deleted = 0
-          AND parent_id = #{parentId}
-        ORDER BY sort ASC, org_code ASC, id ASC
+            sysOrg.id,
+            sysOrg.parent_id    AS parentId,
+            sysOrg.org_code     AS orgCode,
+            sysOrg.org_name     AS orgName,
+            sysOrg.org_type     AS orgType,
+            sysOrg.sort,
+            sysOrg.status,
+            sysOrg.remark,
+            sysOrg.create_id    AS createId,
+            sysOrg.create_name  AS createName,
+            sysOrg.create_time  AS createTime,
+            sysOrg.update_id    AS updateId,
+            sysOrg.update_name  AS updateName,
+            sysOrg.update_time  AS updateTime,
+            sysOrg.deleted,
+            sysOrg.delete_id    AS deleteId,
+            sysOrg.delete_name  AS deleteName,
+            sysOrg.delete_time  AS deleteTime
+        FROM sys_org sysOrg
+        WHERE sysOrg.deleted = 0
+          AND sysOrg.parent_id = #{parentId}
+        ORDER BY sysOrg.sort ASC, sysOrg.org_code ASC, sysOrg.id ASC
     </select>
 
     <!-- 批量 hasChildren：返回 parent_id 中「有未删子」的子集 -->
     <select id="selectActiveParentIdsWithChildren" resultType="java.lang.Long">
-        SELECT DISTINCT parent_id
-        FROM sys_org
-        WHERE deleted = 0
-          AND parent_id IN
-            <foreach collection="parentIds" item="pid" open="(" separator="," close=")">
-                #{pid}
+        SELECT DISTINCT sysOrg.parent_id
+        FROM sys_org sysOrg
+        WHERE sysOrg.deleted = 0
+          AND sysOrg.parent_id IN
+            <foreach collection="parentIds" item="parentId" open="(" separator="," close=")">
+                #{parentId}
             </foreach>
     </select>
 
     <!-- 统计 parentId 下未删子数 -->
     <select id="countActiveChildrenByParentId" resultType="java.lang.Long">
         SELECT COUNT(1)
-        FROM sys_org
-        WHERE deleted = 0
-          AND parent_id = #{parentId}
+        FROM sys_org sysOrg
+        WHERE sysOrg.deleted = 0
+          AND sysOrg.parent_id = #{parentId}
     </select>
 
-    <!-- 统计 orgId 下 sys_user_org 成员数（org_id 已限定 deleted=0 由设计保证；外层 service 校验组织未删） -->
+    <!-- 统计 orgId 下 sys_user_org 成员数 -->
     <select id="countActiveMembersByOrgId" resultType="java.lang.Long">
         SELECT COUNT(1)
-        FROM sys_user_org
-        WHERE org_id = #{orgId}
+        FROM sys_user_org sysUserOrg
+        WHERE sysUserOrg.org_id = #{orgId}
     </select>
 
     <!-- 统计 orgId 下未删角色数 -->
     <select id="countActiveRolesByOrgId" resultType="java.lang.Long">
         SELECT COUNT(1)
-        FROM sys_role
-        WHERE deleted = 0
-          AND org_id = #{orgId}
+        FROM sys_role sysRole
+        WHERE sysRole.deleted = 0
+          AND sysRole.org_id = #{orgId}
     </select>
 
 </mapper>

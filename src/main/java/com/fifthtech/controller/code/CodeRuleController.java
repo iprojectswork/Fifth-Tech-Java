@@ -134,8 +134,8 @@ public class CodeRuleController {
             return Collections.emptyList();
         }
         List<CodeRuleVO> out = new java.util.ArrayList<>(list.size());
-        for (CodeRule r : list) {
-            out.add(toVO(r));
+        for (CodeRule rule : list) {
+            out.add(toVO(rule));
         }
         return out;
     }

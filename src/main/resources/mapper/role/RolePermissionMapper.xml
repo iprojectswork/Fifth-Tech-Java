@@ -4,8 +4,8 @@
 
     <!-- 根据角色ID删除角色权限关联 -->
     <delete id="deleteByRoleId">
-        DELETE FROM sys_role_permission
-        WHERE role_id = #{roleId}
+        DELETE FROM sys_role_permission sysRolePermission
+        WHERE sysRolePermission.role_id = #{roleId}
     </delete>
 
     <!-- 批量插入角色权限关联 -->

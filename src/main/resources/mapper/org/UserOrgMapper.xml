@@ -4,56 +4,56 @@
 
     <!-- 删除用户全部成员关系 -->
     <delete id="deleteByUserId">
-        DELETE FROM sys_user_org
-        WHERE user_id = #{userId}
+        DELETE FROM sys_user_org sysUserOrg
+        WHERE sysUserOrg.user_id = #{userId}
     </delete>
 
     <!-- 删除用户对指定组织的成员关系 -->
     <delete id="deleteByUserIdAndOrgId">
-        DELETE FROM sys_user_org
-        WHERE user_id = #{userId}
-          AND org_id = #{orgId}
+        DELETE FROM sys_user_org sysUserOrg
+        WHERE sysUserOrg.user_id = #{userId}
+          AND sysUserOrg.org_id = #{orgId}
     </delete>
 
     <!-- 批量插入成员关系（避免唯一约束冲突：ON CONFLICT DO NOTHING；PG 适用） -->
     <insert id="batchInsertIgnore">
         INSERT INTO sys_user_org (user_id, org_id, create_time)
         VALUES
-        <foreach collection="orgIds" item="oid" separator=",">
-            (#{userId}, #{oid}, NOW())
+        <foreach collection="orgIds" item="orgId" separator=",">
+            (#{userId}, #{orgId}, NOW())
         </foreach>
         ON CONFLICT (user_id, org_id) DO NOTHING
     </insert>
 
     <!-- 查询用户全部成员组织 ID（去重） -->
     <select id="selectOrgIdsByUserId" resultType="java.lang.Long">
-        SELECT DISTINCT org_id
-        FROM sys_user_org
-        WHERE user_id = #{userId}
+        SELECT DISTINCT sysUserOrg.org_id
+        FROM sys_user_org sysUserOrg
+        WHERE sysUserOrg.user_id = #{userId}
     </select>
 
     <!-- 查询某组织下成员用户 ID 列表（去重） -->
     <select id="selectUserIdsByOrgId" resultType="java.lang.Long">
-        SELECT DISTINCT user_id
-        FROM sys_user_org
-        WHERE org_id = #{orgId}
+        SELECT DISTINCT sysUserOrg.user_id
+        FROM sys_user_org sysUserOrg
+        WHERE sysUserOrg.org_id = #{orgId}
     </select>
 
     <select id="selectUserIdsByOrgIds" resultType="java.lang.Long">
-        SELECT DISTINCT user_id
-        FROM sys_user_org
-        WHERE org_id IN
-        <foreach collection="orgIds" item="oid" open="(" separator="," close=")">
-            #{oid}
+        SELECT DISTINCT sysUserOrg.user_id
+        FROM sys_user_org sysUserOrg
+        WHERE sysUserOrg.org_id IN
+        <foreach collection="orgIds" item="orgId" open="(" separator="," close=")">
+            #{orgId}
         </foreach>
     </select>
 
     <delete id="deleteByUserIdAndOrgIds">
-        DELETE FROM sys_user_org
-        WHERE user_id = #{userId}
-          AND org_id IN
-        <foreach collection="orgIds" item="oid" open="(" separator="," close=")">
-            #{oid}
+        DELETE FROM sys_user_org sysUserOrg
+        WHERE sysUserOrg.user_id = #{userId}
+          AND sysUserOrg.org_id IN
+        <foreach collection="orgIds" item="orgId" open="(" separator="," close=")">
+            #{orgId}
         </foreach>
     </delete>
 
@@ -61,9 +61,9 @@
     <select id="existsUserOrg" resultType="java.lang.Boolean">
         SELECT EXISTS (
             SELECT 1
-            FROM sys_user_org
-            WHERE user_id = #{userId}
-              AND org_id = #{orgId}
+            FROM sys_user_org sysUserOrg
+            WHERE sysUserOrg.user_id = #{userId}
+              AND sysUserOrg.org_id = #{orgId}
         )
     </select>
 

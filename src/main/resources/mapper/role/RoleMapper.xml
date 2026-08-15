@@ -4,127 +4,127 @@
 
     <!-- 根据用户ID查询角色列表（启用，鉴权用） -->
     <select id="selectByUserId" resultType="com.fifthtech.dao.entity.role.Role">
-        SELECT r.id,
-               r.role_name,
-               r.role_code,
-               r.description,
-               r.status,
-               r.sort,
-               r.create_id,
-               r.create_name,
-               r.create_time,
-               r.update_id,
-               r.update_name,
-               r.update_time,
-               r.deleted,
-               r.delete_id,
-               r.delete_name,
-               r.delete_time
-        FROM sys_role r
-        INNER JOIN sys_user_role ur ON r.id = ur.role_id
-        WHERE ur.user_id = #{userId}
-          AND r.deleted = 0
-          AND r.status = 1
-        ORDER BY r.sort ASC
+        SELECT sysRole.id,
+               sysRole.role_name,
+               sysRole.role_code,
+               sysRole.description,
+               sysRole.status,
+               sysRole.sort,
+               sysRole.create_id,
+               sysRole.create_name,
+               sysRole.create_time,
+               sysRole.update_id,
+               sysRole.update_name,
+               sysRole.update_time,
+               sysRole.deleted,
+               sysRole.delete_id,
+               sysRole.delete_name,
+               sysRole.delete_time
+        FROM sys_role sysRole
+        INNER JOIN sys_user_role sysUserRole ON sysRole.id = sysUserRole.role_id
+        WHERE sysUserRole.user_id = #{userId}
+          AND sysRole.deleted = 0
+          AND sysRole.status = 1
+        ORDER BY sysRole.sort ASC
     </select>
 
     <!-- 用户详情：关联角色子表（含禁用） -->
     <select id="listRelatedByUserId" resultType="com.fifthtech.dao.entity.role.Role">
-        SELECT r.id,
-               r.role_name,
-               r.role_code,
-               r.description,
-               r.status,
-               r.sort,
-               r.create_id,
-               r.create_name,
-               r.create_time,
-               r.update_id,
-               r.update_name,
-               r.update_time,
-               r.deleted,
-               r.delete_id,
-               r.delete_name,
-               r.delete_time
-        FROM sys_role r
-        INNER JOIN sys_user_role ur ON r.id = ur.role_id
-        WHERE ur.user_id = #{userId}
-          AND r.deleted = 0
-        ORDER BY r.sort ASC, r.id ASC
+        SELECT sysRole.id,
+               sysRole.role_name,
+               sysRole.role_code,
+               sysRole.description,
+               sysRole.status,
+               sysRole.sort,
+               sysRole.create_id,
+               sysRole.create_name,
+               sysRole.create_time,
+               sysRole.update_id,
+               sysRole.update_name,
+               sysRole.update_time,
+               sysRole.deleted,
+               sysRole.delete_id,
+               sysRole.delete_name,
+               sysRole.delete_time
+        FROM sys_role sysRole
+        INNER JOIN sys_user_role sysUserRole ON sysRole.id = sysUserRole.role_id
+        WHERE sysUserRole.user_id = #{userId}
+          AND sysRole.deleted = 0
+        ORDER BY sysRole.sort ASC, sysRole.id ASC
     </select>
 
     <!-- 角色分页列表 -->
     <select id="listPage" resultType="com.fifthtech.dao.entity.role.Role">
-        SELECT r.id,
-               r.role_name,
-               r.role_code,
-               r.description,
-               r.status,
-               r.sort,
-               r.create_id,
-               r.create_name,
-               r.create_time,
-               r.update_id,
-               r.update_name,
-               r.update_time,
-               r.deleted,
-               r.delete_id,
-               r.delete_name,
-               r.delete_time
-        FROM sys_role r
+        SELECT sysRole.id,
+               sysRole.role_name,
+               sysRole.role_code,
+               sysRole.description,
+               sysRole.status,
+               sysRole.sort,
+               sysRole.create_id,
+               sysRole.create_name,
+               sysRole.create_time,
+               sysRole.update_id,
+               sysRole.update_name,
+               sysRole.update_time,
+               sysRole.deleted,
+               sysRole.delete_id,
+               sysRole.delete_name,
+               sysRole.delete_time
+        FROM sys_role sysRole
         <where>
-            r.deleted = 0
+            sysRole.deleted = 0
             <if test="query.roleName != null and query.roleName != ''">
-                AND r.role_name LIKE CONCAT('%', #{query.roleName}, '%')
+                AND sysRole.role_name LIKE CONCAT('%', #{query.roleName}, '%')
             </if>
             <if test="query.roleCode != null and query.roleCode != ''">
-                AND r.role_code LIKE CONCAT('%', #{query.roleCode}, '%')
+                AND sysRole.role_code LIKE CONCAT('%', #{query.roleCode}, '%')
             </if>
         </where>
-        ORDER BY r.sort ASC, r.id ASC
+        ORDER BY sysRole.sort ASC, sysRole.id ASC
     </select>
 
     <!-- /role/all：全部启用角色 -->
     <select id="selectAllEnabled" resultType="com.fifthtech.dao.entity.role.Role">
-        SELECT r.id,
-               r.role_name,
-               r.role_code,
-               r.description,
-               r.status,
-               r.sort,
-               r.create_id,
-               r.create_name,
-               r.create_time,
-               r.update_id,
-               r.update_name,
-               r.update_time,
-               r.deleted,
-               r.delete_id,
-               r.delete_name,
-               r.delete_time
-        FROM sys_role r
-        WHERE r.deleted = 0
-          AND r.status = 1
-        ORDER BY r.sort ASC, r.id ASC
+        SELECT sysRole.id,
+               sysRole.role_name,
+               sysRole.role_code,
+               sysRole.description,
+               sysRole.status,
+               sysRole.sort,
+               sysRole.create_id,
+               sysRole.create_name,
+               sysRole.create_time,
+               sysRole.update_id,
+               sysRole.update_name,
+               sysRole.update_time,
+               sysRole.deleted,
+               sysRole.delete_id,
+               sysRole.delete_name,
+               sysRole.delete_time
+        FROM sys_role sysRole
+        WHERE sysRole.deleted = 0
+          AND sysRole.status = 1
+        ORDER BY sysRole.sort ASC, sysRole.id ASC
     </select>
 
     <!-- 根据角色ID查询权限ID列表 -->
     <select id="selectPermissionIdsByRoleId" resultType="java.lang.Long">
-        SELECT rp.permission_id
-        FROM sys_role_permission rp
-        INNER JOIN sys_permission p ON rp.permission_id = p.id
-        WHERE rp.role_id = #{roleId}
-          AND p.deleted = 0
+        SELECT sysRolePermission.permission_id
+        FROM sys_role_permission sysRolePermission
+        INNER JOIN sys_permission sysPermission ON sysRolePermission.permission_id = sysPermission.id
+        WHERE sysRolePermission.role_id = #{roleId}
+          AND sysPermission.deleted = 0
     </select>
 
     <!-- 未删 roleCode 全局唯一性校验（excludeId 可选） -->
     <select id="countByRoleCode" resultType="java.lang.Long">
         SELECT COUNT(1)
-        FROM sys_role
-        WHERE deleted = 0
-          AND role_code = #{roleCode}
+        FROM sys_role sysRole
+        WHERE sysRole.deleted = 0
+          AND sysRole.role_code = #{roleCode}
           <if test="excludeId != null">
-              AND id &lt;&gt; #{excludeId}
+              AND sysRole.id &lt;&gt; #{excludeId}
           </if>
     </select>
 

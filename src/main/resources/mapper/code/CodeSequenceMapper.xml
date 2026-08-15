@@ -4,10 +4,16 @@
 
     <!-- 行锁选择：分配号段时进入事务的第一条 SQL；找不到返回空由调用方判别。 -->
     <select id="selectForUpdate" resultType="com.fifthtech.dao.entity.code.CodeSequence">
-        SELECT id, rule_code, rule_id, period_key, current_max, create_time, update_time
-        FROM sys_code_sequence
-        WHERE rule_id = #{ruleId}
-          AND period_key = #{periodKey}
+        SELECT sysCodeSequence.id,
+               sysCodeSequence.rule_code,
+               sysCodeSequence.rule_id,
+               sysCodeSequence.period_key,
+               sysCodeSequence.current_max,
+               sysCodeSequence.create_time,
+               sysCodeSequence.update_time
+        FROM sys_code_sequence sysCodeSequence
+        WHERE sysCodeSequence.rule_id = #{ruleId}
+          AND sysCodeSequence.period_key = #{periodKey}
         FOR UPDATE
     </select>
 
@@ -20,11 +26,11 @@
 
     <!-- 预支：在事务内（行锁已握）将 current_max 自增 -->
     <update id="incrementCurrentMax">
-        UPDATE sys_code_sequence
-        SET current_max = current_max + #{increment},
+        UPDATE sys_code_sequence sysCodeSequence
+        SET current_max = sysCodeSequence.current_max + #{increment},
             update_time = NOW()
-        WHERE rule_id = #{ruleId}
-          AND period_key = #{periodKey}
+        WHERE sysCodeSequence.rule_id = #{ruleId}
+          AND sysCodeSequence.period_key = #{periodKey}
     </update>
 
 </mapper>

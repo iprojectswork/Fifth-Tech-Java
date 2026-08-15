@@ -3,6 +3,7 @@ package com.fifthtech.service.role.impl;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.fifthtech.common.BizConstants;
 import com.fifthtech.common.utils.ConvertUtils;
 import com.fifthtech.dao.entity.role.Role;
 import com.fifthtech.dao.mapper.role.RoleMapper;
@@ -38,11 +39,13 @@ public class RoleServiceImpl extends ServiceImpl<RoleMapper, Role> implements Ro
 
     @Override
     public Page<Role> selectPage(RoleQueryDTO query) {
-        RoleQueryDTO q = query == null ? new RoleQueryDTO() : query;
-        int current = q.getCurrent() == null ? 1 : q.getCurrent();
-        int size = q.getSize() == null ? 10 : q.getSize();
+        if (query == null) {
+            query = new RoleQueryDTO();
+        }
+        int current = query.getCurrent() == null ? BizConstants.DEFAULT_PAGE_CURRENT : query.getCurrent();
+        int size = query.getSize() == null ? BizConstants.DEFAULT_PAGE_SIZE : query.getSize();
         Page<Role> page = new Page<>(current, size);
-        IPage<Role> result = baseMapper.listPage(page, q);
+        IPage<Role> result = baseMapper.listPage(page, query);
         return (Page<Role>) result;
     }
 
@@ -69,18 +72,18 @@ public class RoleServiceImpl extends ServiceImpl<RoleMapper, Role> implements Ro
         if (dto.getRoleCode() == null || dto.getRoleCode().trim().isEmpty()) {
             throw new IllegalArgumentException("roleCode 不能为空");
         }
-        String code = dto.getRoleCode().trim();
-        long dup = baseMapper.countByRoleCode(code, null);
-        if (dup > 0) {
+        String roleCode = dto.getRoleCode().trim();
+        long duplicateCount = baseMapper.countByRoleCode(roleCode, null);
+        if (duplicateCount > 0) {
             throw new IllegalArgumentException("roleCode 已存在");
         }
         Role role = ConvertUtils.toEntity(dto, Role.class);
-        role.setRoleCode(code);
-        role.setStatus(dto.getStatus() != null ? dto.getStatus() : 1);
+        role.setRoleCode(roleCode);
+        role.setStatus(dto.getStatus() != null ? dto.getStatus() : BizConstants.STATUS_ENABLED);
         role.setCreateTime(LocalDateTime.now());
-        Long uid = UserContext.getCurrentUserId();
-        if (uid != null) {
-            role.setCreateId(uid);
+        Long userId = UserContext.getCurrentUserId();
+        if (userId != null) {
+            role.setCreateId(userId);
         }
         save(role);
         return role;
@@ -99,8 +102,8 @@ public class RoleServiceImpl extends ServiceImpl<RoleMapper, Role> implements Ro
         if (dto.getRoleCode() != null && !dto.getRoleCode().trim().isEmpty()) {
             String newCode = dto.getRoleCode().trim();
             if (!newCode.equals(existRole.getRoleCode())) {
-                long dup = baseMapper.countByRoleCode(newCode, existRole.getId());
-                if (dup > 0) {
+                long duplicateCount = baseMapper.countByRoleCode(newCode, existRole.getId());
+                if (duplicateCount > 0) {
                     throw new IllegalArgumentException("roleCode 已存在");
                 }
                 existRole.setRoleCode(newCode);
@@ -119,9 +122,9 @@ public class RoleServiceImpl extends ServiceImpl<RoleMapper, Role> implements Ro
             existRole.setSort(dto.getSort());
         }
         existRole.setUpdateTime(LocalDateTime.now());
-        Long uid = UserContext.getCurrentUserId();
-        if (uid != null) {
-            existRole.setUpdateId(uid);
+        Long userId = UserContext.getCurrentUserId();
+        if (userId != null) {
+            existRole.setUpdateId(userId);
         }
         updateById(existRole);
         return getById(existRole.getId());
@@ -137,9 +140,9 @@ public class RoleServiceImpl extends ServiceImpl<RoleMapper, Role> implements Ro
         if (role == null) {
             return;
         }
-        Long uid = UserContext.getCurrentUserId();
-        if (uid != null) {
-            role.setDeleteId(uid);
+        Long userId = UserContext.getCurrentUserId();
+        if (userId != null) {
+            role.setDeleteId(userId);
             role.setDeleteTime(LocalDateTime.now());
         }
         removeById(id);

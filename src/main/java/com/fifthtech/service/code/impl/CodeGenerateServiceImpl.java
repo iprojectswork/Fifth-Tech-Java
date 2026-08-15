@@ -2,6 +2,7 @@ package com.fifthtech.service.code.impl;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fifthtech.common.BizConstants;
 import com.fifthtech.dao.entity.code.CodeRule;
 import com.fifthtech.dto.code.CodeSegmentDTO;
 import com.fifthtech.service.code.CodeGenerateService;
@@ -115,8 +116,8 @@ public class CodeGenerateServiceImpl implements CodeGenerateService {
             throw new RuntimeException("批量取号未凑满: expected=" + count + ", actual=" + serials.size());
         }
         List<String> out = new ArrayList<>(serials.size());
-        for (Long s : serials) {
-            out.add(render(loaded.segments, ldt, s));
+        for (Long serial : serials) {
+            out.add(render(loaded.segments, ldt, serial));
         }
         return out;
     }
@@ -143,7 +144,7 @@ public class CodeGenerateServiceImpl implements CodeGenerateService {
         if (rule == null) {
             throw new IllegalArgumentException("规则不存在或已删除: " + ruleCode);
         }
-        if (rule.getStatus() == null || rule.getStatus() != 1) {
+        if (rule.getStatus() == null || rule.getStatus() != BizConstants.STATUS_ENABLED) {
             throw new IllegalArgumentException("规则已禁用");
         }
         List<CodeSegmentDTO> segments = parseSegments(rule.getSegmentsJson());
@@ -436,15 +437,15 @@ public class CodeGenerateServiceImpl implements CodeGenerateService {
         return sb.toString();
     }
 
-    private static String leftPad(String s, int width, char c) {
-        if (width < 1 || s.length() >= width) {
-            return s;
+    private static String leftPad(String value, int width, char padChar) {
+        if (width < 1 || value.length() >= width) {
+            return value;
         }
-        StringBuilder sb = new StringBuilder(width);
-        for (int i = 0; i < width - s.length(); i++) {
-            sb.append(c);
+        StringBuilder padded = new StringBuilder(width);
+        for (int i = 0; i < width - value.length(); i++) {
+            padded.append(padChar);
         }
-        sb.append(s);
-        return sb.toString();
+        padded.append(value);
+        return padded.toString();
     }
 }

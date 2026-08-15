@@ -146,8 +146,8 @@ public class UserController {
         Page<User> entityPage = userService.list(query);
         Page<UserVO> voPage = new Page<>(entityPage.getCurrent(), entityPage.getSize(), entityPage.getTotal());
         List<UserVO> records = new java.util.ArrayList<>(entityPage.getRecords().size());
-        for (User u : entityPage.getRecords()) {
-            records.add(toListVO(u));
+        for (User user : entityPage.getRecords()) {
+            records.add(toListVO(user));
         }
         voPage.setRecords(records);
         return Result.success("查询成功", voPage);
@@ -157,7 +157,7 @@ public class UserController {
      * 列表视图：基本字段 + orgNames 摘要（每行一次 infoWithMemberships 汇总；
      * 一期不做 N+1 优化；分页 ≤ 20 性能可接受）。
      */
-    private UserVO toListVO(User u) {
-        return userService.infoWithMemberships(u.getId());
+    private UserVO toListVO(User user) {
+        return userService.infoWithMemberships(user.getId());
     }
 }

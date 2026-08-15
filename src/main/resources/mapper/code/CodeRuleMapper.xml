@@ -5,37 +5,37 @@
     <!-- 分页列表：每条 SQL 写全列，禁止 sql 片段抽取 / resultMap -->
     <select id="selectPageList" resultType="com.fifthtech.dao.entity.code.CodeRule">
         SELECT
-            id,
-            rule_code AS ruleCode,
-            rule_name AS ruleName,
-            segments_json::text AS segmentsJson,
-            batch_size AS batchSize,
-            status,
-            remark,
-            create_id AS createId,
-            create_name AS createName,
-            create_time AS createTime,
-            update_id AS updateId,
-            update_name AS updateName,
-            update_time AS updateTime,
-            deleted,
-            delete_id AS deleteId,
-            delete_name AS deleteName,
-            delete_time AS deleteTime
-        FROM sys_code_rule
+            sysCodeRule.id,
+            sysCodeRule.rule_code AS ruleCode,
+            sysCodeRule.rule_name AS ruleName,
+            sysCodeRule.segments_json::text AS segmentsJson,
+            sysCodeRule.batch_size AS batchSize,
+            sysCodeRule.status,
+            sysCodeRule.remark,
+            sysCodeRule.create_id AS createId,
+            sysCodeRule.create_name AS createName,
+            sysCodeRule.create_time AS createTime,
+            sysCodeRule.update_id AS updateId,
+            sysCodeRule.update_name AS updateName,
+            sysCodeRule.update_time AS updateTime,
+            sysCodeRule.deleted,
+            sysCodeRule.delete_id AS deleteId,
+            sysCodeRule.delete_name AS deleteName,
+            sysCodeRule.delete_time AS deleteTime
+        FROM sys_code_rule sysCodeRule
         <where>
-            deleted = 0
+            sysCodeRule.deleted = 0
             <if test="query.ruleCode != null and query.ruleCode != ''">
-                AND rule_code LIKE CONCAT('%', #{query.ruleCode}, '%')
+                AND sysCodeRule.rule_code LIKE CONCAT('%', #{query.ruleCode}, '%')
             </if>
             <if test="query.ruleName != null and query.ruleName != ''">
-                AND rule_name LIKE CONCAT('%', #{query.ruleName}, '%')
+                AND sysCodeRule.rule_name LIKE CONCAT('%', #{query.ruleName}, '%')
             </if>
             <if test="query.status != null">
-                AND status = #{query.status}
+                AND sysCodeRule.status = #{query.status}
             </if>
         </where>
-        ORDER BY id DESC
+        ORDER BY sysCodeRule.id DESC
         <if test="query.offset != null and query.limit != null">
             LIMIT #{query.limit} OFFSET #{query.offset}
         </if>
@@ -44,26 +44,26 @@
     <!-- 按 rule_code 查一条 -->
     <select id="selectByRuleCode" resultType="com.fifthtech.dao.entity.code.CodeRule">
         SELECT
-            id,
-            rule_code AS ruleCode,
-            rule_name AS ruleName,
-            segments_json::text AS segmentsJson,
-            batch_size AS batchSize,
-            status,
-            remark,
-            create_id AS createId,
-            create_name AS createName,
-            create_time AS createTime,
-            update_id AS updateId,
-            update_name AS updateName,
-            update_time AS updateTime,
-            deleted,
-            delete_id AS deleteId,
-            delete_name AS deleteName,
-            delete_time AS deleteTime
-        FROM sys_code_rule
-        WHERE rule_code = #{ruleCode}
-          AND deleted = 0
+            sysCodeRule.id,
+            sysCodeRule.rule_code AS ruleCode,
+            sysCodeRule.rule_name AS ruleName,
+            sysCodeRule.segments_json::text AS segmentsJson,
+            sysCodeRule.batch_size AS batchSize,
+            sysCodeRule.status,
+            sysCodeRule.remark,
+            sysCodeRule.create_id AS createId,
+            sysCodeRule.create_name AS createName,
+            sysCodeRule.create_time AS createTime,
+            sysCodeRule.update_id AS updateId,
+            sysCodeRule.update_name AS updateName,
+            sysCodeRule.update_time AS updateTime,
+            sysCodeRule.deleted,
+            sysCodeRule.delete_id AS deleteId,
+            sysCodeRule.delete_name AS deleteName,
+            sysCodeRule.delete_time AS deleteTime
+        FROM sys_code_rule sysCodeRule
+        WHERE sysCodeRule.rule_code = #{ruleCode}
+          AND sysCodeRule.deleted = 0
     </select>
 
 </mapper>

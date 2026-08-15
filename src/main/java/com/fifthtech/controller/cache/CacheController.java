@@ -146,9 +146,9 @@ public class CacheController {
             return Result.error("keys 不能为空");
         }
         List<String> validKeys = new ArrayList<>(rawKeys.size());
-        for (String k : rawKeys) {
-            if (isValidKey(k)) {
-                validKeys.add(k);
+        for (String cacheKey : rawKeys) {
+            if (isValidKey(cacheKey)) {
+                validKeys.add(cacheKey);
             }
         }
         if (validKeys.isEmpty()) {

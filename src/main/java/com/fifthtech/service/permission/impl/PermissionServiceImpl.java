@@ -3,6 +3,7 @@ package com.fifthtech.service.permission.impl;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.fifthtech.common.BizConstants;
 import com.fifthtech.common.utils.ConvertUtils;
 import com.fifthtech.dto.permission.PermissionDTO;
 import com.fifthtech.dto.permission.PermissionQueryDTO;
@@ -36,19 +37,19 @@ import java.util.stream.Collectors;
 @Service
 public class PermissionServiceImpl extends ServiceImpl<PermissionMapper, Permission> implements com.fifthtech.service.permission.PermissionService {
 
-    private static final long ROOT_PARENT_ID = 0L;
-
     @Resource
     private PermissionMapper permissionMapper;
 
     @Override
     public Page<Permission> selectPage(PermissionQueryDTO query) {
-        PermissionQueryDTO q = query == null ? new PermissionQueryDTO() : query;
-        int current = q.getCurrent() == null ? 1 : q.getCurrent();
-        int size = q.getSize() == null ? 10 : q.getSize();
+        if (query == null) {
+            query = new PermissionQueryDTO();
+        }
+        int current = query.getCurrent() == null ? BizConstants.DEFAULT_PAGE_CURRENT : query.getCurrent();
+        int size = query.getSize() == null ? BizConstants.DEFAULT_PAGE_SIZE : query.getSize();
         Page<Permission> page = new Page<>(current, size);
-        String permissionName = q.getPermissionName();
-        String permissionCode = q.getPermissionCode();
+        String permissionName = query.getPermissionName();
+        String permissionCode = query.getPermissionCode();
         LambdaQueryWrapper<Permission> wrapper = new LambdaQueryWrapper<>();
         wrapper.like(permissionName != null && !permissionName.isEmpty(), Permission::getPermissionName, permissionName)
                 .like(permissionCode != null && !permissionCode.isEmpty(), Permission::getPermissionCode, permissionCode)
@@ -73,13 +74,14 @@ public class PermissionServiceImpl extends ServiceImpl<PermissionMapper, Permiss
         // 转换为VO列表
         List<PermissionTreeVO> voList = ConvertUtils.toVOList(allPermissions, PermissionTreeVO.class);
         // 构建树结构
-        return buildTree(voList, ROOT_PARENT_ID);
+        return buildTree(voList, BizConstants.ROOT_PARENT_ID);
     }
 
     @Override
     public List<PermissionVO> listChildren(PermissionQueryDTO query) {
-        long pid = (query == null || query.getParentId() == null) ? ROOT_PARENT_ID : query.getParentId();
-        List<Permission> list = permissionMapper.selectByParentId(pid);
+        long parentId = (query == null || query.getParentId() == null)
+                ? BizConstants.ROOT_PARENT_ID : query.getParentId();
+        List<Permission> list = permissionMapper.selectByParentId(parentId);
         if (list == null || list.isEmpty()) {
             return Collections.emptyList();
         }
@@ -98,8 +100,9 @@ public class PermissionServiceImpl extends ServiceImpl<PermissionMapper, Permiss
     private List<PermissionTreeVO> buildTree(List<PermissionTreeVO> permissions, Long parentId) {
         List<PermissionTreeVO> tree = new ArrayList<>();
         for (PermissionTreeVO permission : permissions) {
-            Long pId = permission.getParentId() == null ? ROOT_PARENT_ID : permission.getParentId();
-            if (parentId.equals(pId)) {
+            Long actualParentId = permission.getParentId() == null
+                    ? BizConstants.ROOT_PARENT_ID : permission.getParentId();
+            if (parentId.equals(actualParentId)) {
                 List<PermissionTreeVO> children = buildTree(permissions, permission.getId());
                 permission.setChildren(children);
                 permission.setHasChildren(children != null && !children.isEmpty());
@@ -133,8 +136,8 @@ public class PermissionServiceImpl extends ServiceImpl<PermissionMapper, Permiss
     @Transactional(rollbackFor = Exception.class)
     public Permission insert(PermissionDTO dto) {
         Permission permission = ConvertUtils.toEntity(dto, Permission.class);
-        permission.setStatus(dto.getStatus() != null ? dto.getStatus() : 1);
-        permission.setParentId(dto.getParentId() != null ? dto.getParentId() : 0L);
+        permission.setStatus(dto.getStatus() != null ? dto.getStatus() : BizConstants.STATUS_ENABLED);
+        permission.setParentId(dto.getParentId() != null ? dto.getParentId() : BizConstants.ROOT_PARENT_ID);
         permission.setCreateTime(LocalDateTime.now());
         // 设置创建人信息
         Long currentUserId = UserContext.getCurrentUserId();
@@ -204,18 +207,18 @@ public class PermissionServiceImpl extends ServiceImpl<PermissionMapper, Permiss
         }
         List<Permission> withAncestors = expandMenuAncestors(menuPermissions);
         List<PermissionTreeVO> voList = ConvertUtils.toVOList(withAncestors, PermissionTreeVO.class);
-        return buildTree(voList, 0L);
+        return buildTree(voList, BizConstants.ROOT_PARENT_ID);
     }
 
     private List<Permission> expandMenuAncestors(List<Permission> grantedMenus) {
         List<Permission> allMenus = lambdaQuery()
-                .eq(Permission::getPermissionType, 1)
-                .eq(Permission::getStatus, 1)
+                .eq(Permission::getPermissionType, BizConstants.PERMISSION_TYPE_MENU)
+                .eq(Permission::getStatus, BizConstants.STATUS_ENABLED)
                 .list();
         Map<Long, Permission> byId = new LinkedHashMap<>();
-        for (Permission p : allMenus) {
-            if (p.getId() != null) {
-                byId.put(p.getId(), p);
+        for (Permission permission : allMenus) {
+            if (permission.getId() != null) {
+                byId.put(permission.getId(), permission);
             }
         }
 
@@ -226,7 +229,7 @@ public class PermissionServiceImpl extends ServiceImpl<PermissionMapper, Permiss
             }
             expanded.put(leaf.getId(), leaf);
             Long parentId = leaf.getParentId();
-            while (parentId != null && parentId != 0L) {
+            while (parentId != null && parentId != BizConstants.ROOT_PARENT_ID) {
                 if (expanded.containsKey(parentId)) {
                     break;
                 }

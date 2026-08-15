@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.fifthtech.common.BizConstants;
 import com.fifthtech.dao.entity.org.Org;
 import com.fifthtech.dao.entity.permission.Permission;
 import com.fifthtech.dao.entity.role.Role;
@@ -126,7 +127,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         user.setNickname(dto.getNickname());
         user.setEmail(dto.getEmail());
         user.setPhone(dto.getPhone());
-        user.setStatus(dto.getStatus() == null ? 1 : dto.getStatus());
+        user.setStatus(dto.getStatus() == null ? BizConstants.STATUS_ENABLED : dto.getStatus());
         user.setCreateTime(LocalDateTime.now());
         user.setUpdateTime(LocalDateTime.now());
         save(user);
@@ -222,31 +223,32 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
             vo.setOrgs(new ArrayList<>());
             vo.setOrgNames("");
         } else {
-            LambdaQueryWrapper<Org> ow = new LambdaQueryWrapper<>();
-            ow.in(Org::getId, orgIds).eq(Org::getDeleted, 0).orderByAsc(Org::getSort, Org::getOrgCode);
-            List<Org> orgs = orgMapper.selectList(ow);
+            LambdaQueryWrapper<Org> orgWrapper = new LambdaQueryWrapper<>();
+            orgWrapper.in(Org::getId, orgIds).eq(Org::getDeleted, BizConstants.NOT_DELETED)
+                    .orderByAsc(Org::getSort, Org::getOrgCode);
+            List<Org> orgs = orgMapper.selectList(orgWrapper);
             Map<Long, Org> orgMap = new HashMap<>();
-            for (Org o : orgs) {
-                orgMap.put(o.getId(), o);
+            for (Org org : orgs) {
+                orgMap.put(org.getId(), org);
             }
             Map<Long, String> pathMap = orgService.pathNames(orgIds);
             List<UserOrgSummaryVO> summaries = new ArrayList<>();
             StringBuilder nameSb = new StringBuilder();
-            for (Long oid : orgIds) {
-                Org o = orgMap.get(oid);
-                if (o == null) {
+            for (Long orgId : orgIds) {
+                Org org = orgMap.get(orgId);
+                if (org == null) {
                     continue;
                 }
-                String pathName = pathMap.get(oid);
+                String pathName = pathMap.get(orgId);
                 if (pathName == null || pathName.isEmpty()) {
-                    pathName = o.getOrgName();
+                    pathName = org.getOrgName();
                 }
-                UserOrgSummaryVO s = new UserOrgSummaryVO();
-                s.setId(o.getId());
-                s.setOrgCode(o.getOrgCode());
-                s.setOrgName(o.getOrgName());
-                s.setPathName(pathName);
-                summaries.add(s);
+                UserOrgSummaryVO summary = new UserOrgSummaryVO();
+                summary.setId(org.getId());
+                summary.setOrgCode(org.getOrgCode());
+                summary.setOrgName(org.getOrgName());
+                summary.setPathName(pathName);
+                summaries.add(summary);
                 if (nameSb.length() > 0) {
                     nameSb.append("、");
                 }
@@ -260,18 +262,19 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         if (roleIds == null || roleIds.isEmpty()) {
             vo.setRoles(new ArrayList<>());
         } else {
-            LambdaQueryWrapper<Role> rw = new LambdaQueryWrapper<>();
-            rw.in(Role::getId, roleIds).eq(Role::getDeleted, 0).orderByAsc(Role::getSort, Role::getId);
-            List<Role> roles = roleMapper.selectList(rw);
-            List<UserRoleSummaryVO> rsummaries = new ArrayList<>();
-            for (Role r : roles) {
-                UserRoleSummaryVO s = new UserRoleSummaryVO();
-                s.setId(r.getId());
-                s.setRoleCode(r.getRoleCode());
-                s.setRoleName(r.getRoleName());
-                rsummaries.add(s);
+            LambdaQueryWrapper<Role> roleWrapper = new LambdaQueryWrapper<>();
+            roleWrapper.in(Role::getId, roleIds).eq(Role::getDeleted, BizConstants.NOT_DELETED)
+                    .orderByAsc(Role::getSort, Role::getId);
+            List<Role> roles = roleMapper.selectList(roleWrapper);
+            List<UserRoleSummaryVO> roleSummaries = new ArrayList<>();
+            for (Role role : roles) {
+                UserRoleSummaryVO summary = new UserRoleSummaryVO();
+                summary.setId(role.getId());
+                summary.setRoleCode(role.getRoleCode());
+                summary.setRoleName(role.getRoleName());
+                roleSummaries.add(summary);
             }
-            vo.setRoles(rsummaries);
+            vo.setRoles(roleSummaries);
         }
         return vo;
     }
@@ -282,18 +285,22 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
 
     @Override
     public Page<User> list(UserQueryDTO query) {
-        UserQueryDTO q = query == null ? new UserQueryDTO() : query;
-        int c = q.getCurrent() == null || q.getCurrent() < 1 ? 1 : q.getCurrent();
-        int s = q.getSize() == null || q.getSize() < 1 ? 10 : q.getSize();
-        Page<User> page = new Page<>(c, s);
-        q.setUsername(blankToNull(q.getUsername()));
-        q.setNickname(blankToNull(q.getNickname()));
-        q.setEmail(blankToNull(q.getEmail()));
-        q.setPhone(blankToNull(q.getPhone()));
-        if (q.getOrgId() != null) {
-            q.setOrgIds(orgService.subtreeOrgIds(q.getOrgId()));
+        if (query == null) {
+            query = new UserQueryDTO();
         }
-        IPage<User> result = baseMapper.listPage(page, q);
+        int current = query.getCurrent() == null || query.getCurrent() < 1
+                ? BizConstants.DEFAULT_PAGE_CURRENT : query.getCurrent();
+        int size = query.getSize() == null || query.getSize() < 1
+                ? BizConstants.DEFAULT_PAGE_SIZE : query.getSize();
+        Page<User> page = new Page<>(current, size);
+        query.setUsername(blankToNull(query.getUsername()));
+        query.setNickname(blankToNull(query.getNickname()));
+        query.setEmail(blankToNull(query.getEmail()));
+        query.setPhone(blankToNull(query.getPhone()));
+        if (query.getOrgId() != null) {
+            query.setOrgIds(orgService.subtreeOrgIds(query.getOrgId()));
+        }
+        IPage<User> result = baseMapper.listPage(page, query);
         return (Page<User>) result;
     }
 
@@ -322,26 +329,34 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
 
     @Override
     public Page<Role> listRoles(UserQueryDTO query) {
-        UserQueryDTO q = query == null ? new UserQueryDTO() : query;
-        int c = q.getCurrent() == null || q.getCurrent() < 1 ? 1 : q.getCurrent();
-        int s = q.getSize() == null || q.getSize() < 1 ? 10 : q.getSize();
-        Page<Role> page = new Page<>(c, s);
-        if (q.getUserId() == null) {
+        if (query == null) {
+            query = new UserQueryDTO();
+        }
+        int current = query.getCurrent() == null || query.getCurrent() < 1
+                ? BizConstants.DEFAULT_PAGE_CURRENT : query.getCurrent();
+        int size = query.getSize() == null || query.getSize() < 1
+                ? BizConstants.DEFAULT_PAGE_SIZE : query.getSize();
+        Page<Role> page = new Page<>(current, size);
+        if (query.getUserId() == null) {
             return page;
         }
-        return (Page<Role>) roleMapper.listRelatedByUserId(page, q.getUserId());
+        return (Page<Role>) roleMapper.listRelatedByUserId(page, query.getUserId());
     }
 
     @Override
     public Page<Permission> listPermissions(UserQueryDTO query) {
-        UserQueryDTO q = query == null ? new UserQueryDTO() : query;
-        int c = q.getCurrent() == null || q.getCurrent() < 1 ? 1 : q.getCurrent();
-        int s = q.getSize() == null || q.getSize() < 1 ? 10 : q.getSize();
-        Page<Permission> page = new Page<>(c, s);
-        if (q.getUserId() == null) {
+        if (query == null) {
+            query = new UserQueryDTO();
+        }
+        int current = query.getCurrent() == null || query.getCurrent() < 1
+                ? BizConstants.DEFAULT_PAGE_CURRENT : query.getCurrent();
+        int size = query.getSize() == null || query.getSize() < 1
+                ? BizConstants.DEFAULT_PAGE_SIZE : query.getSize();
+        Page<Permission> page = new Page<>(current, size);
+        if (query.getUserId() == null) {
             return page;
         }
-        return (Page<Permission>) permissionMapper.listRelatedByUserId(page, q.getUserId());
+        return (Page<Permission>) permissionMapper.listRelatedByUserId(page, query.getUserId());
     }
 
     // ---------------------------------------------------------------------
@@ -355,12 +370,12 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         if (roleIds == null || roleIds.isEmpty()) {
             return new HashMap<>();
         }
-        LambdaQueryWrapper<Role> w = new LambdaQueryWrapper<>();
-        w.in(Role::getId, roleIds).eq(Role::getDeleted, 0);
-        List<Role> roles = roleMapper.selectList(w);
+        LambdaQueryWrapper<Role> roleWrapper = new LambdaQueryWrapper<>();
+        roleWrapper.in(Role::getId, roleIds).eq(Role::getDeleted, BizConstants.NOT_DELETED);
+        List<Role> roles = roleMapper.selectList(roleWrapper);
         Map<Long, Role> map = new HashMap<>();
-        for (Role r : roles) {
-            map.put(r.getId(), r);
+        for (Role role : roles) {
+            map.put(role.getId(), role);
         }
         if (map.size() != roleIds.size()) {
             throw new IllegalArgumentException("部分角色不存在或已删除");
@@ -391,20 +406,20 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
             return new ArrayList<>();
         }
         Set<Long> dedup = new HashSet<>();
-        for (Long v : raw) {
-            if (v != null) {
-                dedup.add(v);
+        for (Long id : raw) {
+            if (id != null) {
+                dedup.add(id);
             }
         }
         return new ArrayList<>(dedup);
     }
 
-    private String blankToNull(String s) {
-        if (s == null) {
+    private String blankToNull(String value) {
+        if (value == null) {
             return null;
         }
-        String t = s.trim();
-        return t.isEmpty() ? null : t;
+        String trimmed = value.trim();
+        return trimmed.isEmpty() ? null : trimmed;
     }
 
     // 工具：避免空集合时 MyBatis foreach 解析异常（业务层兜底）

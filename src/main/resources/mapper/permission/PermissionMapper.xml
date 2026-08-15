@@ -4,102 +4,159 @@
 
     <!-- 根据用户ID查询权限列表（启用，鉴权用） -->
     <select id="selectByUserId" resultType="com.fifthtech.dao.entity.permission.Permission">
-        SELECT DISTINCT p.*
-        FROM sys_permission p
-        INNER JOIN sys_role_permission rp ON p.id = rp.permission_id
-        INNER JOIN sys_user_role ur ON rp.role_id = ur.role_id
-        WHERE ur.user_id = #{userId}
-          AND p.deleted = 0
-          AND p.status = 1
-        ORDER BY p.sort ASC
+        SELECT DISTINCT sysPermission.id,
+               sysPermission.permission_name,
+               sysPermission.permission_code,
+               sysPermission.permission_type,
+               sysPermission.parent_id,
+               sysPermission.path,
+               sysPermission.component,
+               sysPermission.icon,
+               sysPermission.status,
+               sysPermission.sort,
+               sysPermission.create_id,
+               sysPermission.create_name,
+               sysPermission.create_time,
+               sysPermission.update_id,
+               sysPermission.update_name,
+               sysPermission.update_time,
+               sysPermission.deleted,
+               sysPermission.delete_id,
+               sysPermission.delete_name,
+               sysPermission.delete_time
+        FROM sys_permission sysPermission
+        INNER JOIN sys_role_permission sysRolePermission ON sysPermission.id = sysRolePermission.permission_id
+        INNER JOIN sys_user_role sysUserRole ON sysRolePermission.role_id = sysUserRole.role_id
+        WHERE sysUserRole.user_id = #{userId}
+          AND sysPermission.deleted = 0
+          AND sysPermission.status = 1
+        ORDER BY sysPermission.sort ASC
     </select>
 
     <!-- 用户详情：关联权限子表（经角色汇总，含禁用） -->
     <select id="listRelatedByUserId" resultType="com.fifthtech.dao.entity.permission.Permission">
-        SELECT DISTINCT p.id,
-               p.permission_name,
-               p.permission_code,
-               p.permission_type,
-               p.parent_id,
-               p.path,
-               p.component,
-               p.icon,
-               p.status,
-               p.sort,
-               p.create_id,
-               p.create_name,
-               p.create_time,
-               p.update_id,
-               p.update_name,
-               p.update_time,
-               p.deleted,
-               p.delete_id,
-               p.delete_name,
-               p.delete_time
-        FROM sys_permission p
-        INNER JOIN sys_role_permission rp ON p.id = rp.permission_id
-        INNER JOIN sys_user_role ur ON rp.role_id = ur.role_id
-        INNER JOIN sys_role r ON r.id = ur.role_id AND r.deleted = 0
-        WHERE ur.user_id = #{userId}
-          AND p.deleted = 0
-        ORDER BY p.sort ASC, p.id ASC
+        SELECT DISTINCT sysPermission.id,
+               sysPermission.permission_name,
+               sysPermission.permission_code,
+               sysPermission.permission_type,
+               sysPermission.parent_id,
+               sysPermission.path,
+               sysPermission.component,
+               sysPermission.icon,
+               sysPermission.status,
+               sysPermission.sort,
+               sysPermission.create_id,
+               sysPermission.create_name,
+               sysPermission.create_time,
+               sysPermission.update_id,
+               sysPermission.update_name,
+               sysPermission.update_time,
+               sysPermission.deleted,
+               sysPermission.delete_id,
+               sysPermission.delete_name,
+               sysPermission.delete_time
+        FROM sys_permission sysPermission
+        INNER JOIN sys_role_permission sysRolePermission ON sysPermission.id = sysRolePermission.permission_id
+        INNER JOIN sys_user_role sysUserRole ON sysRolePermission.role_id = sysUserRole.role_id
+        INNER JOIN sys_role sysRole ON sysRole.id = sysUserRole.role_id AND sysRole.deleted = 0
+        WHERE sysUserRole.user_id = #{userId}
+          AND sysPermission.deleted = 0
+        ORDER BY sysPermission.sort ASC, sysPermission.id ASC
     </select>
 
     <!-- 根据用户ID查询菜单权限列表（只查询菜单类型） -->
     <select id="selectMenuByUserId" resultType="com.fifthtech.dao.entity.permission.Permission">
-        SELECT DISTINCT p.*
-        FROM sys_permission p
-        INNER JOIN sys_role_permission rp ON p.id = rp.permission_id
-        INNER JOIN sys_user_role ur ON rp.role_id = ur.role_id
-        WHERE ur.user_id = #{userId}
-          AND p.deleted = 0
-          AND p.status = 1
-          AND p.permission_type = 1
-        ORDER BY p.sort ASC
+        SELECT DISTINCT sysPermission.id,
+               sysPermission.permission_name,
+               sysPermission.permission_code,
+               sysPermission.permission_type,
+               sysPermission.parent_id,
+               sysPermission.path,
+               sysPermission.component,
+               sysPermission.icon,
+               sysPermission.status,
+               sysPermission.sort,
+               sysPermission.create_id,
+               sysPermission.create_name,
+               sysPermission.create_time,
+               sysPermission.update_id,
+               sysPermission.update_name,
+               sysPermission.update_time,
+               sysPermission.deleted,
+               sysPermission.delete_id,
+               sysPermission.delete_name,
+               sysPermission.delete_time
+        FROM sys_permission sysPermission
+        INNER JOIN sys_role_permission sysRolePermission ON sysPermission.id = sysRolePermission.permission_id
+        INNER JOIN sys_user_role sysUserRole ON sysRolePermission.role_id = sysUserRole.role_id
+        WHERE sysUserRole.user_id = #{userId}
+          AND sysPermission.deleted = 0
+          AND sysPermission.status = 1
+          AND sysPermission.permission_type = 1
+        ORDER BY sysPermission.sort ASC
     </select>
 
     <!-- 查询所有权限列表 -->
     <select id="selectAllPermissions" resultType="com.fifthtech.dao.entity.permission.Permission">
-        SELECT *
-        FROM sys_permission
-        WHERE deleted = 0
-        ORDER BY sort ASC
+        SELECT sysPermission.id,
+               sysPermission.permission_name,
+               sysPermission.permission_code,
+               sysPermission.permission_type,
+               sysPermission.parent_id,
+               sysPermission.path,
+               sysPermission.component,
+               sysPermission.icon,
+               sysPermission.status,
+               sysPermission.sort,
+               sysPermission.create_id,
+               sysPermission.create_name,
+               sysPermission.create_time,
+               sysPermission.update_id,
+               sysPermission.update_name,
+               sysPermission.update_time,
+               sysPermission.deleted,
+               sysPermission.delete_id,
+               sysPermission.delete_name,
+               sysPermission.delete_time
+        FROM sys_permission sysPermission
+        WHERE sysPermission.deleted = 0
+        ORDER BY sysPermission.sort ASC
     </select>
 
     <select id="selectByParentId" resultType="com.fifthtech.dao.entity.permission.Permission">
-        SELECT id,
-               permission_name,
-               permission_code,
-               permission_type,
-               parent_id,
-               path,
-               component,
-               icon,
-               status,
-               sort,
-               create_id,
-               create_name,
-               create_time,
-               update_id,
-               update_name,
-               update_time,
-               deleted,
-               delete_id,
-               delete_name,
-               delete_time
-        FROM sys_permission
-        WHERE deleted = 0
-          AND parent_id = #{parentId}
-        ORDER BY sort ASC, id ASC
+        SELECT sysPermission.id,
+               sysPermission.permission_name,
+               sysPermission.permission_code,
+               sysPermission.permission_type,
+               sysPermission.parent_id,
+               sysPermission.path,
+               sysPermission.component,
+               sysPermission.icon,
+               sysPermission.status,
+               sysPermission.sort,
+               sysPermission.create_id,
+               sysPermission.create_name,
+               sysPermission.create_time,
+               sysPermission.update_id,
+               sysPermission.update_name,
+               sysPermission.update_time,
+               sysPermission.deleted,
+               sysPermission.delete_id,
+               sysPermission.delete_name,
+               sysPermission.delete_time
+        FROM sys_permission sysPermission
+        WHERE sysPermission.deleted = 0
+          AND sysPermission.parent_id = #{parentId}
+        ORDER BY sysPermission.sort ASC, sysPermission.id ASC
     </select>
 
     <select id="selectParentIdsHavingChildren" resultType="long">
-        SELECT DISTINCT parent_id
-        FROM sys_permission
-        WHERE deleted = 0
-          AND parent_id IN
-        <foreach collection="parentIds" item="pid" open="(" separator="," close=")">
-            #{pid}
+        SELECT DISTINCT sysPermission.parent_id
+        FROM sys_permission sysPermission
+        WHERE sysPermission.deleted = 0
+          AND sysPermission.parent_id IN
+        <foreach collection="parentIds" item="parentId" open="(" separator="," close=")">
+            #{parentId}
         </foreach>
     </select>
 

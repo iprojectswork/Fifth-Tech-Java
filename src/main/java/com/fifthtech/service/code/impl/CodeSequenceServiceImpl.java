@@ -62,8 +62,8 @@ public class CodeSequenceServiceImpl implements CodeSequenceService {
             throw new RuntimeException("预支号段失败");
         }
         List<Long> batch = new ArrayList<>(batchSize);
-        for (long v = oldMax + step; v <= newMax; v += step) {
-            batch.add(v);
+        for (long sequenceValue = oldMax + step; sequenceValue <= newMax; sequenceValue += step) {
+            batch.add(sequenceValue);
         }
         return batch;
     }

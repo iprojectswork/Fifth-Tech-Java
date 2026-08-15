@@ -1,5 +1,6 @@
 package com.fifthtech.service.code.impl;
 
+import com.fifthtech.common.BizConstants;
 import com.fifthtech.service.code.CodeRuleService;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
@@ -76,14 +77,18 @@ public class CodeRuleServiceImpl extends ServiceImpl<CodeRuleMapper, CodeRule> i
 
     @Override
     public Page<CodeRule> list(CodeRuleQueryDTO query) {
-        CodeRuleQueryDTO q = query == null ? new CodeRuleQueryDTO() : query;
-        String ruleCode = q.getRuleCode();
-        String ruleName = q.getRuleName();
-        Integer status = q.getStatus();
-        int pageNum = (q.getCurrent() == null || q.getCurrent() < 1) ? 1 : q.getCurrent();
-        int pageSize = (q.getSize() == null || q.getSize() < 1) ? 10 : q.getSize();
+        if (query == null) {
+            query = new CodeRuleQueryDTO();
+        }
+        String ruleCode = query.getRuleCode();
+        String ruleName = query.getRuleName();
+        Integer status = query.getStatus();
+        int pageNum = (query.getCurrent() == null || query.getCurrent() < 1)
+                ? BizConstants.DEFAULT_PAGE_CURRENT : query.getCurrent();
+        int pageSize = (query.getSize() == null || query.getSize() < 1)
+                ? BizConstants.DEFAULT_PAGE_SIZE : query.getSize();
         LambdaQueryWrapper<CodeRule> countWrapper = new LambdaQueryWrapper<>();
-        countWrapper.eq(CodeRule::getDeleted, 0);
+        countWrapper.eq(CodeRule::getDeleted, BizConstants.NOT_DELETED);
         if (ruleCode != null && !ruleCode.isEmpty()) {
             countWrapper.like(CodeRule::getRuleCode, ruleCode);
         }
@@ -99,9 +104,9 @@ public class CodeRuleServiceImpl extends ServiceImpl<CodeRuleMapper, CodeRule> i
             page.setRecords(Collections.emptyList());
             return page;
         }
-        q.setOffset((pageNum - 1) * pageSize);
-        q.setLimit(pageSize);
-        List<CodeRule> records = baseMapper.selectPageList(q);
+        query.setOffset((pageNum - 1) * pageSize);
+        query.setLimit(pageSize);
+        List<CodeRule> records = baseMapper.selectPageList(query);
         page.setRecords(records);
         return page;
     }
@@ -139,14 +144,14 @@ public class CodeRuleServiceImpl extends ServiceImpl<CodeRuleMapper, CodeRule> i
         entity.setRuleName(dto.getRuleName());
         entity.setSegmentsJson(serializeSegments(dto.getSegments()));
         entity.setBatchSize(batchSize);
-        entity.setStatus(dto.getStatus() == null ? 1 : dto.getStatus());
+        entity.setStatus(dto.getStatus() == null ? BizConstants.STATUS_ENABLED : dto.getStatus());
         entity.setRemark(dto.getRemark());
         entity.setCreateTime(LocalDateTime.now());
         entity.setUpdateTime(LocalDateTime.now());
-        Long uid = UserContextRef.currentUserIdOrNull();
-        if (uid != null) {
-            entity.setCreateId(uid);
-            entity.setUpdateId(uid);
+        Long userId = UserContextRef.currentUserIdOrNull();
+        if (userId != null) {
+            entity.setCreateId(userId);
+            entity.setUpdateId(userId);
         }
         save(entity);
         return entity;
@@ -190,9 +195,9 @@ public class CodeRuleServiceImpl extends ServiceImpl<CodeRuleMapper, CodeRule> i
             existing.setRemark(dto.getRemark());
         }
         existing.setUpdateTime(LocalDateTime.now());
-        Long uid = UserContextRef.currentUserIdOrNull();
-        if (uid != null) {
-            existing.setUpdateId(uid);
+        Long userId = UserContextRef.currentUserIdOrNull();
+        if (userId != null) {
+            existing.setUpdateId(userId);
         }
         updateById(existing);
         // best-effort：删 pool key（变更 segments / batch_size / status 后旧号段可能渲染失败）
@@ -214,9 +219,9 @@ public class CodeRuleServiceImpl extends ServiceImpl<CodeRuleMapper, CodeRule> i
         if (existing == null) {
             return;
         }
-        Long uid = UserContextRef.currentUserIdOrNull();
-        if (uid != null) {
-            existing.setDeleteId(uid);
+        Long userId = UserContextRef.currentUserIdOrNull();
+        if (userId != null) {
+            existing.setDeleteId(userId);
         }
         existing.setDeleteTime(LocalDateTime.now());
         // 直接改 MP 软删字段（MP @TableLogic 会基于条件 UPDATE deleted=1）
@@ -358,9 +363,9 @@ public class CodeRuleServiceImpl extends ServiceImpl<CodeRuleMapper, CodeRule> i
                 "code:pool:" + ruleCode + ":D:20260802",
                 "code:pool:" + ruleCode + ":D:20260803"
         };
-        for (String k : keys) {
+        for (String poolKey : keys) {
             try {
-                stringRedisTemplate.delete(k);
+                stringRedisTemplate.delete(poolKey);
             } catch (RuntimeException ignore) {
                 // best-effort
             }
