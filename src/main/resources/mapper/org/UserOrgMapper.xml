@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.fifthtech.dao.mapper.org.UserOrgMapper">
+
+    <!-- 删除用户全部成员关系 -->
+    <delete id="deleteByUserId">
+        DELETE FROM sys_user_org
+        WHERE user_id = #{userId}
+    </delete>
+
+    <!-- 删除用户对指定组织的成员关系 -->
+    <delete id="deleteByUserIdAndOrgId">
+        DELETE FROM sys_user_org
+        WHERE user_id = #{userId}
+          AND org_id = #{orgId}
+    </delete>
+
+    <!-- 批量插入成员关系（避免唯一约束冲突：ON CONFLICT DO NOTHING；PG 适用） -->
+    <insert id="batchInsertIgnore">
+        INSERT INTO sys_user_org (user_id, org_id, create_time)
+        VALUES
+        <foreach collection="orgIds" item="oid" separator=",">
+            (#{userId}, #{oid}, NOW())
+        </foreach>
+        ON CONFLICT (user_id, org_id) DO NOTHING
+    </insert>
+
+    <!-- 查询用户全部成员组织 ID（去重） -->
+    <select id="selectOrgIdsByUserId" resultType="java.lang.Long">
+        SELECT DISTINCT org_id
+        FROM sys_user_org
+        WHERE user_id = #{userId}
+    </select>
+
+    <!-- 查询某组织下成员用户 ID 列表（去重） -->
+    <select id="selectUserIdsByOrgId" resultType="java.lang.Long">
+        SELECT DISTINCT user_id
+        FROM sys_user_org
+        WHERE org_id = #{orgId}
+    </select>
+
+    <select id="selectUserIdsByOrgIds" resultType="java.lang.Long">
+        SELECT DISTINCT user_id
+        FROM sys_user_org
+        WHERE org_id IN
+        <foreach collection="orgIds" item="oid" open="(" separator="," close=")">
+            #{oid}
+        </foreach>
+    </select>
+
+    <delete id="deleteByUserIdAndOrgIds">
+        DELETE FROM sys_user_org
+        WHERE user_id = #{userId}
+          AND org_id IN
+        <foreach collection="orgIds" item="oid" open="(" separator="," close=")">
+            #{oid}
+        </foreach>
+    </delete>
+
+    <!-- exists 判定：用于「授角色自动补成员」等场景 -->
+    <select id="existsUserOrg" resultType="java.lang.Boolean">
+        SELECT EXISTS (
+            SELECT 1
+            FROM sys_user_org
+            WHERE user_id = #{userId}
+              AND org_id = #{orgId}
+        )
+    </select>
+
+</mapper>

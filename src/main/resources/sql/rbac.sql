@@ -1,8 +1,8 @@
 -- 角色表
 CREATE TABLE IF NOT EXISTS sys_role (
     id BIGINT PRIMARY KEY,
-    role_name VARCHAR(50) NOT NULL UNIQUE,
-    role_code VARCHAR(50) NOT NULL UNIQUE,
+    role_name VARCHAR(50) NOT NULL,
+    role_code VARCHAR(50) NOT NULL,
     description VARCHAR(255),
     status INTEGER DEFAULT 1,
     sort INTEGER DEFAULT 0,

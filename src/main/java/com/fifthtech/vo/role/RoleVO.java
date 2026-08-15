@@ -1,5 +1,7 @@
 package com.fifthtech.vo.role;
 
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
 import lombok.Data;
 
 import java.time.LocalDateTime;
@@ -10,7 +12,6 @@ import java.time.LocalDateTime;
  * @author RH
  * @description 角色视图对象
  * @date 2026-03-22
- * @version 1.0
  */
 @Data
 public class RoleVO {
@@ -18,6 +19,7 @@ public class RoleVO {
     /**
      * 角色ID
      */
+    @JsonSerialize(using = ToStringSerializer.class)
     private Long id;
 
     /**

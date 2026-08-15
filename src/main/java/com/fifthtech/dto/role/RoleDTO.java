@@ -24,7 +24,7 @@ public class RoleDTO {
     private String roleName;
 
     /**
-     * 角色编码
+     * 角色编码（全局唯一）
      */
     private String roleCode;
 

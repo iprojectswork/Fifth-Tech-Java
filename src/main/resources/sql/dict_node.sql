@@ -59,3 +59,47 @@ BEGIN
             (1008, 1006, '0',       '禁用',     2, 1);
     END IF;
 END $$;
+
+-- 组织类型字典：org/type（业务 GET /dict/data?pathCode=org/type）
+INSERT INTO sys_dict_node (id, parent_id, code, name, sort, status)
+SELECT 1109, 0, 'org', '组织', 10, 1
+WHERE NOT EXISTS (SELECT 1 FROM sys_dict_node WHERE deleted = 0 AND parent_id = 0 AND code = 'org');
+
+INSERT INTO sys_dict_node (id, parent_id, code, name, sort, status)
+SELECT 1110, n.id, 'type', '类型', 1, 1
+FROM sys_dict_node n
+WHERE n.deleted = 0 AND n.parent_id = 0 AND n.code = 'org'
+  AND NOT EXISTS (
+      SELECT 1 FROM sys_dict_node c
+      WHERE c.deleted = 0 AND c.parent_id = n.id AND c.code = 'type'
+  );
+
+INSERT INTO sys_dict_node (id, parent_id, code, name, sort, status)
+SELECT 1111, t.id, 'company', '公司/集团', 1, 1
+FROM sys_dict_node t
+JOIN sys_dict_node o ON o.id = t.parent_id
+WHERE t.deleted = 0 AND t.code = 'type' AND o.deleted = 0 AND o.code = 'org'
+  AND NOT EXISTS (
+      SELECT 1 FROM sys_dict_node c
+      WHERE c.deleted = 0 AND c.parent_id = t.id AND c.code = 'company'
+  );
+
+INSERT INTO sys_dict_node (id, parent_id, code, name, sort, status)
+SELECT 1112, t.id, 'dept', '部门', 2, 1
+FROM sys_dict_node t
+JOIN sys_dict_node o ON o.id = t.parent_id
+WHERE t.deleted = 0 AND t.code = 'type' AND o.deleted = 0 AND o.code = 'org'
+  AND NOT EXISTS (
+      SELECT 1 FROM sys_dict_node c
+      WHERE c.deleted = 0 AND c.parent_id = t.id AND c.code = 'dept'
+  );
+
+INSERT INTO sys_dict_node (id, parent_id, code, name, sort, status)
+SELECT 1113, t.id, 'group', '组/科室', 3, 1
+FROM sys_dict_node t
+JOIN sys_dict_node o ON o.id = t.parent_id
+WHERE t.deleted = 0 AND t.code = 'type' AND o.deleted = 0 AND o.code = 'org'
+  AND NOT EXISTS (
+      SELECT 1 FROM sys_dict_node c
+      WHERE c.deleted = 0 AND c.parent_id = t.id AND c.code = 'group'
+  );

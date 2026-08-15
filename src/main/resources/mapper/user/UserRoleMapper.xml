@@ -15,6 +15,41 @@
         <foreach collection="roleIds" item="roleId" separator=",">
             (#{userId}, #{roleId}, NOW())
         </foreach>
+        ON CONFLICT (user_id, role_id) DO NOTHING
     </insert>
+
+    <!-- 用户撤掉组织成员 → 级联删该组织下任职（C4 §4.8） -->
+    <delete id="deleteByUserIdAndOrgIds">
+        DELETE FROM sys_user_role
+        WHERE user_id = #{userId}
+          AND role_id IN (
+              SELECT r.id
+              FROM sys_role r
+              WHERE r.deleted = 0
+                AND r.org_id IN
+                <foreach collection="orgIds" item="oid" open="(" separator="," close=")">
+                    #{oid}
+                </foreach>
+          )
+    </delete>
+
+    <!-- 查询用户在指定组织下挂靠的角色 ID 集合（去重） -->
+    <select id="selectRoleIdsByUserIdAndOrgIds" resultType="java.lang.Long">
+        SELECT DISTINCT ur.role_id
+        FROM sys_user_role ur
+        INNER JOIN sys_role r ON r.id = ur.role_id AND r.deleted = 0
+        WHERE ur.user_id = #{userId}
+          AND r.org_id IN
+          <foreach collection="orgIds" item="oid" open="(" separator="," close=")">
+              #{oid}
+          </foreach>
+    </select>
+
+    <!-- 查询用户当前全部任职角色 ID（去重） -->
+    <select id="selectRoleIdsByUserId" resultType="java.lang.Long">
+        SELECT DISTINCT role_id
+        FROM sys_user_role
+        WHERE user_id = #{userId}
+    </select>
 
 </mapper>

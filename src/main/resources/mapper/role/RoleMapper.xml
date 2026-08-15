@@ -4,7 +4,22 @@
 
     <!-- 根据用户ID查询角色列表（启用，鉴权用） -->
     <select id="selectByUserId" resultType="com.fifthtech.dao.entity.role.Role">
-        SELECT r.*
+        SELECT r.id,
+               r.role_name,
+               r.role_code,
+               r.description,
+               r.status,
+               r.sort,
+               r.create_id,
+               r.create_name,
+               r.create_time,
+               r.update_id,
+               r.update_name,
+               r.update_time,
+               r.deleted,
+               r.delete_id,
+               r.delete_name,
+               r.delete_time
         FROM sys_role r
         INNER JOIN sys_user_role ur ON r.id = ur.role_id
         WHERE ur.user_id = #{userId}
@@ -38,6 +53,61 @@
         ORDER BY r.sort ASC, r.id ASC
     </select>
 
+    <!-- 角色分页列表 -->
+    <select id="listPage" resultType="com.fifthtech.dao.entity.role.Role">
+        SELECT r.id,
+               r.role_name,
+               r.role_code,
+               r.description,
+               r.status,
+               r.sort,
+               r.create_id,
+               r.create_name,
+               r.create_time,
+               r.update_id,
+               r.update_name,
+               r.update_time,
+               r.deleted,
+               r.delete_id,
+               r.delete_name,
+               r.delete_time
+        FROM sys_role r
+        <where>
+            r.deleted = 0
+            <if test="roleName != null and roleName != ''">
+                AND r.role_name LIKE CONCAT('%', #{roleName}, '%')
+            </if>
+            <if test="roleCode != null and roleCode != ''">
+                AND r.role_code LIKE CONCAT('%', #{roleCode}, '%')
+            </if>
+        </where>
+        ORDER BY r.sort ASC, r.id ASC
+    </select>
+
+    <!-- /role/all：全部启用角色 -->
+    <select id="selectAllEnabled" resultType="com.fifthtech.dao.entity.role.Role">
+        SELECT r.id,
+               r.role_name,
+               r.role_code,
+               r.description,
+               r.status,
+               r.sort,
+               r.create_id,
+               r.create_name,
+               r.create_time,
+               r.update_id,
+               r.update_name,
+               r.update_time,
+               r.deleted,
+               r.delete_id,
+               r.delete_name,
+               r.delete_time
+        FROM sys_role r
+        WHERE r.deleted = 0
+          AND r.status = 1
+        ORDER BY r.sort ASC, r.id ASC
+    </select>
+
     <!-- 根据角色ID查询权限ID列表 -->
     <select id="selectPermissionIdsByRoleId" resultType="java.lang.Long">
         SELECT rp.permission_id
@@ -45,6 +115,17 @@
         INNER JOIN sys_permission p ON rp.permission_id = p.id
         WHERE rp.role_id = #{roleId}
           AND p.deleted = 0
+    </select>
+
+    <!-- 未删 roleCode 全局唯一性校验（excludeId 可选） -->
+    <select id="countByRoleCode" resultType="java.lang.Long">
+        SELECT COUNT(1)
+        FROM sys_role
+        WHERE deleted = 0
+          AND role_code = #{roleCode}
+          <if test="excludeId != null">
+              AND id &lt;&gt; #{excludeId}
+          </if>
     </select>
 
 </mapper>
