@@ -5,6 +5,7 @@ import com.fifthtech.dao.entity.user.User;
 import com.fifthtech.dto.org.OrgDTO;
 import com.fifthtech.dto.org.OrgMembersDTO;
 import com.fifthtech.dto.org.OrgMoveDTO;
+import com.fifthtech.dto.org.OrgQueryDTO;
 import com.fifthtech.service.org.OrgService;
 import com.fifthtech.vo.org.OrgMemberVO;
 import com.fifthtech.vo.org.OrgTreeVO;
@@ -17,7 +18,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
@@ -43,16 +43,28 @@ public class OrgController {
      * 懒加载 children：左树展开节点时调用
      */
     @GetMapping("/children")
-    public Result<List<OrgVO>> listChildren(@RequestParam(defaultValue = "0") Long parentId) {
-        return Result.success("查询成功", orgService.listChildren(parentId));
+    public Result<List<OrgVO>> listChildren(OrgQueryDTO query) {
+        if (query == null) {
+            query = new OrgQueryDTO();
+        }
+        if (query.getParentId() == null) {
+            query.setParentId(0L);
+        }
+        return Result.success("查询成功", orgService.listChildren(query));
     }
 
     /**
      * 右栏 list（与 children 同数据源，方法别名）
      */
     @GetMapping("/list")
-    public Result<List<OrgVO>> list(@RequestParam(defaultValue = "0") Long parentId) {
-        return Result.success("查询成功", orgService.list(parentId));
+    public Result<List<OrgVO>> list(OrgQueryDTO query) {
+        if (query == null) {
+            query = new OrgQueryDTO();
+        }
+        if (query.getParentId() == null) {
+            query.setParentId(0L);
+        }
+        return Result.success("查询成功", orgService.list(query));
     }
 
     /**
@@ -149,9 +161,9 @@ public class OrgController {
      * 查人：组织成员 ∩ 持有该全局角色的用户
      */
     @GetMapping("/users-by-role")
-    public Result<List<User>> usersByRole(@RequestParam Long orgId, @RequestParam String roleCode) {
+    public Result<List<User>> usersByRole(OrgQueryDTO query) {
         try {
-            return Result.success("查询成功", orgService.usersByRole(orgId, roleCode));
+            return Result.success("查询成功", orgService.usersByRole(query));
         } catch (IllegalArgumentException ex) {
             return Result.error(ex.getMessage());
         }
@@ -161,9 +173,9 @@ public class OrgController {
      * 本组织成员
      */
     @GetMapping("/members")
-    public Result<List<OrgMemberVO>> listMembers(@RequestParam Long orgId) {
+    public Result<List<OrgMemberVO>> listMembers(OrgQueryDTO query) {
         try {
-            return Result.success("查询成功", orgService.listMembers(orgId));
+            return Result.success("查询成功", orgService.listMembers(query));
         } catch (IllegalArgumentException ex) {
             return Result.error(ex.getMessage());
         }

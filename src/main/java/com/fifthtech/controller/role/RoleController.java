@@ -5,6 +5,7 @@ import com.fifthtech.common.Result;
 import com.fifthtech.common.utils.ConvertUtils;
 import com.fifthtech.dao.entity.role.Role;
 import com.fifthtech.dto.role.RoleDTO;
+import com.fifthtech.dto.role.RoleQueryDTO;
 import com.fifthtech.service.role.RoleService;
 import com.fifthtech.vo.role.RoleVO;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,7 +16,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.ArrayList;
@@ -41,12 +41,8 @@ public class RoleController {
      * 角色分页列表
      */
     @GetMapping("/list")
-    public Result<Page<RoleVO>> list(
-            @RequestParam(defaultValue = "1") Integer current,
-            @RequestParam(defaultValue = "10") Integer size,
-            @RequestParam(required = false) String roleName,
-            @RequestParam(required = false) String roleCode) {
-        Page<Role> entityPage = roleService.selectPage(current, size, roleName, roleCode);
+    public Result<Page<RoleVO>> list(RoleQueryDTO query) {
+        Page<Role> entityPage = roleService.selectPage(query);
         Page<RoleVO> voPage = new Page<>(entityPage.getCurrent(), entityPage.getSize(), entityPage.getTotal());
         voPage.setRecords(ConvertUtils.toVOList(entityPage.getRecords(), RoleVO.class));
         return Result.success("查询成功", voPage);

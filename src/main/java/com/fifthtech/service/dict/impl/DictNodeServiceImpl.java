@@ -6,6 +6,7 @@ import com.fifthtech.dao.entity.dict.DictNode;
 import com.fifthtech.dao.mapper.dict.DictNodeMapper;
 import com.fifthtech.dto.dict.DictNodeDTO;
 import com.fifthtech.dto.dict.DictNodeMoveDTO;
+import com.fifthtech.dto.dict.DictNodeQueryDTO;
 import com.fifthtech.security.UserContext;
 import com.fifthtech.service.dict.DictNodeService;
 import com.fifthtech.vo.dict.DictNodeTreeVO;
@@ -64,13 +65,13 @@ public class DictNodeServiceImpl extends ServiceImpl<DictNodeMapper, DictNode> i
     // ---------------------------------------------------------------------
 
     @Override
-    public List<DictNodeVO> listChildren(Long parentId) {
-        return listDirectChildren(parentId);
+    public List<DictNodeVO> listChildren(DictNodeQueryDTO query) {
+        return listDirectChildren(query == null ? null : query.getParentId());
     }
 
     @Override
-    public List<DictNodeVO> list(Long parentId) {
-        return listDirectChildren(parentId);
+    public List<DictNodeVO> list(DictNodeQueryDTO query) {
+        return listDirectChildren(query == null ? null : query.getParentId());
     }
 
     private List<DictNodeVO> listDirectChildren(Long parentId) {
@@ -368,7 +369,8 @@ public class DictNodeServiceImpl extends ServiceImpl<DictNodeMapper, DictNode> i
     // ---------------------------------------------------------------------
 
     @Override
-    public List<DictNodeVO> listDataByPathCode(String pathCode) {
+    public List<DictNodeVO> listDataByPathCode(DictNodeQueryDTO query) {
+        String pathCode = query == null ? null : query.getPathCode();
         if (pathCode == null || pathCode.isEmpty()) {
             throw new IllegalArgumentException("pathCode 不能为空");
         }

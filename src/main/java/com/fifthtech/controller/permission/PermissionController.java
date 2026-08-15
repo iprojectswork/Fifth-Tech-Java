@@ -5,6 +5,7 @@ import com.fifthtech.common.Result;
 import com.fifthtech.common.utils.ConvertUtils;
 import com.fifthtech.dao.entity.permission.Permission;
 import com.fifthtech.dto.permission.PermissionDTO;
+import com.fifthtech.dto.permission.PermissionQueryDTO;
 import com.fifthtech.service.permission.PermissionService;
 import com.fifthtech.vo.permission.PermissionTreeVO;
 import com.fifthtech.vo.permission.PermissionVO;
@@ -32,12 +33,8 @@ public class PermissionController {
      * 权限分页列表
      */
     @GetMapping("/list")
-    public Result<Page<PermissionVO>> list(
-            @RequestParam(defaultValue = "1") Integer current,
-            @RequestParam(defaultValue = "10") Integer size,
-            @RequestParam(required = false) String permissionName,
-            @RequestParam(required = false) String permissionCode) {
-        Page<Permission> entityPage = permissionService.selectPage(current, size, permissionName, permissionCode);
+    public Result<Page<PermissionVO>> list(PermissionQueryDTO query) {
+        Page<Permission> entityPage = permissionService.selectPage(query);
         Page<PermissionVO> voPage = new Page<>(entityPage.getCurrent(), entityPage.getSize(), entityPage.getTotal());
         voPage.setRecords(ConvertUtils.toVOList(entityPage.getRecords(), PermissionVO.class));
         return Result.success("查询成功", voPage);
@@ -53,8 +50,14 @@ public class PermissionController {
     }
 
     @GetMapping("/children")
-    public Result<List<PermissionVO>> children(@RequestParam(defaultValue = "0") Long parentId) {
-        return Result.success("查询成功", permissionService.listChildren(parentId));
+    public Result<List<PermissionVO>> children(PermissionQueryDTO query) {
+        if (query == null) {
+            query = new PermissionQueryDTO();
+        }
+        if (query.getParentId() == null) {
+            query.setParentId(0L);
+        }
+        return Result.success("查询成功", permissionService.listChildren(query));
     }
 
     /**

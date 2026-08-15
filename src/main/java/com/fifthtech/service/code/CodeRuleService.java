@@ -5,6 +5,8 @@ import com.baomidou.mybatisplus.extension.service.IService;
 import com.fifthtech.dao.entity.code.CodeRule;
 import com.fifthtech.dao.entity.code.CodeSequence;
 import com.fifthtech.dto.code.CodeRuleDTO;
+import com.fifthtech.dto.code.CodeRuleQueryDTO;
+import com.fifthtech.dto.code.CodeSequenceQueryDTO;
 
 import java.util.List;
 
@@ -23,7 +25,7 @@ public interface CodeRuleService extends IService<CodeRule> {
     /**
      * 规则分页列表（手写 SQL；按 ruleCode / ruleName / status 过滤）
      */
-    Page<CodeRule> list(Integer current, Integer size, String ruleCode, String ruleName, Integer status);
+    Page<CodeRule> list(CodeRuleQueryDTO query);
 
     /**
      * 按主键取一条
@@ -53,5 +55,5 @@ public interface CodeRuleService extends IService<CodeRule> {
     /**
      * 按规则取流水水位列表（{@code ruleId} 与 {@code ruleCode} 二选一；同时存在以 ruleId 为准）
      */
-    List<CodeSequence> listSequences(Long ruleId, String ruleCode);
+    List<CodeSequence> listSequences(CodeSequenceQueryDTO query);
 }

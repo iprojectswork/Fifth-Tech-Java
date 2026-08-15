@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.fifthtech.common.Result;
 import com.fifthtech.dao.entity.code.CodeRule;
 import com.fifthtech.dto.code.CodeRuleDTO;
+import com.fifthtech.dto.code.CodeRuleQueryDTO;
 import com.fifthtech.service.code.CodeRuleService;
 import com.fifthtech.vo.code.CodeRuleVO;
 import com.fifthtech.vo.code.CodeSegmentVO;
@@ -17,7 +18,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.Collections;
@@ -45,13 +45,8 @@ public class CodeRuleController {
      * 分页列表（手写 SQL）
      */
     @GetMapping("/list")
-    public Result<Page<CodeRuleVO>> list(
-            @RequestParam(defaultValue = "1") Integer current,
-            @RequestParam(defaultValue = "10") Integer size,
-            @RequestParam(required = false) String ruleCode,
-            @RequestParam(required = false) String ruleName,
-            @RequestParam(required = false) Integer status) {
-        Page<CodeRule> entityPage = codeRuleService.list(current, size, ruleCode, ruleName, status);
+    public Result<Page<CodeRuleVO>> list(CodeRuleQueryDTO query) {
+        Page<CodeRule> entityPage = codeRuleService.list(query);
         Page<CodeRuleVO> voPage = new Page<>(entityPage.getCurrent(), entityPage.getSize(), entityPage.getTotal());
         voPage.setRecords(toVOList(entityPage.getRecords()));
         return Result.success("查询成功", voPage);

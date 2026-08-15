@@ -12,9 +12,11 @@ import com.fifthtech.dao.mapper.org.UserOrgMapper;
 import com.fifthtech.dao.mapper.role.RoleMapper;
 import com.fifthtech.dao.mapper.user.UserMapper;
 import com.fifthtech.dao.mapper.user.UserRoleMapper;
+import com.fifthtech.dto.dict.DictNodeQueryDTO;
 import com.fifthtech.dto.org.OrgDTO;
 import com.fifthtech.dto.org.OrgMembersDTO;
 import com.fifthtech.dto.org.OrgMoveDTO;
+import com.fifthtech.dto.org.OrgQueryDTO;
 import com.fifthtech.security.UserContext;
 import com.fifthtech.service.dict.DictNodeService;
 import com.fifthtech.service.org.OrgService;
@@ -95,13 +97,13 @@ public class OrgServiceImpl extends ServiceImpl<OrgMapper, Org> implements OrgSe
     // ---------------------------------------------------------------------
 
     @Override
-    public List<OrgVO> listChildren(Long parentId) {
-        return listDirectChildren(parentId);
+    public List<OrgVO> listChildren(OrgQueryDTO query) {
+        return listDirectChildren(query == null ? null : query.getParentId());
     }
 
     @Override
-    public List<OrgVO> list(Long parentId) {
-        return listDirectChildren(parentId);
+    public List<OrgVO> list(OrgQueryDTO query) {
+        return listDirectChildren(query == null ? null : query.getParentId());
     }
 
     private List<OrgVO> listDirectChildren(Long parentId) {
@@ -479,10 +481,12 @@ public class OrgServiceImpl extends ServiceImpl<OrgMapper, Org> implements OrgSe
     // ---------------------------------------------------------------------
 
     @Override
-    public List<User> usersByRole(Long orgId, String roleCode) {
-        if (orgId == null) {
+    public List<User> usersByRole(OrgQueryDTO query) {
+        if (query == null || query.getOrgId() == null) {
             throw new IllegalArgumentException("orgId 不能为空");
         }
+        Long orgId = query.getOrgId();
+        String roleCode = query.getRoleCode();
         if (roleCode == null || roleCode.trim().isEmpty()) {
             throw new IllegalArgumentException("roleCode 不能为空");
         }
@@ -530,10 +534,11 @@ public class OrgServiceImpl extends ServiceImpl<OrgMapper, Org> implements OrgSe
     }
 
     @Override
-    public List<OrgMemberVO> listMembers(Long orgId) {
-        if (orgId == null) {
+    public List<OrgMemberVO> listMembers(OrgQueryDTO query) {
+        if (query == null || query.getOrgId() == null) {
             throw new IllegalArgumentException("orgId 不能为空");
         }
+        Long orgId = query.getOrgId();
         Org org = orgMapper.selectById(orgId);
         if (org == null) {
             throw new IllegalArgumentException("组织不存在");
@@ -853,7 +858,9 @@ public class OrgServiceImpl extends ServiceImpl<OrgMapper, Org> implements OrgSe
     private Map<String, String> orgTypeLabelMap() {
         Map<String, String> map = new HashMap<>();
         try {
-            List<DictNodeVO> items = dictNodeService.listDataByPathCode(ORG_TYPE_PATH);
+            DictNodeQueryDTO typeQuery = new DictNodeQueryDTO();
+            typeQuery.setPathCode(ORG_TYPE_PATH);
+            List<DictNodeVO> items = dictNodeService.listDataByPathCode(typeQuery);
             if (items != null) {
                 for (DictNodeVO item : items) {
                     if (item.getCode() != null) {

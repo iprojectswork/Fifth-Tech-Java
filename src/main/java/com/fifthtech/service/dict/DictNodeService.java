@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.extension.service.IService;
 import com.fifthtech.dao.entity.dict.DictNode;
 import com.fifthtech.dto.dict.DictNodeDTO;
 import com.fifthtech.dto.dict.DictNodeMoveDTO;
+import com.fifthtech.dto.dict.DictNodeQueryDTO;
 import com.fifthtech.vo.dict.DictNodeTreeVO;
 import com.fifthtech.vo.dict.DictNodeVO;
 
@@ -27,12 +28,12 @@ public interface DictNodeService extends IService<DictNode> {
     /**
      * 懒加载 children：返回 parentId 下所有直接子（含 hasChildren 与 path）
      */
-    List<DictNodeVO> listChildren(Long parentId);
+    List<DictNodeVO> listChildren(DictNodeQueryDTO query);
 
     /**
      * 右栏 list：与 children 同数据源，方法别名
      */
-    List<DictNodeVO> list(Long parentId);
+    List<DictNodeVO> list(DictNodeQueryDTO query);
 
     /**
      * 全量树（含叶子与 path）
@@ -67,5 +68,5 @@ public interface DictNodeService extends IService<DictNode> {
     /**
      * 业务只读：按 {@code pathCode} 精确匹配，取该节点下「启用」直接子
      */
-    List<DictNodeVO> listDataByPathCode(String pathCode);
+    List<DictNodeVO> listDataByPathCode(DictNodeQueryDTO query);
 }

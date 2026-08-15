@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.fifthtech.dao.entity.role.Role;
 import com.fifthtech.dto.role.RoleDTO;
+import com.fifthtech.dto.role.RoleQueryDTO;
 
 import java.util.List;
 
@@ -21,7 +22,7 @@ public interface RoleService extends IService<Role> {
     /**
      * /role/list：分页；roleName / roleCode 可选模糊。
      */
-    Page<Role> selectPage(Integer current, Integer size, String roleName, String roleCode);
+    Page<Role> selectPage(RoleQueryDTO query);
 
     Role selectById(Long id);
 

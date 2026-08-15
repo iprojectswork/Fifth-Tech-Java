@@ -74,11 +74,11 @@
         FROM sys_role r
         <where>
             r.deleted = 0
-            <if test="roleName != null and roleName != ''">
-                AND r.role_name LIKE CONCAT('%', #{roleName}, '%')
+            <if test="query.roleName != null and query.roleName != ''">
+                AND r.role_name LIKE CONCAT('%', #{query.roleName}, '%')
             </if>
-            <if test="roleCode != null and roleCode != ''">
-                AND r.role_code LIKE CONCAT('%', #{roleCode}, '%')
+            <if test="query.roleCode != null and query.roleCode != ''">
+                AND r.role_code LIKE CONCAT('%', #{query.roleCode}, '%')
             </if>
         </where>
         ORDER BY r.sort ASC, r.id ASC

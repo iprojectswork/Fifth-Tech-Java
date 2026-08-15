@@ -3,6 +3,7 @@ package com.fifthtech.controller.dict;
 import com.fifthtech.common.Result;
 import com.fifthtech.dto.dict.DictNodeDTO;
 import com.fifthtech.dto.dict.DictNodeMoveDTO;
+import com.fifthtech.dto.dict.DictNodeQueryDTO;
 import com.fifthtech.service.dict.DictNodeService;
 import com.fifthtech.vo.dict.DictNodeTreeVO;
 import com.fifthtech.vo.dict.DictNodeVO;
@@ -14,7 +15,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
@@ -40,16 +40,28 @@ public class DictNodeController {
      * 懒加载 children：左树展开节点时调用
      */
     @GetMapping("/node/children")
-    public Result<List<DictNodeVO>> listChildren(@RequestParam(defaultValue = "0") Long parentId) {
-        return Result.success("查询成功", dictNodeService.listChildren(parentId));
+    public Result<List<DictNodeVO>> listChildren(DictNodeQueryDTO query) {
+        if (query == null) {
+            query = new DictNodeQueryDTO();
+        }
+        if (query.getParentId() == null) {
+            query.setParentId(0L);
+        }
+        return Result.success("查询成功", dictNodeService.listChildren(query));
     }
 
     /**
      * 右栏 list（与 children 同数据源，方法别名）
      */
     @GetMapping("/node/list")
-    public Result<List<DictNodeVO>> list(@RequestParam(defaultValue = "0") Long parentId) {
-        return Result.success("查询成功", dictNodeService.list(parentId));
+    public Result<List<DictNodeVO>> list(DictNodeQueryDTO query) {
+        if (query == null) {
+            query = new DictNodeQueryDTO();
+        }
+        if (query.getParentId() == null) {
+            query.setParentId(0L);
+        }
+        return Result.success("查询成功", dictNodeService.list(query));
     }
 
     /**
@@ -138,9 +150,9 @@ public class DictNodeController {
      * 业务只读：按 pathCode 取该节点下启用直接子（不存在 → 业务错误）
      */
     @GetMapping("/data")
-    public Result<List<DictNodeVO>> data(@RequestParam("pathCode") String pathCode) {
+    public Result<List<DictNodeVO>> data(DictNodeQueryDTO query) {
         try {
-            return Result.success("查询成功", dictNodeService.listDataByPathCode(pathCode));
+            return Result.success("查询成功", dictNodeService.listDataByPathCode(query));
         } catch (IllegalArgumentException ex) {
             return Result.error(ex.getMessage());
         }

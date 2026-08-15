@@ -6,6 +6,7 @@ import com.fifthtech.dao.entity.user.User;
 import com.fifthtech.dto.org.OrgDTO;
 import com.fifthtech.dto.org.OrgMembersDTO;
 import com.fifthtech.dto.org.OrgMoveDTO;
+import com.fifthtech.dto.org.OrgQueryDTO;
 import com.fifthtech.vo.org.OrgMemberVO;
 import com.fifthtech.vo.org.OrgTreeVO;
 import com.fifthtech.vo.org.OrgVO;
@@ -32,12 +33,12 @@ public interface OrgService extends IService<Org> {
     /**
      * 懒加载 children：返回 parentId 下所有直接子（含 hasChildren、path、typeLabel）
      */
-    List<OrgVO> listChildren(Long parentId);
+    List<OrgVO> listChildren(OrgQueryDTO query);
 
     /**
      * 右栏 list：与 children 同数据源，方法别名
      */
-    List<OrgVO> list(Long parentId);
+    List<OrgVO> list(OrgQueryDTO query);
 
     /**
      * 全量树（含叶子与 path）
@@ -77,12 +78,12 @@ public interface OrgService extends IService<Org> {
     /**
      * 查人：组织成员 ∩ 持有该全局角色的用户
      */
-    List<User> usersByRole(Long orgId, String roleCode);
+    List<User> usersByRole(OrgQueryDTO query);
 
     /**
      * 本组织成员列表
      */
-    List<OrgMemberVO> listMembers(Long orgId);
+    List<OrgMemberVO> listMembers(OrgQueryDTO query);
 
     /**
      * 全量替换本组织成员

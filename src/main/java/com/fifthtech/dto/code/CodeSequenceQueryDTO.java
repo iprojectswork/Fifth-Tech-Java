@@ -11,7 +11,7 @@ import java.io.Serializable;
  * <p>水位查询入参：{@code ruleId} / {@code ruleCode} 至少一项。</p>
  *
  * @author RH
- * @description 流水水位查询条件
+ * @description 流水水位查询条件（前端入参）
  * @date 2026-08-02
  */
 @Data

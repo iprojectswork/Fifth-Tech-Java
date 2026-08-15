@@ -22,28 +22,28 @@
         FROM sys_user u
         <where>
             u.deleted = 0
-            <if test="username != null and username != ''">
-                AND u.username LIKE CONCAT('%', #{username}, '%')
+            <if test="query.username != null and query.username != ''">
+                AND u.username LIKE CONCAT('%', #{query.username}, '%')
             </if>
-            <if test="nickname != null and nickname != ''">
-                AND u.nickname LIKE CONCAT('%', #{nickname}, '%')
+            <if test="query.nickname != null and query.nickname != ''">
+                AND u.nickname LIKE CONCAT('%', #{query.nickname}, '%')
             </if>
-            <if test="email != null and email != ''">
-                AND u.email LIKE CONCAT('%', #{email}, '%')
+            <if test="query.email != null and query.email != ''">
+                AND u.email LIKE CONCAT('%', #{query.email}, '%')
             </if>
-            <if test="phone != null and phone != ''">
-                AND u.phone LIKE CONCAT('%', #{phone}, '%')
+            <if test="query.phone != null and query.phone != ''">
+                AND u.phone LIKE CONCAT('%', #{query.phone}, '%')
             </if>
-            <if test="status != null">
-                AND u.status = #{status}
+            <if test="query.status != null">
+                AND u.status = #{query.status}
             </if>
-            <if test="orgIds != null and orgIds.size() &gt; 0">
+            <if test="query.orgIds != null and query.orgIds.size() &gt; 0">
                 AND EXISTS (
                     SELECT 1
                     FROM sys_user_org uo
                     WHERE uo.user_id = u.id
                       AND uo.org_id IN
-                      <foreach collection="orgIds" item="oid" open="(" separator="," close=")">
+                      <foreach collection="query.orgIds" item="oid" open="(" separator="," close=")">
                           #{oid}
                       </foreach>
                 )

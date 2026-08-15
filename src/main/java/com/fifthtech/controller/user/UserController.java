@@ -7,6 +7,7 @@ import com.fifthtech.dao.entity.permission.Permission;
 import com.fifthtech.dao.entity.role.Role;
 import com.fifthtech.dao.entity.user.User;
 import com.fifthtech.dto.user.UserDTO;
+import com.fifthtech.dto.user.UserQueryDTO;
 import com.fifthtech.service.user.UserService;
 import com.fifthtech.vo.permission.PermissionVO;
 import com.fifthtech.vo.role.RoleVO;
@@ -108,28 +109,30 @@ public class UserController {
     }
 
     @GetMapping("/{id}/roles")
-    public Result<Page<RoleVO>> listRoles(
-            @PathVariable Long id,
-            @RequestParam(defaultValue = "1") Integer current,
-            @RequestParam(defaultValue = "10") Integer size) {
+    public Result<Page<RoleVO>> listRoles(@PathVariable Long id, UserQueryDTO query) {
         if (userService.selectById(id) == null) {
             return Result.error("用户不存在！");
         }
-        Page<Role> entityPage = userService.listRoles(id, current, size);
+        if (query == null) {
+            query = new UserQueryDTO();
+        }
+        query.setUserId(id);
+        Page<Role> entityPage = userService.listRoles(query);
         Page<RoleVO> voPage = new Page<>(entityPage.getCurrent(), entityPage.getSize(), entityPage.getTotal());
         voPage.setRecords(ConvertUtils.toVOList(entityPage.getRecords(), RoleVO.class));
         return Result.success("查询成功", voPage);
     }
 
     @GetMapping("/{id}/permissions")
-    public Result<Page<PermissionVO>> listPermissions(
-            @PathVariable Long id,
-            @RequestParam(defaultValue = "1") Integer current,
-            @RequestParam(defaultValue = "10") Integer size) {
+    public Result<Page<PermissionVO>> listPermissions(@PathVariable Long id, UserQueryDTO query) {
         if (userService.selectById(id) == null) {
             return Result.error("用户不存在！");
         }
-        Page<Permission> entityPage = userService.listPermissions(id, current, size);
+        if (query == null) {
+            query = new UserQueryDTO();
+        }
+        query.setUserId(id);
+        Page<Permission> entityPage = userService.listPermissions(query);
         Page<PermissionVO> voPage = new Page<>(entityPage.getCurrent(), entityPage.getSize(), entityPage.getTotal());
         voPage.setRecords(ConvertUtils.toVOList(entityPage.getRecords(), PermissionVO.class));
         return Result.success("查询成功", voPage);
@@ -139,11 +142,8 @@ public class UserController {
      * 分页查询。可选 {@code orgId} 精确过滤该组织成员。
      */
     @GetMapping("/list")
-    public Result<Page<UserVO>> list(
-            @RequestParam(defaultValue = "1") Integer current,
-            @RequestParam(defaultValue = "10") Integer size,
-            UserDTO query) {
-        Page<User> entityPage = userService.list(current, size, query);
+    public Result<Page<UserVO>> list(UserQueryDTO query) {
+        Page<User> entityPage = userService.list(query);
         Page<UserVO> voPage = new Page<>(entityPage.getCurrent(), entityPage.getSize(), entityPage.getTotal());
         List<UserVO> records = new java.util.ArrayList<>(entityPage.getRecords().size());
         for (User u : entityPage.getRecords()) {

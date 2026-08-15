@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.fifthtech.common.utils.ConvertUtils;
 import com.fifthtech.dto.permission.PermissionDTO;
+import com.fifthtech.dto.permission.PermissionQueryDTO;
 import com.fifthtech.vo.permission.PermissionTreeVO;
 import com.fifthtech.vo.permission.PermissionVO;
 import com.fifthtech.dao.entity.permission.Permission;
@@ -41,8 +42,13 @@ public class PermissionServiceImpl extends ServiceImpl<PermissionMapper, Permiss
     private PermissionMapper permissionMapper;
 
     @Override
-    public Page<Permission> selectPage(Integer current, Integer size, String permissionName, String permissionCode) {
+    public Page<Permission> selectPage(PermissionQueryDTO query) {
+        PermissionQueryDTO q = query == null ? new PermissionQueryDTO() : query;
+        int current = q.getCurrent() == null ? 1 : q.getCurrent();
+        int size = q.getSize() == null ? 10 : q.getSize();
         Page<Permission> page = new Page<>(current, size);
+        String permissionName = q.getPermissionName();
+        String permissionCode = q.getPermissionCode();
         LambdaQueryWrapper<Permission> wrapper = new LambdaQueryWrapper<>();
         wrapper.like(permissionName != null && !permissionName.isEmpty(), Permission::getPermissionName, permissionName)
                 .like(permissionCode != null && !permissionCode.isEmpty(), Permission::getPermissionCode, permissionCode)
@@ -71,8 +77,8 @@ public class PermissionServiceImpl extends ServiceImpl<PermissionMapper, Permiss
     }
 
     @Override
-    public List<PermissionVO> listChildren(Long parentId) {
-        long pid = parentId == null ? ROOT_PARENT_ID : parentId;
+    public List<PermissionVO> listChildren(PermissionQueryDTO query) {
+        long pid = (query == null || query.getParentId() == null) ? ROOT_PARENT_ID : query.getParentId();
         List<Permission> list = permissionMapper.selectByParentId(pid);
         if (list == null || list.isEmpty()) {
             return Collections.emptyList();

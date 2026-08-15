@@ -6,12 +6,13 @@ import com.fifthtech.vo.permission.PermissionTreeVO;
 import com.fifthtech.vo.permission.PermissionVO;
 import com.fifthtech.dao.entity.permission.Permission;
 import com.fifthtech.dto.permission.PermissionDTO;
+import com.fifthtech.dto.permission.PermissionQueryDTO;
 
 import java.util.List;
 
 public interface PermissionService extends IService<Permission> {
 
-    Page<Permission> selectPage(Integer current, Integer size, String permissionName, String permissionCode);
+    Page<Permission> selectPage(PermissionQueryDTO query);
 
     Permission selectById(Long id);
 
@@ -19,7 +20,7 @@ public interface PermissionService extends IService<Permission> {
 
     List<PermissionTreeVO> selectTree();
 
-    List<PermissionVO> listChildren(Long parentId);
+    List<PermissionVO> listChildren(PermissionQueryDTO query);
 
     Permission insert(PermissionDTO dto);
 

@@ -11,7 +11,9 @@ import com.fifthtech.dao.entity.code.CodeSequence;
 import com.fifthtech.dao.mapper.code.CodeRuleMapper;
 import com.fifthtech.dao.mapper.code.CodeSequenceMapper;
 import com.fifthtech.dto.code.CodeRuleDTO;
+import com.fifthtech.dto.code.CodeRuleQueryDTO;
 import com.fifthtech.dto.code.CodeSegmentDTO;
+import com.fifthtech.dto.code.CodeSequenceQueryDTO;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.annotation.Resource;
@@ -73,9 +75,13 @@ public class CodeRuleServiceImpl extends ServiceImpl<CodeRuleMapper, CodeRule> i
     private final ObjectMapper objectMapper = new ObjectMapper();
 
     @Override
-    public Page<CodeRule> list(Integer current, Integer size, String ruleCode, String ruleName, Integer status) {
-        int pageNum = (current == null || current < 1) ? 1 : current;
-        int pageSize = (size == null || size < 1) ? 10 : size;
+    public Page<CodeRule> list(CodeRuleQueryDTO query) {
+        CodeRuleQueryDTO q = query == null ? new CodeRuleQueryDTO() : query;
+        String ruleCode = q.getRuleCode();
+        String ruleName = q.getRuleName();
+        Integer status = q.getStatus();
+        int pageNum = (q.getCurrent() == null || q.getCurrent() < 1) ? 1 : q.getCurrent();
+        int pageSize = (q.getSize() == null || q.getSize() < 1) ? 10 : q.getSize();
         LambdaQueryWrapper<CodeRule> countWrapper = new LambdaQueryWrapper<>();
         countWrapper.eq(CodeRule::getDeleted, 0);
         if (ruleCode != null && !ruleCode.isEmpty()) {
@@ -93,8 +99,9 @@ public class CodeRuleServiceImpl extends ServiceImpl<CodeRuleMapper, CodeRule> i
             page.setRecords(Collections.emptyList());
             return page;
         }
-        int offset = (pageNum - 1) * pageSize;
-        List<CodeRule> records = baseMapper.selectPageList(ruleCode, ruleName, status, offset, pageSize);
+        q.setOffset((pageNum - 1) * pageSize);
+        q.setLimit(pageSize);
+        List<CodeRule> records = baseMapper.selectPageList(q);
         page.setRecords(records);
         return page;
     }
@@ -223,8 +230,9 @@ public class CodeRuleServiceImpl extends ServiceImpl<CodeRuleMapper, CodeRule> i
     }
 
     @Override
-    public List<CodeSequence> listSequences(Long ruleId, String ruleCode) {
-        Long effectiveRuleId = ruleId;
+    public List<CodeSequence> listSequences(CodeSequenceQueryDTO query) {
+        Long effectiveRuleId = query == null ? null : query.getRuleId();
+        String ruleCode = query == null ? null : query.getRuleCode();
         if (effectiveRuleId == null && ruleCode != null && !ruleCode.isEmpty()) {
             CodeRule rule = baseMapper.selectByRuleCode(ruleCode);
             if (rule == null) {

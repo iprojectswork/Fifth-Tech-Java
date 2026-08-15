@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.fifthtech.dao.entity.role.Role;
+import com.fifthtech.dto.role.RoleQueryDTO;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
@@ -34,9 +35,7 @@ public interface RoleMapper extends BaseMapper<Role> {
     /**
      * /role/list：可选 name/code 模糊。
      */
-    IPage<Role> listPage(Page<Role> page,
-                         @Param("roleName") String roleName,
-                         @Param("roleCode") String roleCode);
+    IPage<Role> listPage(Page<Role> page, @Param("query") RoleQueryDTO query);
 
     /**
      * /role/all：返回启用角色。

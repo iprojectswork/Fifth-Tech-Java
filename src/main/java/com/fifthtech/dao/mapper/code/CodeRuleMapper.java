@@ -2,6 +2,7 @@ package com.fifthtech.dao.mapper.code;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.fifthtech.dao.entity.code.CodeRule;
+import com.fifthtech.dto.code.CodeRuleQueryDTO;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
@@ -21,16 +22,8 @@ public interface CodeRuleMapper extends BaseMapper<CodeRule> {
 
     /**
      * 编码规则分页列表（手写 SQL；显式列清单）
-     *
-     * @param ruleCode 规则编码（模糊，可空）
-     * @param ruleName 规则名称（模糊，可空）
-     * @param status   状态（可空）
      */
-    List<CodeRule> selectPageList(@Param("ruleCode") String ruleCode,
-                                  @Param("ruleName") String ruleName,
-                                  @Param("status") Integer status,
-                                  @Param("offset") Integer offset,
-                                  @Param("limit") Integer limit);
+    List<CodeRule> selectPageList(@Param("query") CodeRuleQueryDTO query);
 
     /**
      * 按 rule_code 查一条（生成服务加载规则用）

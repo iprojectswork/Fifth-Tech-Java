@@ -8,6 +8,7 @@ import com.fifthtech.dao.entity.role.Role;
 import com.fifthtech.dao.mapper.role.RoleMapper;
 import com.fifthtech.dao.mapper.role.RolePermissionMapper;
 import com.fifthtech.dto.role.RoleDTO;
+import com.fifthtech.dto.role.RoleQueryDTO;
 import com.fifthtech.security.UserContext;
 import com.fifthtech.service.role.RoleService;
 import jakarta.annotation.Resource;
@@ -36,9 +37,12 @@ public class RoleServiceImpl extends ServiceImpl<RoleMapper, Role> implements Ro
     private RolePermissionMapper rolePermissionMapper;
 
     @Override
-    public Page<Role> selectPage(Integer current, Integer size, String roleName, String roleCode) {
+    public Page<Role> selectPage(RoleQueryDTO query) {
+        RoleQueryDTO q = query == null ? new RoleQueryDTO() : query;
+        int current = q.getCurrent() == null ? 1 : q.getCurrent();
+        int size = q.getSize() == null ? 10 : q.getSize();
         Page<Role> page = new Page<>(current, size);
-        IPage<Role> result = baseMapper.listPage(page, roleName, roleCode);
+        IPage<Role> result = baseMapper.listPage(page, q);
         return (Page<Role>) result;
     }
 

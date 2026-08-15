@@ -25,19 +25,19 @@
         FROM sys_code_rule
         <where>
             deleted = 0
-            <if test="ruleCode != null and ruleCode != ''">
-                AND rule_code LIKE CONCAT('%', #{ruleCode}, '%')
+            <if test="query.ruleCode != null and query.ruleCode != ''">
+                AND rule_code LIKE CONCAT('%', #{query.ruleCode}, '%')
             </if>
-            <if test="ruleName != null and ruleName != ''">
-                AND rule_name LIKE CONCAT('%', #{ruleName}, '%')
+            <if test="query.ruleName != null and query.ruleName != ''">
+                AND rule_name LIKE CONCAT('%', #{query.ruleName}, '%')
             </if>
-            <if test="status != null">
-                AND status = #{status}
+            <if test="query.status != null">
+                AND status = #{query.status}
             </if>
         </where>
         ORDER BY id DESC
-        <if test="offset != null and limit != null">
-            LIMIT #{limit} OFFSET #{offset}
+        <if test="query.offset != null and query.limit != null">
+            LIMIT #{query.limit} OFFSET #{query.offset}
         </if>
     </select>
 

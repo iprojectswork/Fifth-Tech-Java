@@ -16,6 +16,7 @@ import com.fifthtech.dao.mapper.role.RoleMapper;
 import com.fifthtech.dao.mapper.user.UserMapper;
 import com.fifthtech.dao.mapper.user.UserRoleMapper;
 import com.fifthtech.dto.user.UserDTO;
+import com.fifthtech.dto.user.UserQueryDTO;
 import com.fifthtech.service.org.OrgService;
 import com.fifthtech.service.user.UserService;
 import com.fifthtech.vo.user.UserOrgSummaryVO;
@@ -280,34 +281,20 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
     // ---------------------------------------------------------------------
 
     @Override
-    public Page<User> list(Integer current, Integer size, UserDTO dto) {
-        int c = current == null || current < 1 ? 1 : current;
-        int s = size == null || size < 1 ? 10 : size;
+    public Page<User> list(UserQueryDTO query) {
+        UserQueryDTO q = query == null ? new UserQueryDTO() : query;
+        int c = q.getCurrent() == null || q.getCurrent() < 1 ? 1 : q.getCurrent();
+        int s = q.getSize() == null || q.getSize() < 1 ? 10 : q.getSize();
         Page<User> page = new Page<>(c, s);
-        String username = dto == null ? null : dto.getUsername();
-        String nickname = dto == null ? null : dto.getNickname();
-        String email = dto == null ? null : dto.getEmail();
-        String phone = dto == null ? null : dto.getPhone();
-        Integer status = dto == null ? null : dto.getStatus();
-        Long orgId = dto == null ? null : dto.getOrgId();
-        List<Long> orgIds = orgId == null ? null : orgService.subtreeOrgIds(orgId);
-        IPage<User> result = baseMapper.listPage(page,
-                blankToNull(username), blankToNull(nickname), blankToNull(email), blankToNull(phone),
-                status, orgIds);
-        return (Page<User>) result;
-    }
-
-    // 兼容旧 User 查询入口：保留以防其它类误用
-    public Page<User> list(Integer current, Integer size, User query) {
-        UserDTO dto = new UserDTO();
-        if (query != null) {
-            dto.setUsername(query.getUsername());
-            dto.setNickname(query.getNickname());
-            dto.setEmail(query.getEmail());
-            dto.setPhone(query.getPhone());
-            dto.setStatus(query.getStatus());
+        q.setUsername(blankToNull(q.getUsername()));
+        q.setNickname(blankToNull(q.getNickname()));
+        q.setEmail(blankToNull(q.getEmail()));
+        q.setPhone(blankToNull(q.getPhone()));
+        if (q.getOrgId() != null) {
+            q.setOrgIds(orgService.subtreeOrgIds(q.getOrgId()));
         }
-        return list(current, size, dto);
+        IPage<User> result = baseMapper.listPage(page, q);
+        return (Page<User>) result;
     }
 
     @Override
@@ -334,25 +321,27 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
     }
 
     @Override
-    public Page<Role> listRoles(Long userId, Integer current, Integer size) {
-        int c = current == null || current < 1 ? 1 : current;
-        int s = size == null || size < 1 ? 10 : size;
+    public Page<Role> listRoles(UserQueryDTO query) {
+        UserQueryDTO q = query == null ? new UserQueryDTO() : query;
+        int c = q.getCurrent() == null || q.getCurrent() < 1 ? 1 : q.getCurrent();
+        int s = q.getSize() == null || q.getSize() < 1 ? 10 : q.getSize();
         Page<Role> page = new Page<>(c, s);
-        if (userId == null) {
+        if (q.getUserId() == null) {
             return page;
         }
-        return (Page<Role>) roleMapper.listRelatedByUserId(page, userId);
+        return (Page<Role>) roleMapper.listRelatedByUserId(page, q.getUserId());
     }
 
     @Override
-    public Page<Permission> listPermissions(Long userId, Integer current, Integer size) {
-        int c = current == null || current < 1 ? 1 : current;
-        int s = size == null || size < 1 ? 10 : size;
+    public Page<Permission> listPermissions(UserQueryDTO query) {
+        UserQueryDTO q = query == null ? new UserQueryDTO() : query;
+        int c = q.getCurrent() == null || q.getCurrent() < 1 ? 1 : q.getCurrent();
+        int s = q.getSize() == null || q.getSize() < 1 ? 10 : q.getSize();
         Page<Permission> page = new Page<>(c, s);
-        if (userId == null) {
+        if (q.getUserId() == null) {
             return page;
         }
-        return (Page<Permission>) permissionMapper.listRelatedByUserId(page, userId);
+        return (Page<Permission>) permissionMapper.listRelatedByUserId(page, q.getUserId());
     }
 
     // ---------------------------------------------------------------------
