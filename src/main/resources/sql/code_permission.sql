@@ -1,4 +1,4 @@
--- C2 增量种子：编码管理菜单 + 按钮 + 绑定 super_admin(role_id=1)
+-- 编码管理菜单 + 按钮 + 绑定 super_admin(role_id=1)
 -- 已初始化数据库可重复执行，不影响其它数据。
 -- PostgreSQL 语法（ON CONFLICT DO NOTHING）。
 -- 菜单/按钮 ID 与 cache_permission 同段位推后：menu=6, buttons=501~504。

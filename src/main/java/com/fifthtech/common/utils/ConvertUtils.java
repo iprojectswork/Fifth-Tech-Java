@@ -6,15 +6,21 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Convert
- *
  * @author RH
- * @description 通用转换工具类
- * @date 2026-01-25
- * @version 1.0
+ * @ClassName ConvertUtils
+ * @description: 对象转换工具
+ * @date 2026年01月25日
+ * @version: 1.0
  */
 public class ConvertUtils {
 
+    /**
+    * @description: 单对象转 Entity
+    * @author: RH
+    * @date: 2026/8/16 13:21
+    * @param: [source, targetClass]
+    * @return: {@link T}
+    **/
     public static <S, T> T toEntity(S source, Class<T> targetClass) {
         if (source == null) {
             return null;
@@ -28,6 +34,13 @@ public class ConvertUtils {
         }
     }
 
+    /**
+    * @description: 单对象转 DTO
+    * @author: RH
+    * @date: 2026/8/16 13:21
+    * @param: [source, targetClass]
+    * @return: {@link T}
+    **/
     public static <S, T> T toDTO(S source, Class<T> targetClass) {
         if (source == null) {
             return null;
@@ -41,6 +54,13 @@ public class ConvertUtils {
         }
     }
 
+    /**
+    * @description: 单对象转 VO
+    * @author: RH
+    * @date: 2026/8/16 13:21
+    * @param: [source, targetClass]
+    * @return: {@link T}
+    **/
     public static <S, T> T toVO(S source, Class<T> targetClass) {
         if (source == null) {
             return null;
@@ -54,6 +74,13 @@ public class ConvertUtils {
         }
     }
 
+    /**
+    * @description: 集合转 Entity 列表
+    * @author: RH
+    * @date: 2026/8/16 13:21
+    * @param: [sourceList, targetClass]
+    * @return: {@link List}<{@link T}>
+    **/
     public static <S, T> List<T> toEntityList(List<S> sourceList, Class<T> targetClass) {
         if (sourceList == null || sourceList.isEmpty()) {
             return new ArrayList<>();
@@ -65,6 +92,13 @@ public class ConvertUtils {
         return targetList;
     }
 
+    /**
+    * @description: 集合转 DTO 列表
+    * @author: RH
+    * @date: 2026/8/16 13:21
+    * @param: [sourceList, targetClass]
+    * @return: {@link List}<{@link T}>
+    **/
     public static <S, T> List<T> toDTOList(List<S> sourceList, Class<T> targetClass) {
         if (sourceList == null || sourceList.isEmpty()) {
             return new ArrayList<>();
@@ -76,6 +110,13 @@ public class ConvertUtils {
         return targetList;
     }
 
+    /**
+    * @description: 集合转 VO 列表
+    * @author: RH
+    * @date: 2026/8/16 13:21
+    * @param: [sourceList, targetClass]
+    * @return: {@link List}<{@link T}>
+    **/
     public static <S, T> List<T> toVOList(List<S> sourceList, Class<T> targetClass) {
         if (sourceList == null || sourceList.isEmpty()) {
             return new ArrayList<>();

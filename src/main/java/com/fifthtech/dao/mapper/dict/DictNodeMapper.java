@@ -8,32 +8,39 @@ import org.apache.ibatis.annotations.Param;
 import java.util.List;
 
 /**
- * DictNodeMapper
- *
- * <p>数据字典 Mapper。{@code list} 语义的方法（{@link #selectActiveList} /
- * {@link #selectChildrenByParentId}）走 XML 手写 SQL（D2）；其余 info / count / exists
- * 等可走 MyBatis-Plus（D3）。</p>
- *
  * @author RH
- * @description 数据字典 Mapper
- * @date 2026-08-02
+ * @ClassName DictNodeMapper
+ * @description: 数据字典Mapper接口
+ * @date 2026年08月02日
+ * @version: 1.0
  */
 @Mapper
 public interface DictNodeMapper extends BaseMapper<DictNode> {
 
     /**
-     * 全量未删节点（用于 {@code /dict/node/tree}），按 sort/code/id 升序
-     */
+    * @description: 查询全量未删字典节点（按 sort/code/id 升序），用于字典树
+    * @author: RH
+    * @date: 2026/8/16 13:21
+    * @param: []
+    * @return: {@link List}<{@link DictNode}>
+    **/
     List<DictNode> selectActiveList();
 
     /**
-     * 指定父节点下的直接子（用于 {@code /dict/node/children} 与 {@code /dict/node/list}），
-     * 按 sort/code/id 升序；{@code parentId=0} 取根层第一层
-     */
+    * @description: 根据父id查询直接子节点
+    * @author: RH
+    * @date: 2026/8/16 13:21
+    * @param: [parentId]
+    * @return: {@link List}<{@link DictNode}>
+    **/
     List<DictNode> selectChildrenByParentId(@Param("parentId") Long parentId);
 
     /**
-     * 批量 hasChildren：返回有未删子的 parent_id 集合（用于树/children 标记）
-     */
+    * @description: 从父ID集合中筛选出「有未删子」的子集，用于树/children 的 hasChildren 标记
+    * @author: RH
+    * @date: 2026/8/16 13:21
+    * @param: [parentIds]
+    * @return: {@link List}<{@link Long}>
+    **/
     List<Long> selectActiveParentIdsWithChildren(@Param("parentIds") List<Long> parentIds);
 }

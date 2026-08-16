@@ -8,45 +8,68 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 /**
- * UserVO
- *
- * <p>用户视图。
- * <ul>
- *   <li>{@code orgNames} / {@code orgs}：成员组织（只读展示；写入走组织管理）。</li>
- *   <li>{@code roles}：已授全局角色。</li>
- * </ul>
- * </p>
- *
  * @author RH
- * @description 用户视图对象
- * @date 2026-01-25
+ * @ClassName UserVO
+ * @description: 用户视图
+ * @date 2026年01月25日
+ * @version: 1.0
  */
 @Data
 public class UserVO {
 
+    /**
+     * 用户 ID
+     */
     @JsonSerialize(using = ToStringSerializer.class)
     private Long id;
 
+    /**
+     * 用户名
+     */
     private String username;
 
+    /**
+     * 昵称
+     */
     private String nickname;
 
+    /**
+     * 邮箱
+     */
     private String email;
 
+    /**
+     * 联系电话
+     */
     private String phone;
 
+    /**
+     * 状态（0：未提交 1：已提交 2：已审核 10：审批中）
+     */
     private Integer status;
 
+    /**
+     * 创建时间
+     */
     private LocalDateTime createTime;
 
+    /**
+     * 更新时间
+     */
     private LocalDateTime updateTime;
 
-    /** 成员组织名拼接（{@code /} 分隔；list 视图用） */
+    /**
+     * 成员组织名拼接（/ 分隔；list 视图用）
+     */
     private String orgNames;
 
-    /** 成员组织详情（详情 / 表单用） */
+    /**
+     * 成员组织详情
+     */
     private List<UserOrgSummaryVO> orgs;
 
-    /** 已授角色（详情 / 表单用） */
+    /**
+     * 已授角色
+     */
     private List<UserRoleSummaryVO> roles;
 }

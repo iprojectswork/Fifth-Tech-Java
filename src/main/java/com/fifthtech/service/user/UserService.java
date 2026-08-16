@@ -12,60 +12,128 @@ import com.fifthtech.vo.user.UserVO;
 import java.util.List;
 
 /**
- * UserService
- *
- * <p>用户服务。
- * <ul>
- *   <li>用户表单只写角色；组织成员由组织管理页维护。</li>
- *   <li>{@link #deleteUser(Long)}：级联清 {@code sys_user_org} 与 {@code sys_user_role}。</li>
-     *   <li>{@link #list(UserQueryDTO)}：可选 {@code orgId} 精确过滤该组织成员。</li>
- * </ul>
- * </p>
- *
  * @author RH
- * @description 用户服务接口
- * @date 2026-01-25
+ * @ClassName UserService
+ * @description: 用户服务接口
+ * @date 2026年01月25日
+ * @version: 1.0
  */
 public interface UserService extends IService<User> {
 
     /**
-     * 新增用户；可选写入角色。不写组织成员。
-     */
+    * @description: 新增用户并写入角色，不写组织成员
+    * @author: RH
+    * @date: 2026/8/16 13:21
+    * @param: [dto]
+    * @return: {@link User}
+    **/
     User insertWithMemberships(UserDTO dto);
 
     /**
-     * 修改用户；{@code roleIds} 非 null 时全量替换角色。不写组织成员。
-     */
+    * @description: 根据id修改用户并全量替换角色，不写组织成员
+    * @author: RH
+    * @date: 2026/8/16 13:21
+    * @param: [dto]
+    * @return: {@link User}
+    **/
     User editWithMemberships(UserDTO dto);
 
     /**
-     * 逻辑删除用户 + 级联清 {@code sys_user_org} 与 {@code sys_user_role}。
-     */
+    * @description: 根据id逻辑删除用户，并级联清除组织挂靠与角色
+    * @author: RH
+    * @date: 2026/8/16 13:21
+    * @param: [id]
+    * @return: boolean
+    **/
     boolean deleteUser(Long id);
 
     /**
-     * 详情（含 orgs / roles 摘要）。
-     */
+    * @description: 根据id查询用户详情，含组织与角色
+    * @author: RH
+    * @date: 2026/8/16 13:21
+    * @param: [id]
+    * @return: {@link UserVO}
+    **/
     UserVO infoWithMemberships(Long id);
 
+    /**
+    * @description: 新增用户（兼容旧接口，不涉及成员写入）
+    * @author: RH
+    * @date: 2026/8/16 13:21
+    * @param: [user]
+    * @return: {@link User}
+    **/
     User insert(User user);
 
+    /**
+    * @description: 根据id逻辑删除用户
+    * @author: RH
+    * @date: 2026/8/16 13:21
+    * @param: [id]
+    * @return: boolean
+    **/
     boolean delete(Long id);
 
+    /**
+    * @description: 根据id修改用户基础字段
+    * @author: RH
+    * @date: 2026/8/16 13:21
+    * @param: [user]
+    * @return: boolean
+    **/
     boolean edit(User user);
 
+    /**
+    * @description: 根据id查询用户
+    * @author: RH
+    * @date: 2026/8/16 13:21
+    * @param: [id]
+    * @return: {@link User}
+    **/
     User selectById(Long id);
 
     /**
-     * 分页查询。可选 {@code query.orgId} 精确过滤成员组织；其它字段作为 username/nickname/email/phone/status 模糊/精确过滤。
-     */
+    * @description: 分页查询用户，可按组织过滤成员
+    * @author: RH
+    * @date: 2026/8/16 13:21
+    * @param: [query]
+    * @return: {@link Page}<{@link User}>
+    **/
     Page<User> list(UserQueryDTO query);
 
+    /**
+    * @description: 根据用户名查询用户
+    * @author: RH
+    * @date: 2026/8/16 13:21
+    * @param: [username]
+    * @return: {@link User}
+    **/
     User selectByUsername(String username);
 
+    /**
+    * @description: 批量修改用户状态
+    * @author: RH
+    * @date: 2026/8/16 13:21
+    * @param: [ids, status]
+    * @return: boolean
+    **/
     boolean updateStatus(List<Long> ids, Integer status);
 
+    /**
+    * @description: 根据用户id分页查询已授角色
+    * @author: RH
+    * @date: 2026/8/16 13:21
+    * @param: [query]
+    * @return: {@link Page}<{@link Role}>
+    **/
     Page<Role> listRoles(UserQueryDTO query);
 
+    /**
+    * @description: 根据用户id分页查询权限，含禁用，按角色汇总去重
+    * @author: RH
+    * @date: 2026/8/16 13:21
+    * @param: [query]
+    * @return: {@link Page}<{@link Permission}>
+    **/
     Page<Permission> listPermissions(UserQueryDTO query);
 }

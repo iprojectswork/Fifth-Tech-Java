@@ -16,6 +16,13 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 
+/**
+ * @author RH
+ * @ClassName AuthController
+ * @description: 认证控制器
+ * @date 2026年08月16日
+ * @version: 1.0
+ */
 @RestController
 @RequestMapping("/auth")
 public class AuthController {
@@ -23,6 +30,13 @@ public class AuthController {
     @Autowired
     private AuthService authService;
 
+    /**
+    * @description: 登录
+    * @author: RH
+    * @date: 2026/8/16 13:21
+    * @param: [request]
+    * @return: {@link Result}<{@link LoginResponseVO}>
+    **/
     @PostMapping("/login")
     public Result<LoginResponseVO> login(@Valid @RequestBody LoginRequestDTO request) {
         LoginResponseVO response = authService.login(request);
@@ -32,6 +46,13 @@ public class AuthController {
         return Result.error(response.getMessage());
     }
 
+    /**
+    * @description: 查询当前登录用户
+    * @author: RH
+    * @date: 2026/8/16 13:21
+    * @param: []
+    * @return: {@link Result}<{@link UserInfoVO}>
+    **/
     @GetMapping("/user-info")
     public Result<UserInfoVO> userInfo() {
         UserInfoVO userInfo = authService.getUserInfo();
@@ -41,11 +62,25 @@ public class AuthController {
         return Result.success(userInfo);
     }
 
+    /**
+    * @description: 查询当前用户菜单
+    * @author: RH
+    * @date: 2026/8/16 13:21
+    * @param: []
+    * @return: {@link Result}<{@link List}<{@link PermissionTreeVO}>>
+    **/
     @GetMapping("/menus")
     public Result<List<PermissionTreeVO>> menus() {
         return Result.success(authService.getMenus());
     }
 
+    /**
+    * @description: 退出登录
+    * @author: RH
+    * @date: 2026/8/16 13:21
+    * @param: []
+    * @return: {@link Result}<{@link Void}>
+    **/
     @PostMapping("/logout")
     public Result<Void> logout() {
         authService.logout();

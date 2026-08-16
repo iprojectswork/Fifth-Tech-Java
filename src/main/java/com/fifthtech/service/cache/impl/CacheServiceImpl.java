@@ -21,10 +21,11 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 /**
- * CacheServiceImpl
- *
- * @description 基于 StringRedisTemplate 的 String 键管理；使用 SCAN（非 KEYS）收集键
- * @date 2026-08-01
+ * @author RH
+ * @ClassName CacheServiceImpl
+ * @description: 缓存服务实现
+ * @date 2026年08月01日
+ * @version: 1.0
  */
 @Service
 public class CacheServiceImpl implements CacheService {

@@ -37,13 +37,11 @@ import java.util.Map;
 import java.util.Set;
 
 /**
- * UserServiceImpl
- *
- * <p>用户服务实现。用户表单只写角色；组织成员由组织管理页维护。</p>
- *
  * @author RH
- * @description 用户服务实现类
- * @date 2026-01-25
+ * @ClassName UserServiceImpl
+ * @description: 用户服务实现
+ * @date 2026年01月25日
+ * @version: 1.0
  */
 @Service
 public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements UserService {
@@ -65,10 +63,6 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
 
     @Resource
     private OrgService orgService;
-
-    // ---------------------------------------------------------------------
-    // 旧版接口（保持兼容）
-    // ---------------------------------------------------------------------
 
     @Override
     @Transactional(rollbackFor = Exception.class)
@@ -97,10 +91,6 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
     public User selectById(Long id) {
         return getById(id);
     }
-
-    // ---------------------------------------------------------------------
-    // 新版：含成员与任职（写入路径）
-    // ---------------------------------------------------------------------
 
     @Override
     @Transactional(rollbackFor = Exception.class)
@@ -279,10 +269,6 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         return vo;
     }
 
-    // ---------------------------------------------------------------------
-    // 旧版 list（兼容性保持，但改为接收 UserDTO）
-    // ---------------------------------------------------------------------
-
     @Override
     public Page<User> list(UserQueryDTO query) {
         if (query == null) {
@@ -359,13 +345,6 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         return (Page<Permission>) permissionMapper.listRelatedByUserId(page, query.getUserId());
     }
 
-    // ---------------------------------------------------------------------
-    // helpers
-    // ---------------------------------------------------------------------
-
-    /**
-     * 校验角色均存在未删，返回 roleId → Role 的映射。
-     */
     private Map<Long, Role> validateAndLoadRoles(List<Long> roleIds) {
         if (roleIds == null || roleIds.isEmpty()) {
             return new HashMap<>();
@@ -422,7 +401,6 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         return trimmed.isEmpty() ? null : trimmed;
     }
 
-    // 工具：避免空集合时 MyBatis foreach 解析异常（业务层兜底）
     @SuppressWarnings("unused")
     private static <T> List<T> safeList(List<T> src) {
         return src == null ? Collections.emptyList() : src;

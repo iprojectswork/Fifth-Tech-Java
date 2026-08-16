@@ -6,17 +6,18 @@ import lombok.Data;
 import java.io.Serializable;
 
 /**
- * CodeSequenceQueryDTO
- *
- * <p>水位查询入参：{@code ruleId} / {@code ruleCode} 至少一项。</p>
- *
  * @author RH
- * @description 流水水位查询条件（前端入参）
- * @date 2026-08-02
+ * @ClassName CodeSequenceQueryDTO
+ * @description: 流水水位查询条件
+ * @date 2026年08月02日
+ * @version: 1.0
  */
 @Data
 public class CodeSequenceQueryDTO implements Serializable {
 
+    /**
+     * 序列化版本号
+     */
     private static final long serialVersionUID = 1L;
 
     /**

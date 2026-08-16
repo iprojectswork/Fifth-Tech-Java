@@ -27,40 +27,27 @@ import java.util.Set;
 import java.util.regex.Pattern;
 
 /**
- * DictNodeServiceImpl
- *
- * <p>规则（D1–D21）摘要：
- * <ul>
- *   <li>D4/D5：同父未删 code 唯一（DB 部分唯一索引兜底）；code 禁含 /，trim 后非空，
- *   长度 1~64，建议 {@code [A-Za-z0-9_\-\.]+}。</li>
- *   <li>D6：path 不落库，运行时按链拼接；getParent 步数超过 {@link #BizConstants.MAX_TREE_DEPTH} 视为坏数据。</li>
- *   <li>D7：列表/树子节点顺序 {@code sort ASC, code ASC, id ASC}。</li>
- *   <li>D8：业务读仅返回 status=1。</li>
- *   <li>D9/D14/D17：删除与 move 要求源无未删子；move 目标必须存在或为 0、id != targetParentId。</li>
- *   <li>D18：最大深度 16（根下第一层 depth=1）。</li>
- *   <li>D21：{@code /dict/data} 按 pathCode 精确匹配走链解析，不存在抛业务异常。</li>
- * </ul>
- * </p>
- *
  * @author RH
- * @description 数据字典节点服务实现
- * @date 2026-08-02
+ * @ClassName DictNodeServiceImpl
+ * @description: 数据字典节点服务实现
+ * @date 2026年08月02日
+ * @version: 1.0
  */
 @Service
 public class DictNodeServiceImpl extends ServiceImpl<DictNodeMapper, DictNode> implements DictNodeService {
 
-    /** 沿 parent 链多走几步，用于识别坏链 */
+    /**
+     * 沿 parent 链多走几步，用于识别坏链
+     */
     private static final int TREE_WALK_SLACK = 4;
 
-    /** code 字符合法集（C3 D5：禁 /；trim 后非空；长度 1~64） */
+    /**
+     * code 字符合法集（禁 /；trim 后非空；长度 1~64）
+     */
     private static final Pattern CODE_PATTERN = Pattern.compile("^[A-Za-z0-9_\\-\\.]+$");
 
     @Resource
     private DictNodeMapper dictNodeMapper;
-
-    // ---------------------------------------------------------------------
-    // listChildren / list
-    // ---------------------------------------------------------------------
 
     @Override
     public List<DictNodeVO> listChildren(DictNodeQueryDTO query) {
@@ -99,10 +86,6 @@ public class DictNodeServiceImpl extends ServiceImpl<DictNodeMapper, DictNode> i
         return vos;
     }
 
-    // ---------------------------------------------------------------------
-    // tree
-    // ---------------------------------------------------------------------
-
     @Override
     public List<DictNodeTreeVO> tree() {
         List<DictNode> all = dictNodeMapper.selectActiveList();
@@ -140,10 +123,6 @@ public class DictNodeServiceImpl extends ServiceImpl<DictNodeMapper, DictNode> i
         return vo;
     }
 
-    // ---------------------------------------------------------------------
-    // info
-    // ---------------------------------------------------------------------
-
     @Override
     public DictNodeVO info(Long id) {
         if (id == null) {
@@ -168,10 +147,6 @@ public class DictNodeServiceImpl extends ServiceImpl<DictNodeMapper, DictNode> i
         vo.setHasChildren(hasKids.contains(id));
         return vo;
     }
-
-    // ---------------------------------------------------------------------
-    // insert
-    // ---------------------------------------------------------------------
 
     @Override
     @Transactional(rollbackFor = Exception.class)
@@ -223,10 +198,6 @@ public class DictNodeServiceImpl extends ServiceImpl<DictNodeMapper, DictNode> i
         return info(entity.getId());
     }
 
-    // ---------------------------------------------------------------------
-    // edit
-    // ---------------------------------------------------------------------
-
     @Override
     @Transactional(rollbackFor = Exception.class)
     public DictNodeVO edit(DictNodeDTO dto) {
@@ -270,10 +241,6 @@ public class DictNodeServiceImpl extends ServiceImpl<DictNodeMapper, DictNode> i
         updateById(existing);
         return info(existing.getId());
     }
-
-    // ---------------------------------------------------------------------
-    // move
-    // ---------------------------------------------------------------------
 
     @Override
     @Transactional(rollbackFor = Exception.class)
@@ -330,10 +297,6 @@ public class DictNodeServiceImpl extends ServiceImpl<DictNodeMapper, DictNode> i
         updateById(upd);
     }
 
-    // ---------------------------------------------------------------------
-    // delete
-    // ---------------------------------------------------------------------
-
     @Override
     @Transactional(rollbackFor = Exception.class)
     public void delete(Long id) {
@@ -359,10 +322,6 @@ public class DictNodeServiceImpl extends ServiceImpl<DictNodeMapper, DictNode> i
         // 触发 @TableLogic → UPDATE ... SET deleted = 1 WHERE id = ? AND deleted = 0
         dictNodeMapper.deleteById(id);
     }
-
-    // ---------------------------------------------------------------------
-    // listDataByPathCode
-    // ---------------------------------------------------------------------
 
     @Override
     public List<DictNodeVO> listDataByPathCode(DictNodeQueryDTO query) {
@@ -428,14 +387,6 @@ public class DictNodeServiceImpl extends ServiceImpl<DictNodeMapper, DictNode> i
         return vos;
     }
 
-    // ---------------------------------------------------------------------
-    // helpers
-    // ---------------------------------------------------------------------
-
-    /**
-     * 走 parent 链拼 pathCode / pathName（不超过 BizConstants.MAX_TREE_DEPTH 步数；步数超限或成环返回 null）。
-     * 用于 info 与 listDataByPathCode 的兜底；tree 走内存构建不走这里。
-     */
     private String[] computePathById(Long id) {
         if (id == null) {
             return null;
@@ -474,9 +425,6 @@ public class DictNodeServiceImpl extends ServiceImpl<DictNodeMapper, DictNode> i
         return new String[]{pathCode.toString(), pathName.toString()};
     }
 
-    /**
-     * 计算节点深度（根下第一层 = 1；根 = 0）。走 parent 链遇 NULL / 成环 / 超 BizConstants.MAX_TREE_DEPTH 返回 -1。
-     */
     private int computeDepth(Long id) {
         if (id == null || id == BizConstants.ROOT_PARENT_ID) {
             return 0;
@@ -500,9 +448,6 @@ public class DictNodeServiceImpl extends ServiceImpl<DictNodeMapper, DictNode> i
         return depth;
     }
 
-    /**
-     * 同 parent 下未删 code 唯一性校验（{@code excludeId} 可选：edit 时排除自身）。
-     */
     private boolean existsSameCode(Long parentId, String code, Long excludeId) {
         LambdaQueryWrapper<DictNode> wrapper = new LambdaQueryWrapper<>();
         wrapper.eq(DictNode::getParentId, parentId)
@@ -514,9 +459,6 @@ public class DictNodeServiceImpl extends ServiceImpl<DictNodeMapper, DictNode> i
         return dictNodeMapper.selectCount(wrapper) > 0;
     }
 
-    /**
-     * 校验并返回 trim 后的 code（C3 D5）；调用方必须用返回值落库。
-     */
     private String normalizeCode(String raw) {
         if (raw == null) {
             throw new IllegalArgumentException("code 不能为空");
@@ -537,9 +479,6 @@ public class DictNodeServiceImpl extends ServiceImpl<DictNodeMapper, DictNode> i
         return code;
     }
 
-    /**
-     * 校验并返回 trim 后的 name；禁止空名（DB NOT NULL）。
-     */
     private String normalizeName(String raw) {
         if (raw == null) {
             throw new IllegalArgumentException("name 不能为空");

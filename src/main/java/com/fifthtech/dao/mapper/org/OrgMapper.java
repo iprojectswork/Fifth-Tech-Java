@@ -8,52 +8,75 @@ import org.apache.ibatis.annotations.Param;
 import java.util.List;
 
 /**
- * OrgMapper
- *
- * <p>组织 Mapper。{@code list} 语义的查询（{@link #selectActiveList} /
- * {@link #selectChildrenByParentId} / {@link #selectEnabledOptions}）走 XML 手写 SQL（C4 §7.3，
- * 禁 {@code SELECT *}）；其余 info / count / exists 可走 MyBatis-Plus。</p>
- *
  * @author RH
- * @description 组织 Mapper
- * @date 2026-08-09
+ * @ClassName OrgMapper
+ * @description: 组织Mapper接口
+ * @date 2026年08月09日
+ * @version: 1.0
  */
 @Mapper
 public interface OrgMapper extends BaseMapper<Org> {
 
     /**
-     * 全量未删组织（用于 {@code /org/tree}），按 sort/code/id 升序
-     */
+    * @description: 查询全量未删组织（按 sort/code/id 升序），用于组织树
+    * @author: RH
+    * @date: 2026/8/16 13:21
+    * @param: []
+    * @return: {@link List}<{@link Org}>
+    **/
     List<Org> selectActiveList();
 
     /**
-     * 全量启用（{@code status=1}）未删组织（用于 {@code /org/options}），按 sort/code/id 升序
-     */
+    * @description: 查询全量启用且未删组织（按 sort/code/id 升序），用于选择器
+    * @author: RH
+    * @date: 2026/8/16 13:21
+    * @param: []
+    * @return: {@link List}<{@link Org}>
+    **/
     List<Org> selectEnabledOptions();
 
     /**
-     * 指定父节点下的直接子（用于 {@code /org/children} 与 {@code /org/list}），
-     * 按 sort/code/id 升序；{@code parentId=0} 取根层第一层
-     */
+    * @description: 根据父id查询直接子组织
+    * @author: RH
+    * @date: 2026/8/16 13:21
+    * @param: [parentId]
+    * @return: {@link List}<{@link Org}>
+    **/
     List<Org> selectChildrenByParentId(@Param("parentId") Long parentId);
 
     /**
-     * 批量 hasChildren：返回有未删子的 parent_id 集合（用于树/children 标记）
-     */
+    * @description: 从父ID集合中筛选出「有未删子」的子集，用于树/children 的 hasChildren 标记
+    * @author: RH
+    * @date: 2026/8/16 13:21
+    * @param: [parentIds]
+    * @return: {@link List}<{@link Long}>
+    **/
     List<Long> selectActiveParentIdsWithChildren(@Param("parentIds") List<Long> parentIds);
 
     /**
-     * 统计 {@code parentId} 下未删子节点数
-     */
+    * @description: 根据父id统计未删子组织数
+    * @author: RH
+    * @date: 2026/8/16 13:21
+    * @param: [parentId]
+    * @return: long
+    **/
     long countActiveChildrenByParentId(@Param("parentId") Long parentId);
 
     /**
-     * 统计 {@code orgId} 下未删 {@code sys_user_org} 成员数
-     */
+    * @description: 根据组织id统计未删成员数
+    * @author: RH
+    * @date: 2026/8/16 13:21
+    * @param: [orgId]
+    * @return: long
+    **/
     long countActiveMembersByOrgId(@Param("orgId") Long orgId);
 
     /**
-     * 统计 {@code orgId} 下未删角色数
-     */
+    * @description: 根据组织id统计未删角色数
+    * @author: RH
+    * @date: 2026/8/16 13:21
+    * @param: [orgId]
+    * @return: long
+    **/
     long countActiveRolesByOrgId(@Param("orgId") Long orgId);
 }

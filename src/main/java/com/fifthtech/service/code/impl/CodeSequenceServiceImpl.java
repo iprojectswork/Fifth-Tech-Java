@@ -17,14 +17,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * CodeSequenceServiceImpl
- *
- * <p>所有 SQL 走独立事务（{@code REQUIRES_NEW}），供 {@link CodeGenerateServiceImpl} 通过
- * Spring 代理调用，保证行锁 + 自增在事务内完成。</p>
- *
  * @author RH
- * @description 流水水位事务服务实现
- * @date 2026-08-02
+ * @ClassName CodeSequenceServiceImpl
+ * @description: 流水水位事务服务实现
+ * @date 2026年08月02日
+ * @version: 1.0
  */
 @Service
 public class CodeSequenceServiceImpl implements CodeSequenceService {

@@ -31,24 +31,18 @@ import java.util.Set;
 import java.util.regex.Pattern;
 
 /**
- * CodeRuleServiceImpl
- *
- * <ul>
- *   <li>片段校验：恰好 1 个 SEQUENCE、至多 1 个 DATE、{@code batch_size} 1~5000、
- *   SEQUENCE.length 1~18、SEQUENCE.step &gt; 0、DATE.pattern 白名单。</li>
- *   <li>segments 以 Jackson {@code List<CodeSegmentDTO>} 双向转换；落入 PG JSONB 列。</li>
- *   <li>status / segments / batch_size 变更时按规则可能产生的 periodKey 全集删 Redis pool
- *   （仅清理，不删 sequence，sequence 行由 sys_code_sequence 永久保留）。</li>
- * </ul>
- *
  * @author RH
- * @description 编码规则服务实现
- * @date 2026-08-02
+ * @ClassName CodeRuleServiceImpl
+ * @description: 编码规则服务实现
+ * @date 2026年08月02日
+ * @version: 1.0
  */
 @Service
 public class CodeRuleServiceImpl extends ServiceImpl<CodeRuleMapper, CodeRule> implements CodeRuleService {
 
-    /** DATE.pattern 白名单（与 C2-CODE-RULE.md §4.1 一致） */
+    /**
+     * DATE.pattern 白名单
+     */
     private static final Set<String> DATE_PATTERN_WHITELIST;
 
     static {
@@ -254,9 +248,6 @@ public class CodeRuleServiceImpl extends ServiceImpl<CodeRuleMapper, CodeRule> i
         return codeSequenceMapper.selectList(wrapper);
     }
 
-    /**
-     * 校验 segments 列表（恰好一个 SEQUENCE、至多一个 DATE；FIXED / DATE / SEQUENCE 字段合规）。
-     */
     private void validateSegments(List<CodeSegmentDTO> segments) {
         if (segments == null || segments.isEmpty()) {
             throw new IllegalArgumentException("segments 不能为空");
@@ -330,9 +321,6 @@ public class CodeRuleServiceImpl extends ServiceImpl<CodeRuleMapper, CodeRule> i
         }
     }
 
-    /**
-     * 把 segments_json 反序列化为强类型列表（生成 / 预览 使用）。
-     */
     public List<CodeSegmentDTO> parseSegments(String segmentsJson) {
         if (segmentsJson == null || segmentsJson.isEmpty()) {
             return Collections.emptyList();
@@ -344,9 +332,6 @@ public class CodeRuleServiceImpl extends ServiceImpl<CodeRuleMapper, CodeRule> i
         }
     }
 
-    /**
-     * 清掉指定 ruleCode 下所有可能存在的 Redis pool key（按已知 periodKey 有限枚举 + 通配 SCAN 兜底）。
-     */
     private void evictPoolKeys(String ruleCode) {
         if (ruleCode == null || ruleCode.isEmpty()) {
             return;
@@ -389,10 +374,6 @@ public class CodeRuleServiceImpl extends ServiceImpl<CodeRuleMapper, CodeRule> i
         }
     }
 
-    /**
-     * 静态内部 holder：避免直接依赖 spring 静态类。
-     * 主会话上下文用 {@code com.fifthtech.security.UserContext}；这里反射桥接可避免循环 import 测试问题。
-     */
     static final class UserContextRef {
         static Long currentUserIdOrNull() {
             try {

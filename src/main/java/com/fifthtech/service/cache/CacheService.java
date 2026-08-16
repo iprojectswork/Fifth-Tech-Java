@@ -8,49 +8,74 @@ import com.fifthtech.vo.cache.CachePageVO;
 import java.util.List;
 
 /**
- * CacheService
- *
- * @description Redis String 键管理服务（SCAN 列表 / 详情 / 写入 / TTL / 删除 + auth 对称清理）
- * @date 2026-08-01
+ * @author RH
+ * @ClassName CacheService
+ * @description: Redis String 键管理服务接口
+ * @date 2026年08月01日
+ * @version: 1.0
  */
 public interface CacheService {
 
     /**
-     * SCAN 收集 key，按字典序排序后内存分页；命中 max-scan-keys 上限返回 truncated=true
-     */
+    * @description: SCAN 收集键并按字典序排序，内存分页返回；命中 max-scan-keys 上限标记 truncated=true
+    * @author: RH
+    * @date: 2026/8/16 13:21
+    * @param: [pattern, current, size]
+    * @return: {@link CachePageVO}
+    **/
     CachePageVO listKeys(String pattern, Integer current, Integer size);
 
     /**
-     * 详情；非 String 返回 null（由 Controller 转译为业务错误）
-     */
+    * @description: 根据key查询缓存详情
+    * @author: RH
+    * @date: 2026/8/16 13:21
+    * @param: [key]
+    * @return: {@link CacheDetailVO}
+    **/
     CacheDetailVO getDetail(String key);
 
     /**
-     * 仅返回键类型（Redis type 命令结果的小写编码）；key 不存在返回 "none"
-     */
+    * @description: 根据key查询缓存类型
+    * @author: RH
+    * @date: 2026/8/16 13:21
+    * @param: [key]
+    * @return: {@link String}
+    **/
     String getType(String key);
 
     /**
-     * 新增/覆盖 String 键；ttlSeconds=null 不设置过期；&gt;0 setEx
-     *
-     * @return true 写入成功
-     */
+    * @description: 新增或覆盖 String 键，ttlSeconds 为空不设置过期，大于 0 走 SETEX；非 String 类型与超长 value 拒绝
+    * @author: RH
+    * @date: 2026/8/16 13:21
+    * @param: [dto]
+    * @return: boolean
+    **/
     boolean set(CacheSetDTO dto);
 
     /**
-     * 仅修改 TTL；ttlSeconds&gt;0 expire；-1 PERSIST；非 String 返回 false
-     */
+    * @description: 修改 String 键的 TTL，大于 0 走 EXPIRE，-1 走 PERSIST；非 String 类型拒绝
+    * @author: RH
+    * @date: 2026/8/16 13:21
+    * @param: [dto]
+    * @return: boolean
+    **/
     boolean expire(CacheExpireDTO dto);
 
     /**
-     * 批量删除（auth:* 对称清理）；空列表返回 0
-     *
-     * @return 实际删除 key 数（含对称键）
-     */
+    * @description: 根据key批量删除缓存，Token键对称清理
+    * @author: RH
+    * @date: 2026/8/16 13:21
+    * @param: [keys]
+    * @return: long
+    **/
     long delete(List<String> keys);
 
     /**
-     * 单个 value 的 UTF-8 字节上限（Controller 用于在 set 前做 oversize 预校验，避免与 service 内部阈值漂移）
-     */
+    * @description: 返回单 value 的 UTF-8 字节上限，Controller 用于写入前预校验
+    * @author: RH
+    * @date: 2026/8/16 13:21
+    * @param: []
+    * @return: int
+    **/
     int getMaxValueBytes();
 }

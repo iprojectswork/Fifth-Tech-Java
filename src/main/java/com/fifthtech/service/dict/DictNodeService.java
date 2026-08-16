@@ -11,62 +11,92 @@ import com.fifthtech.vo.dict.DictNodeVO;
 import java.util.List;
 
 /**
- * DictNodeService
- *
- * <p>数据字典节点服务。方法命名遵循 {@code JAVA-CODING-CONVENTIONS.md}：
- * {@code insert} / {@code edit} / {@code delete} / {@code list} / {@code info}；
- * 业务特例方法：{@code listChildren}（懒加载 children 别名）、
- * {@code tree}（全量树）、{@code move}（改挂父节点）、
- * {@code listDataByPathCode}（业务只读）。</p>
- *
  * @author RH
- * @description 数据字典节点服务接口
- * @date 2026-08-02
+ * @ClassName DictNodeService
+ * @description: 数据字典节点服务接口
+ * @date 2026年08月02日
+ * @version: 1.0
  */
 public interface DictNodeService extends IService<DictNode> {
 
     /**
-     * 懒加载 children：返回 parentId 下所有直接子（含 hasChildren 与 path）
-     */
+    * @description: 根据父id查询直接子节点，含是否有子节点与路径
+    * @author: RH
+    * @date: 2026/8/16 13:21
+    * @param: [query]
+    * @return: {@link List}<{@link DictNodeVO}>
+    **/
     List<DictNodeVO> listChildren(DictNodeQueryDTO query);
 
     /**
-     * 右栏 list：与 children 同数据源，方法别名
-     */
+    * @description: 根据父id查询子节点列表
+    * @author: RH
+    * @date: 2026/8/16 13:21
+    * @param: [query]
+    * @return: {@link List}<{@link DictNodeVO}>
+    **/
     List<DictNodeVO> list(DictNodeQueryDTO query);
 
     /**
-     * 全量树（含叶子与 path）
-     */
+    * @description: 查询字典节点全树，含叶子与路径
+    * @author: RH
+    * @date: 2026/8/16 13:21
+    * @param: []
+    * @return: {@link List}<{@link DictNodeTreeVO}>
+    **/
     List<DictNodeTreeVO> tree();
 
     /**
-     * 详情（含 path / hasChildren）
-     */
+    * @description: 根据id查询字典节点详情，含路径与是否有子节点
+    * @author: RH
+    * @date: 2026/8/16 13:21
+    * @param: [id]
+    * @return: {@link DictNodeVO}
+    **/
     DictNodeVO info(Long id);
 
     /**
-     * 新增节点
-     */
+    * @description: 新增字典节点
+    * @author: RH
+    * @date: 2026/8/16 13:21
+    * @param: [dto]
+    * @return: {@link DictNodeVO}
+    **/
     DictNodeVO insert(DictNodeDTO dto);
 
     /**
-     * 修改节点（不改 parent；改挂请用 {@link #move}）
-     */
+    * @description: 根据id修改字典节点，不改父节点
+    * @author: RH
+    * @date: 2026/8/16 13:21
+    * @param: [dto]
+    * @return: {@link DictNodeVO}
+    **/
     DictNodeVO edit(DictNodeDTO dto);
 
     /**
-     * 改挂父节点（仅无子节点可拖；服务端权威校验）
-     */
+    * @description: 改挂字典节点父节点，仅无子节点可拖，服务端权威校验防环与深度
+    * @author: RH
+    * @date: 2026/8/16 13:21
+    * @param: [dto]
+    * @return: void
+    **/
     void move(DictNodeMoveDTO dto);
 
     /**
-     * 逻辑删除（有未删子则拒绝）
-     */
+    * @description: 根据id逻辑删除字典节点，有未删子节点则拒绝
+    * @author: RH
+    * @date: 2026/8/16 13:21
+    * @param: [id]
+    * @return: void
+    **/
     void delete(Long id);
 
     /**
-     * 业务只读：按 {@code pathCode} 精确匹配，取该节点下「启用」直接子
-     */
+    * @description: 根据pathCode查询启用的直接子节点
+    * @author: RH
+    * @date: 2026/8/16 13:21
+    * @param: [query]
+    * @return: {@link List}<{@link DictNodeVO}>
+    **/
     List<DictNodeVO> listDataByPathCode(DictNodeQueryDTO query);
 }

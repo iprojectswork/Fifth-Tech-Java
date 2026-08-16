@@ -1,4 +1,4 @@
--- C1 增量种子：缓存管理菜单 + 按钮 + 绑定 super_admin(role_id=1)
+-- 缓存管理菜单 + 按钮 + 绑定 super_admin(role_id=1)
 -- 已初始化数据库可重复执行，不影响其它数据。
 -- PostgreSQL 语法（ON CONFLICT DO NOTHING）。
 

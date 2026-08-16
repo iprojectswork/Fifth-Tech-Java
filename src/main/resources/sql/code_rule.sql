@@ -1,4 +1,4 @@
--- C2 DDL: 编码规则 + 流水水位 (PostgreSQL)
+-- 编码规则 + 流水水位 (PostgreSQL)
 -- 已初始化数据库可重复执行（IF NOT EXISTS）。
 -- segments_json 用 JSONB 保存；rule_code 全局唯一；(rule_id, period_key) 唯一。
 

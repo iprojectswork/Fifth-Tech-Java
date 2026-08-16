@@ -8,45 +8,58 @@ import org.apache.ibatis.annotations.Param;
 import java.util.List;
 
 /**
- * UserRoleMapper
- *
- * <p>用户角色关联 Mapper（C4 §4.3 / §4.8）。
- * 写操作均走 XML（{@code INSERT} / {@code DELETE} 带集合参数）。
- * 角色已带 {@code org_id}，「用户撤掉组织成员」级联删该组织下任职通过
- * {@link #deleteByUserIdAndOrgIds} 实现。</p>
- *
  * @author RH
- * @description 用户角色关联Mapper接口
- * @date 2026-03-22
+ * @ClassName UserRoleMapper
+ * @description: 用户角色关联Mapper接口
+ * @date 2026年03月22日
+ * @version: 1.0
  */
 @Mapper
 public interface UserRoleMapper extends BaseMapper<UserRole> {
 
     /**
-     * 根据用户ID删除用户角色关联
-     */
+    * @description: 根据用户id删除全部角色任职
+    * @author: RH
+    * @date: 2026/8/16 13:21
+    * @param: [userId]
+    * @return: void
+    **/
     void deleteByUserId(@Param("userId") Long userId);
 
     /**
-     * 批量插入用户角色关联
-     */
+    * @description: 批量插入角色任职（唯一键冲突忽略）
+    * @author: RH
+    * @date: 2026/8/16 13:21
+    * @param: [userId, roleIds]
+    * @return: void
+    **/
     void batchInsert(@Param("userId") Long userId, @Param("roleIds") List<Long> roleIds);
 
     /**
-     * 删除指定用户在某些组织下挂靠角色的任职记录（C4 §4.8：
-     * 用户保存时若 {@code orgIds} 缩减，级联删除该组织下 {@code user_role}）。
-     * 通过 {@code sys_user_org} 不存在或 {@code sys_role.org_id IN (:orgIds)} 判定。
-     */
+    * @description: 根据用户id和组织id集合删除角色任职
+    * @author: RH
+    * @date: 2026/8/16 13:21
+    * @param: [userId, orgIds]
+    * @return: void
+    **/
     void deleteByUserIdAndOrgIds(@Param("userId") Long userId, @Param("orgIds") List<Long> orgIds);
 
     /**
-     * 查询用户在某些组织下挂靠的角色 ID 集合（C4 §4.8）。
-     */
+    * @description: 根据用户id和组织id集合查询角色id
+    * @author: RH
+    * @date: 2026/8/16 13:21
+    * @param: [userId, orgIds]
+    * @return: {@link List}<{@link Long}>
+    **/
     List<Long> selectRoleIdsByUserIdAndOrgIds(@Param("userId") Long userId,
                                               @Param("orgIds") List<Long> orgIds);
 
     /**
-     * 按 userId 取当前全部任职角色 ID 集合（{@code DISTINCT}）。
-     */
+    * @description: 根据用户id查询任职角色id
+    * @author: RH
+    * @date: 2026/8/16 13:21
+    * @param: [userId]
+    * @return: {@link List}<{@link Long}>
+    **/
     List<Long> selectRoleIdsByUserId(@Param("userId") Long userId);
 }

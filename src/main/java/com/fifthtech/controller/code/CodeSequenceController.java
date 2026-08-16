@@ -14,10 +14,11 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.List;
 
 /**
- * CodeSequenceController
- *
- * @description 编码流水水位查询（只读）
- * @date 2026-08-02
+ * @author RH
+ * @ClassName CodeSequenceController
+ * @description: 编码流水控制器
+ * @date 2026年08月02日
+ * @version: 1.0
  */
 @RestController
 @RequestMapping("/code/sequence")
@@ -27,8 +28,12 @@ public class CodeSequenceController {
     private CodeRuleService codeRuleService;
 
     /**
-     * 流水水位列表
-     */
+    * @description: 查询编码流水列表
+    * @author: RH
+    * @date: 2026/8/16 13:21
+    * @param: [query]
+    * @return: {@link Result}<{@link List}<{@link CodeSequenceVO}>>
+    **/
     @GetMapping("/list")
     public Result<List<CodeSequenceVO>> list(CodeSequenceQueryDTO query) {
         List<CodeSequence> rows = codeRuleService.listSequences(query);

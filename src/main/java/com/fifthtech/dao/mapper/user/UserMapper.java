@@ -9,20 +9,21 @@ import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
 /**
- * UserMapper
- *
- * <p>用户 Mapper。{@code list} 走 XML 手写 SQL（{@code EXISTS sys_user_org} 过滤 +
- * 显式列；C4 §7.3 禁 {@code SELECT *}）。查询入参一律封装为 {@link UserQueryDTO}。</p>
- *
  * @author RH
- * @description 用户Mapper接口
- * @date 2026-01-25
+ * @ClassName UserMapper
+ * @description: 用户Mapper接口
+ * @date 2026年01月25日
+ * @version: 1.0
  */
 @Mapper
 public interface UserMapper extends BaseMapper<User> {
 
     /**
-     * 用户分页。{@code query.orgIds} 可选；存在时挂靠落在该集合内即命中（含下级组织）。
-     */
+    * @description: 分页查询用户，根据组织集合过滤挂靠关系
+    * @author: RH
+    * @date: 2026/8/16 13:21
+    * @param: [page, query]
+    * @return: {@link IPage}<{@link User}>
+    **/
     IPage<User> listPage(Page<User> page, @Param("query") UserQueryDTO query);
 }

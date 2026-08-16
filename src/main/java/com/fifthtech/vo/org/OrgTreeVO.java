@@ -7,19 +7,19 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * OrgTreeVO
- *
- * <p>组织树节点视图：在 {@link OrgVO} 基础上追加 {@code children}。
- * 叶子 {@code children=[]} 且 {@code hasChildren=false}。</p>
- *
  * @author RH
- * @description 组织树节点视图
- * @date 2026-08-09
+ * @ClassName OrgTreeVO
+ * @description: 组织树节点视图
+ * @date 2026年08月09日
+ * @version: 1.0
  */
 @Data
 @EqualsAndHashCode(callSuper = true)
 public class OrgTreeVO extends OrgVO {
 
+    /**
+     * 序列化版本号
+     */
     private static final long serialVersionUID = 1L;
 
     /**

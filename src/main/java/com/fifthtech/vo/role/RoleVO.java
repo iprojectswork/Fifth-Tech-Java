@@ -7,17 +7,17 @@ import lombok.Data;
 import java.time.LocalDateTime;
 
 /**
- * RoleVO
- *
  * @author RH
- * @description 角色视图对象
- * @date 2026-03-22
+ * @ClassName RoleVO
+ * @description: 角色视图
+ * @date 2026年03月22日
+ * @version: 1.0
  */
 @Data
 public class RoleVO {
 
     /**
-     * 角色ID
+     * 角色 ID
      */
     @JsonSerialize(using = ToStringSerializer.class)
     private Long id;
@@ -38,7 +38,7 @@ public class RoleVO {
     private String description;
 
     /**
-     * 状态（0：禁用，1：启用）
+     * 状态（1：启用 0：禁用）
      */
     private Integer status;
 

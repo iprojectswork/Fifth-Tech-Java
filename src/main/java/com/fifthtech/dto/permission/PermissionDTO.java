@@ -3,18 +3,17 @@ package com.fifthtech.dto.permission;
 import lombok.Data;
 
 /**
- * PermissionDTO
- *
  * @author RH
- * @description 权限数据传输对象
- * @date 2026-03-22
- * @version 1.0
+ * @ClassName PermissionDTO
+ * @description: 权限数据传输对象
+ * @date 2026年03月22日
+ * @version: 1.0
  */
 @Data
 public class PermissionDTO {
 
     /**
-     * 权限ID
+     * 主键（edit 时必填）
      */
     private Long id;
 
@@ -29,32 +28,32 @@ public class PermissionDTO {
     private String permissionCode;
 
     /**
-     * 权限类型（1：菜单，2：按钮）
+     * 权限类型（1：菜单 2：按钮）
      */
     private Integer permissionType;
 
     /**
-     * 父级ID
+     * 父权限 ID
      */
     private Long parentId;
 
     /**
-     * 路由路径（菜单类型）
+     * 路由路径
      */
     private String path;
 
     /**
-     * 组件路径（菜单类型）
+     * 组件路径
      */
     private String component;
 
     /**
-     * 图标（菜单类型）
+     * 图标
      */
     private String icon;
 
     /**
-     * 状态（0：禁用，1：启用）
+     * 状态（1：启用 0：禁用）
      */
     private Integer status;
 

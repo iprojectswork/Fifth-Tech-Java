@@ -1,4 +1,4 @@
--- C4 存量迁移：sys_role.org_id + 索引 + 演示种子
+-- 存量迁移：sys_role.org_id + 索引 + 演示种子
 -- 前置：org.sql（至少有 HQ id=1）
 -- PostgreSQL，可重复执行
 

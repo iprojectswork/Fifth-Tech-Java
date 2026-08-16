@@ -7,23 +7,33 @@ import lombok.Data;
 import java.io.Serializable;
 
 /**
- * UserRoleSummaryVO
- *
- * <p>用户视图内嵌的角色摘要（{@code id / roleCode / roleName}）。</p>
- *
  * @author RH
- * @description 用户角色摘要
- * @date 2026-08-09
+ * @ClassName UserRoleSummaryVO
+ * @description: 用户角色摘要
+ * @date 2026年08月09日
+ * @version: 1.0
  */
 @Data
 public class UserRoleSummaryVO implements Serializable {
 
+    /**
+     * 序列化版本号
+     */
     private static final long serialVersionUID = 1L;
 
+    /**
+     * 角色 ID
+     */
     @JsonSerialize(using = ToStringSerializer.class)
     private Long id;
 
+    /**
+     * 角色编码
+     */
     private String roleCode;
 
+    /**
+     * 角色名称
+     */
     private String roleName;
 }

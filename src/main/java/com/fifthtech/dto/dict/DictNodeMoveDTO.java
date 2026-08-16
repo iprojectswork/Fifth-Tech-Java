@@ -6,18 +6,18 @@ import lombok.Data;
 import java.io.Serializable;
 
 /**
- * DictNodeMoveDTO
- *
- * <p>数据字典节点 move（改挂父节点）入参。服务端权威校验：
- * 源存在且未删、源无未删子、目标存在或为 0、非自己、新父下 code 不冲突、深度 ≤ 16。</p>
- *
  * @author RH
- * @description 数据字典节点 move 入参
- * @date 2026-08-02
+ * @ClassName DictNodeMoveDTO
+ * @description: 数据字典节点 move 入参
+ * @date 2026年08月02日
+ * @version: 1.0
  */
 @Data
 public class DictNodeMoveDTO implements Serializable {
 
+    /**
+     * 序列化版本号
+     */
     private static final long serialVersionUID = 1L;
 
     /**

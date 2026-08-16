@@ -10,17 +10,19 @@ import lombok.Data;
 import java.time.LocalDateTime;
 
 /**
- * User
- *
  * @author RH
- * @description 用户实体类
- * @date 2026-01-25
- * @version 1.0
+ * @ClassName User
+ * @description: 用户实体
+ * @date 2026年01月25日
+ * @version: 1.0
  */
 @Data
 @TableName("sys_user")
 public class User {
 
+    /**
+     * 主键
+     */
     @TableId(type = IdType.ASSIGN_ID)
     @TableField("id")
     private Long id;
@@ -74,7 +76,7 @@ public class User {
     private LocalDateTime updateTime;
 
     /**
-     * 是否删除 0：否 1：是
+     * 是否删除（0：否 1：是）
      */
     @TableLogic
     @TableField("deleted")

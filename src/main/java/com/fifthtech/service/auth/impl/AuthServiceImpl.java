@@ -16,6 +16,13 @@ import org.springframework.stereotype.Service;
 import java.util.Collections;
 import java.util.List;
 
+/**
+ * @author RH
+ * @ClassName AuthServiceImpl
+ * @description: 认证服务实现
+ * @date 2026年08月16日
+ * @version: 1.0
+ */
 @Service
 public class AuthServiceImpl implements AuthService {
 

@@ -26,19 +26,11 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.List;
 
 /**
- * UserController
- *
- * <p>用户 API。
- * <ul>
- *   <li>{@code POST /user} / {@code PUT /user}：可选 {@code roleIds[]}；不写组织成员。</li>
- *   <li>{@code GET /user/list}：可选 {@code orgId} 精确过滤该组织成员。</li>
- *   <li>{@code GET /user/{id}}：详情含 {@code orgs[]}（只读）/ {@code roles[]}。</li>
- * </ul>
- * </p>
- *
  * @author RH
- * @description 用户控制器
- * @date 2026-01-25
+ * @ClassName UserController
+ * @description: 用户控制器
+ * @date 2026年01月25日
+ * @version: 1.0
  */
 @RestController
 @RequestMapping("/user")
@@ -47,6 +39,13 @@ public class UserController {
     @Autowired
     private UserService userService;
 
+    /**
+    * @description: 新增用户
+    * @author: RH
+    * @date: 2026/8/16 13:21
+    * @param: [dto]
+    * @return: {@link Result}<{@link UserVO}>
+    **/
     @PostMapping
     public Result<UserVO> insert(@RequestBody UserDTO dto) {
         if (dto == null) {
@@ -61,6 +60,13 @@ public class UserController {
         }
     }
 
+    /**
+    * @description: 根据id删除用户
+    * @author: RH
+    * @date: 2026/8/16 13:21
+    * @param: [id]
+    * @return: {@link Result}<{@link Void}>
+    **/
     @DeleteMapping("/{id}")
     public Result<Void> delete(@PathVariable Long id) {
         if (id == null) {
@@ -73,6 +79,13 @@ public class UserController {
         return Result.error("删除失败，用户不存在");
     }
 
+    /**
+    * @description: 根据id修改用户
+    * @author: RH
+    * @date: 2026/8/16 13:21
+    * @param: [dto]
+    * @return: {@link Result}<{@link UserVO}>
+    **/
     @PutMapping
     public Result<UserVO> edit(@RequestBody UserDTO dto) {
         if (dto == null || dto.getId() == null) {
@@ -87,6 +100,13 @@ public class UserController {
         }
     }
 
+    /**
+    * @description: 根据id批量修改用户状态
+    * @author: RH
+    * @date: 2026/8/16 13:21
+    * @param: [ids, status]
+    * @return: {@link Result}<{@link Void}>
+    **/
     @PutMapping("/status")
     public Result<Void> updateStatus(@RequestBody List<Long> ids, @RequestParam Integer status) {
         boolean success = userService.updateStatus(ids, status);
@@ -96,6 +116,13 @@ public class UserController {
         return Result.error("状态更新失败");
     }
 
+    /**
+    * @description: 根据id查询用户
+    * @author: RH
+    * @date: 2026/8/16 13:21
+    * @param: [id]
+    * @return: {@link Result}<{@link UserVO}>
+    **/
     @GetMapping("/{id}")
     public Result<UserVO> selectById(@PathVariable Long id) {
         if (id == null) {
@@ -108,6 +135,13 @@ public class UserController {
         return Result.error("用户不存在！");
     }
 
+    /**
+    * @description: 根据用户id查询角色
+    * @author: RH
+    * @date: 2026/8/16 13:21
+    * @param: [id, query]
+    * @return: {@link Result}<{@link Page}<{@link RoleVO}>>
+    **/
     @GetMapping("/{id}/roles")
     public Result<Page<RoleVO>> listRoles(@PathVariable Long id, UserQueryDTO query) {
         if (userService.selectById(id) == null) {
@@ -123,6 +157,13 @@ public class UserController {
         return Result.success("查询成功", voPage);
     }
 
+    /**
+    * @description: 根据用户id查询权限
+    * @author: RH
+    * @date: 2026/8/16 13:21
+    * @param: [id, query]
+    * @return: {@link Result}<{@link Page}<{@link PermissionVO}>>
+    **/
     @GetMapping("/{id}/permissions")
     public Result<Page<PermissionVO>> listPermissions(@PathVariable Long id, UserQueryDTO query) {
         if (userService.selectById(id) == null) {
@@ -139,8 +180,12 @@ public class UserController {
     }
 
     /**
-     * 分页查询。可选 {@code orgId} 精确过滤该组织成员。
-     */
+    * @description: 分页查询用户列表
+    * @author: RH
+    * @date: 2026/8/16 13:21
+    * @param: [query]
+    * @return: {@link Result}<{@link Page}<{@link UserVO}>>
+    **/
     @GetMapping("/list")
     public Result<Page<UserVO>> list(UserQueryDTO query) {
         Page<User> entityPage = userService.list(query);
@@ -154,9 +199,12 @@ public class UserController {
     }
 
     /**
-     * 列表视图：基本字段 + orgNames 摘要（每行一次 infoWithMemberships 汇总；
-     * 一期不做 N+1 优化；分页 ≤ 20 性能可接受）。
-     */
+    * @description: 转换用户列表视图
+    * @author: RH
+    * @date: 2026/8/16 13:21
+    * @param: [user]
+    * @return: {@link UserVO}
+    **/
     private UserVO toListVO(User user) {
         return userService.infoWithMemberships(user.getId());
     }

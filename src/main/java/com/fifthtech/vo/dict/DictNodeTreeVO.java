@@ -7,19 +7,19 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * DictNodeTreeVO
- *
- * <p>数据字典树节点视图：在 {@link DictNodeVO} 基础上追加 {@code children}。
- * 叶子 {@code children=[]} 且 {@code hasChildren=false}。</p>
- *
  * @author RH
- * @description 数据字典树节点视图
- * @date 2026-08-02
+ * @ClassName DictNodeTreeVO
+ * @description: 数据字典树节点视图
+ * @date 2026年08月02日
+ * @version: 1.0
  */
 @Data
 @EqualsAndHashCode(callSuper = true)
 public class DictNodeTreeVO extends DictNodeVO {
 
+    /**
+     * 序列化版本号
+     */
     private static final long serialVersionUID = 1L;
 
     /**

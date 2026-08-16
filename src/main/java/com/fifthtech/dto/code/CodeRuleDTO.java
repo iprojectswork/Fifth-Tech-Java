@@ -7,19 +7,18 @@ import java.io.Serializable;
 import java.util.List;
 
 /**
- * CodeRuleDTO
- *
- * <p>编码规则入参：{@code segments} 为有序片段数组（FIXED / DATE / SEQUENCE），与
- * {@code CodeRuleServiceImpl} 的校验逻辑一一对应。
- * id 以字符串收发，避免浏览器 JSON 雪花精度丢失。</p>
- *
  * @author RH
- * @description 编码规则数据传输对象
- * @date 2026-08-02
+ * @ClassName CodeRuleDTO
+ * @description: 编码规则数据传输对象
+ * @date 2026年08月02日
+ * @version: 1.0
  */
 @Data
 public class CodeRuleDTO implements Serializable {
 
+    /**
+     * 序列化版本号
+     */
     private static final long serialVersionUID = 1L;
 
     /**
@@ -39,17 +38,17 @@ public class CodeRuleDTO implements Serializable {
     private String ruleName;
 
     /**
-     * 有序片段数组（至少 1 个；必须含恰好 1 个 SEQUENCE、至多 1 个 DATE）
+     * 有序片段数组
      */
     private List<CodeSegmentDTO> segments;
 
     /**
-     * 预支号段大小（1~5000；为空时取 code.generate.default-pool-batch-size）
+     * 预支号段大小（1~5000）
      */
     private Integer batchSize;
 
     /**
-     * 状态（1 启用 / 0 禁用；默认 1）
+     * 状态（1：启用 0：禁用）
      */
     private Integer status;
 

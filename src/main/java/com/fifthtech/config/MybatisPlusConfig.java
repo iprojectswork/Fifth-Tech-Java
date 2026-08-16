@@ -7,14 +7,22 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 /**
- * MyBatis-Plus 插件配置
- *
- * @description 注册分页插件，使 Page#getTotal 返回真实总条数（否则 total 恒为 0）
- * @date 2026-08-02
+ * @author RH
+ * @ClassName MybatisPlusConfig
+ * @description: MyBatis-Plus配置
+ * @date 2026年08月02日
+ * @version: 1.0
  */
 @Configuration
 public class MybatisPlusConfig {
 
+    /**
+    * @description: 注册分页插件（PostgreSQL 方言），开启溢出回到首页，保证 Page#getTotal 返回真实总条数
+    * @author: RH
+    * @date: 2026/8/16 13:21
+    * @param: []
+    * @return: {@link MybatisPlusInterceptor}
+    **/
     @Bean
     public MybatisPlusInterceptor mybatisPlusInterceptor() {
         MybatisPlusInterceptor interceptor = new MybatisPlusInterceptor();

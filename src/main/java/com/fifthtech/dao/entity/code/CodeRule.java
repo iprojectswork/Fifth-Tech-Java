@@ -11,53 +11,49 @@ import lombok.Data;
 import java.time.LocalDateTime;
 
 /**
- * CodeRule
- *
- * <p>业务编码规则定义：有序片段（FIXED / DATE / SEQUENCE）以 JSONB 存储在
- * {@code segments_json}。运行期由 {@code CodeGenerateService} 按规则取号。</p>
- *
  * @author RH
- * @description 编码规则实体
- * @date 2026-08-02
+ * @ClassName CodeRule
+ * @description: 编码规则实体
+ * @date 2026年08月02日
+ * @version: 1.0
  */
 @Data
 @TableName(value = "sys_code_rule", autoResultMap = true)
 public class CodeRule {
 
     /**
-     * 主键（雪花 ID）
+     * 主键
      */
     @TableId(type = IdType.ASSIGN_ID)
     @TableField("id")
     private Long id;
 
     /**
-     * 规则编码（全局唯一；调用方入参）
+     * 规则编码（全局唯一）
      */
     @TableField("rule_code")
     private String ruleCode;
 
     /**
-     * 规则名称（展示用）
+     * 规则名称
      */
     @TableField("rule_name")
     private String ruleName;
 
     /**
-     * 有序片段数组的 JSON 字符串；与 PG JSONB 列双向转换（MyBatis 写入时通过 SQL cast 落地）。
-     * 形态如 {@code [{"type":"FIXED","value":"B"},{"type":"DATE","pattern":"yyyyMMdd"},{"type":"SEQUENCE","length":3,"start":1,"step":1}]}。
+     * 有序片段数组的 JSON 字符串
      */
     @TableField(value = "segments_json", typeHandler = JsonbStringTypeHandler.class)
     private String segmentsJson;
 
     /**
-     * 每次预支号段大小，默认 100，范围 1~5000
+     * 预支号段大小（默认 100）
      */
     @TableField("batch_size")
     private Integer batchSize;
 
     /**
-     * 状态（1 启用 / 0 禁用）
+     * 状态（1：启用 0：禁用）
      */
     @TableField("status")
     private Integer status;
@@ -105,7 +101,7 @@ public class CodeRule {
     private LocalDateTime updateTime;
 
     /**
-     * 逻辑删除（0 未删 / 1 已删）
+     * 是否删除（0：否 1：是）
      */
     @TableLogic
     @TableField("deleted")

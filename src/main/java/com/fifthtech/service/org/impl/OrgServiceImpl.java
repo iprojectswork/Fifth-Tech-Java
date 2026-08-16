@@ -40,36 +40,28 @@ import java.util.Set;
 import java.util.regex.Pattern;
 
 /**
- * OrgServiceImpl
- *
- * <p>规则（C4 §3 / §4 / §5 / §7.3）摘要：
- * <ul>
- *   <li>D4/D5：同父未删 org_code 唯一（DB 部分唯一索引兜底）；code 禁含 /，trim 后非空，
- *   长度 1~64，建议 {@code [A-Za-z0-9_\-\.]+}。</li>
- *   <li>D6：path 不落库，运行时按链拼接；getParent 步数超过 {@link #BizConstants.MAX_TREE_DEPTH} 视为坏数据。</li>
- *   <li>D7：列表/树子节点顺序 {@code sort ASC, org_code ASC, id ASC}。</li>
- *   <li>D8：业务读 options 仅返回 status=1。</li>
-     *   <li>D9/D14/D17：删除要求无未删子/成员；move 允许整树，目标必须存在或为 0、
-     *   id != targetParentId、目标不在源子树内（防环）。</li>
- *   <li>D15：组织 move 是整树 move；下属组织的 org_id 也不变（parent_id 自关联）。</li>
- *   <li>D18：最大深度 16（根下第一层 depth=1）。</li>
-     *   <li>D14：删除组织若有子/成员 → 拒绝。</li>
- * </ul>
- * </p>
- *
  * @author RH
- * @description 组织服务实现
- * @date 2026-08-09
+ * @ClassName OrgServiceImpl
+ * @description: 组织服务实现
+ * @date 2026年08月09日
+ * @version: 1.0
  */
 @Service
 public class OrgServiceImpl extends ServiceImpl<OrgMapper, Org> implements OrgService {
 
-    /** 沿 parent 链多走几步，用于识别坏链 */
+    /**
+     * 沿 parent 链多走几步，用于识别坏链
+     */
     private static final int TREE_WALK_SLACK = 4;
 
-    /** org_code 字符合法集（C4 D5：禁 /；trim 后非空；长度 1~64） */
+    /**
+     * org_code 字符合法集（禁 /；trim 后非空；长度 1~64）
+     */
     private static final Pattern CODE_PATTERN = Pattern.compile("^[A-Za-z0-9_\\-\\.]+$");
 
+    /**
+     * 组织类型字典路径
+     */
     private static final String ORG_TYPE_PATH = "org/type";
 
     @Resource
@@ -89,10 +81,6 @@ public class OrgServiceImpl extends ServiceImpl<OrgMapper, Org> implements OrgSe
 
     @Resource
     private DictNodeService dictNodeService;
-
-    // ---------------------------------------------------------------------
-    // listChildren / list
-    // ---------------------------------------------------------------------
 
     @Override
     public List<OrgVO> listChildren(OrgQueryDTO query) {
@@ -131,10 +119,6 @@ public class OrgServiceImpl extends ServiceImpl<OrgMapper, Org> implements OrgSe
         return vos;
     }
 
-    // ---------------------------------------------------------------------
-    // tree
-    // ---------------------------------------------------------------------
-
     @Override
     public List<OrgTreeVO> tree() {
         List<Org> all = orgMapper.selectActiveList();
@@ -172,10 +156,6 @@ public class OrgServiceImpl extends ServiceImpl<OrgMapper, Org> implements OrgSe
         return vo;
     }
 
-    // ---------------------------------------------------------------------
-    // info
-    // ---------------------------------------------------------------------
-
     @Override
     public OrgVO info(Long id) {
         if (id == null) {
@@ -200,10 +180,6 @@ public class OrgServiceImpl extends ServiceImpl<OrgMapper, Org> implements OrgSe
         vo.setHasChildren(hasKids.contains(id));
         return vo;
     }
-
-    // ---------------------------------------------------------------------
-    // insert
-    // ---------------------------------------------------------------------
 
     @Override
     @Transactional(rollbackFor = Exception.class)
@@ -257,10 +233,6 @@ public class OrgServiceImpl extends ServiceImpl<OrgMapper, Org> implements OrgSe
         return info(entity.getId());
     }
 
-    // ---------------------------------------------------------------------
-    // edit
-    // ---------------------------------------------------------------------
-
     @Override
     @Transactional(rollbackFor = Exception.class)
     public OrgVO edit(OrgDTO dto) {
@@ -308,10 +280,6 @@ public class OrgServiceImpl extends ServiceImpl<OrgMapper, Org> implements OrgSe
         updateById(existing);
         return info(existing.getId());
     }
-
-    // ---------------------------------------------------------------------
-    // move
-    // ---------------------------------------------------------------------
 
     @Override
     @Transactional(rollbackFor = Exception.class)
@@ -368,10 +336,6 @@ public class OrgServiceImpl extends ServiceImpl<OrgMapper, Org> implements OrgSe
         updateById(upd);
     }
 
-    /**
-     * 防环判定：{@code candidate} 是否在 {@code ancestorId} 的子树内（不含 ancestorId 本身）。
-     * 走 parent 链遇成环或超过 {@link #BizConstants.MAX_TREE_DEPTH} 一律视为 false（保守放行后由后续唯一性约束兜底）。
-     */
     private boolean isDescendant(Long candidate, Long ancestorId) {
         if (candidate == null || ancestorId == null) {
             return false;
@@ -397,10 +361,6 @@ public class OrgServiceImpl extends ServiceImpl<OrgMapper, Org> implements OrgSe
         }
         return false;
     }
-
-    // ---------------------------------------------------------------------
-    // delete
-    // ---------------------------------------------------------------------
 
     @Override
     @Transactional(rollbackFor = Exception.class)
@@ -431,10 +391,6 @@ public class OrgServiceImpl extends ServiceImpl<OrgMapper, Org> implements OrgSe
         // 触发 @TableLogic → UPDATE ... SET deleted = 1 WHERE id = ? AND deleted = 0
         orgMapper.deleteById(id);
     }
-
-    // ---------------------------------------------------------------------
-    // options
-    // ---------------------------------------------------------------------
 
     @Override
     public List<OrgVO> options() {
@@ -470,10 +426,6 @@ public class OrgServiceImpl extends ServiceImpl<OrgMapper, Org> implements OrgSe
         // 这里仅返回扁平 + path，前端自己组装树；选择器类型按需
         return vo;
     }
-
-    // ---------------------------------------------------------------------
-    // usersByRole
-    // ---------------------------------------------------------------------
 
     @Override
     public List<User> usersByRole(OrgQueryDTO query) {
@@ -666,13 +618,6 @@ public class OrgServiceImpl extends ServiceImpl<OrgMapper, Org> implements OrgSe
         return userIds == null ? new ArrayList<>() : userIds;
     }
 
-    // ---------------------------------------------------------------------
-    // helpers
-    // ---------------------------------------------------------------------
-
-    /**
-     * 走 parent 链拼 pathCode / pathName（不超过 BizConstants.MAX_TREE_DEPTH 步数；步数超限或成环返回 null）。
-     */
     private String[] computePathById(Long id) {
         if (id == null) {
             return null;
@@ -711,9 +656,6 @@ public class OrgServiceImpl extends ServiceImpl<OrgMapper, Org> implements OrgSe
         return new String[]{pathCode.toString(), pathName.toString()};
     }
 
-    /**
-     * 计算节点深度（根下第一层 = 1；根 = 0）。走 parent 链遇 NULL / 成环 / 超 BizConstants.MAX_TREE_DEPTH 返回 -1。
-     */
     private int computeDepth(Long id) {
         if (id == null || id == BizConstants.ROOT_PARENT_ID) {
             return 0;
@@ -766,9 +708,6 @@ public class OrgServiceImpl extends ServiceImpl<OrgMapper, Org> implements OrgSe
         return orgMapper.selectCount(wrapper) > 0;
     }
 
-    /**
-     * 校验并返回 trim 后的 orgCode（C4 D5）；调用方必须用返回值落库。
-     */
     private String normalizeCode(String raw) {
         if (raw == null) {
             throw new IllegalArgumentException("orgCode 不能为空");
@@ -789,9 +728,6 @@ public class OrgServiceImpl extends ServiceImpl<OrgMapper, Org> implements OrgSe
         return code;
     }
 
-    /**
-     * 校验并返回 trim 后的 orgName；禁止空名（DB NOT NULL）。
-     */
     private String normalizeName(String raw) {
         if (raw == null) {
             throw new IllegalArgumentException("orgName 不能为空");

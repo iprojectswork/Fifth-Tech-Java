@@ -24,10 +24,11 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * CacheController
- *
- * @description Redis String 键管理接口（列表 / 详情 / 写入 / TTL / 删除）
- * @date 2026-08-01
+ * @author RH
+ * @ClassName CacheController
+ * @description: 缓存控制器
+ * @date 2026年08月01日
+ * @version: 1.0
  */
 @RestController
 @RequestMapping("/cache")
@@ -40,8 +41,12 @@ public class CacheController {
     private CacheService cacheService;
 
     /**
-     * 分页列表（SCAN + 内存分页）
-     */
+    * @description: 查询缓存键列表
+    * @author: RH
+    * @date: 2026/8/16 13:21
+    * @param: [pattern, current, size]
+    * @return: {@link Result}<{@link CachePageVO}>
+    **/
     @GetMapping("/keys")
     public Result<CachePageVO> keys(
             @RequestParam(required = false, defaultValue = "*") String pattern,
@@ -52,8 +57,12 @@ public class CacheController {
     }
 
     /**
-     * 详情；区分 键不存在 / 仅支持 String 类型 / value 超过大小上限
-     */
+    * @description: 根据key查询缓存详情
+    * @author: RH
+    * @date: 2026/8/16 13:21
+    * @param: [key]
+    * @return: {@link Result}<{@link CacheDetailVO}>
+    **/
     @GetMapping("/detail")
     public Result<CacheDetailVO> detail(@RequestParam String key) {
         if (!isValidKey(key)) {
@@ -74,8 +83,12 @@ public class CacheController {
     }
 
     /**
-     * 写入 / 覆盖 String；null ttl = 不设置过期；&gt;0 = setEx 秒数
-     */
+    * @description: 保存缓存
+    * @author: RH
+    * @date: 2026/8/16 13:21
+    * @param: [dto]
+    * @return: {@link Result}<{@link Void}>
+    **/
     @PostMapping
     public Result<Void> set(@RequestBody CacheSetDTO dto) {
         if (dto == null) {
@@ -104,8 +117,12 @@ public class CacheController {
     }
 
     /**
-     * 仅改 TTL；-1 = PERSIST；非 String 拒绝
-     */
+    * @description: 修改缓存过期时间
+    * @author: RH
+    * @date: 2026/8/16 13:21
+    * @param: [dto]
+    * @return: {@link Result}<{@link Void}>
+    **/
     @PutMapping("/expire")
     public Result<Void> expire(@RequestBody CacheExpireDTO dto) {
         if (dto == null) {
@@ -134,8 +151,12 @@ public class CacheController {
     }
 
     /**
-     * 批量删除；空列表拒绝；auth:* 对称清理；blank/whitespace key 直接跳过
-     */
+    * @description: 根据key批量删除缓存
+    * @author: RH
+    * @date: 2026/8/16 13:21
+    * @param: [dto]
+    * @return: {@link Result}<{@link Map}<{@link String}, {@link Object}>>
+    **/
     @DeleteMapping
     public Result<Map<String, Object>> delete(@RequestBody CacheDeleteDTO dto) {
         if (dto == null) {

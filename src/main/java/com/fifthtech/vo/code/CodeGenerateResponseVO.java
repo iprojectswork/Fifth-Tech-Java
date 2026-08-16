@@ -6,17 +6,18 @@ import java.io.Serializable;
 import java.util.List;
 
 /**
- * CodeGenerateResponseVO
- *
- * <p>取号响应：{@code codes} 为本次生成的编号数组（升序）。</p>
- *
  * @author RH
- * @description 取号响应
- * @date 2026-08-02
+ * @ClassName CodeGenerateResponseVO
+ * @description: 取号响应
+ * @date 2026年08月02日
+ * @version: 1.0
  */
 @Data
 public class CodeGenerateResponseVO implements Serializable {
 
+    /**
+     * 序列化版本号
+     */
     private static final long serialVersionUID = 1L;
 
     /**

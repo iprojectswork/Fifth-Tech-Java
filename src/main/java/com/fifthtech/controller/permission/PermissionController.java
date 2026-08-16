@@ -15,12 +15,11 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 /**
- * PermissionController
- *
  * @author RH
- * @description 权限控制器
- * @date 2026-03-22
- * @version 1.0
+ * @ClassName PermissionController
+ * @description: 权限控制器
+ * @date 2026年03月22日
+ * @version: 1.0
  */
 @RestController
 @RequestMapping("/permission")
@@ -30,8 +29,12 @@ public class PermissionController {
     private PermissionService permissionService;
 
     /**
-     * 权限分页列表
-     */
+    * @description: 分页查询权限列表
+    * @author: RH
+    * @date: 2026/8/16 13:21
+    * @param: [query]
+    * @return: {@link Result}<{@link Page}<{@link PermissionVO}>>
+    **/
     @GetMapping("/list")
     public Result<Page<PermissionVO>> list(PermissionQueryDTO query) {
         Page<Permission> entityPage = permissionService.selectPage(query);
@@ -41,14 +44,25 @@ public class PermissionController {
     }
 
     /**
-     * 权限树结构（用于分配权限）
-     */
+    * @description: 查询权限树
+    * @author: RH
+    * @date: 2026/8/16 13:21
+    * @param: []
+    * @return: {@link Result}<{@link List}<{@link PermissionTreeVO}>>
+    **/
     @GetMapping("/tree")
     public Result<List<PermissionTreeVO>> tree() {
         List<PermissionTreeVO> tree = permissionService.selectTree();
         return Result.success("查询成功", tree);
     }
 
+    /**
+    * @description: 根据父id查询子权限
+    * @author: RH
+    * @date: 2026/8/16 13:21
+    * @param: [query]
+    * @return: {@link Result}<{@link List}<{@link PermissionVO}>>
+    **/
     @GetMapping("/children")
     public Result<List<PermissionVO>> children(PermissionQueryDTO query) {
         if (query == null) {
@@ -61,8 +75,12 @@ public class PermissionController {
     }
 
     /**
-     * 获取权限详情
-     */
+    * @description: 根据id查询权限
+    * @author: RH
+    * @date: 2026/8/16 13:21
+    * @param: [id]
+    * @return: {@link Result}<{@link PermissionVO}>
+    **/
     @GetMapping("/{id}")
     public Result<PermissionVO> getById(@PathVariable Long id) {
         Permission entity = permissionService.selectById(id);
@@ -75,8 +93,12 @@ public class PermissionController {
     }
 
     /**
-     * 创建权限
-     */
+    * @description: 新增权限
+    * @author: RH
+    * @date: 2026/8/16 13:21
+    * @param: [dto]
+    * @return: {@link Result}<{@link PermissionVO}>
+    **/
     @PostMapping
     public Result<PermissionVO> insert(@RequestBody PermissionDTO dto) {
         // 检查权限编码是否已存在
@@ -92,8 +114,12 @@ public class PermissionController {
     }
 
     /**
-     * 更新权限
-     */
+    * @description: 根据id修改权限
+    * @author: RH
+    * @date: 2026/8/16 13:21
+    * @param: [dto]
+    * @return: {@link Result}<{@link PermissionVO}>
+    **/
     @PutMapping
     public Result<PermissionVO> update(@RequestBody PermissionDTO dto) {
         if (dto.getId() == null) {
@@ -117,8 +143,12 @@ public class PermissionController {
     }
 
     /**
-     * 删除权限
-     */
+    * @description: 根据id删除权限
+    * @author: RH
+    * @date: 2026/8/16 13:21
+    * @param: [id]
+    * @return: {@link Result}<{@link Void}>
+    **/
     @DeleteMapping("/{id}")
     public Result<Void> delete(@PathVariable Long id) {
         Permission existPermission = permissionService.selectById(id);

@@ -4,46 +4,65 @@ import java.time.Instant;
 import java.util.List;
 
 /**
- * CodeGenerateService
- *
- * <p>号段池取号 + 试拼（不占号）。与规则 CRUD 解耦；管理端通过
- * {@code CodeRuleService} 维护规则，运行期通过 {@code CodeGenerateService} 取号。</p>
- *
  * @author RH
- * @description 编码取号服务接口
- * @date 2026-08-02
+ * @ClassName CodeGenerateService
+ * @description: 编码取号服务接口
+ * @date 2026年08月02日
+ * @version: 1.0
  */
 public interface CodeGenerateService {
 
     /**
-     * 取一个号（业务时间 = 默认时区 Asia/Shanghai + 系统当前时间）。
-     */
+    * @description: 取一个号，业务时间取系统当前时间（默认时区 Asia/Shanghai）
+    * @author: RH
+    * @date: 2026/8/16 13:21
+    * @param: [ruleCode]
+    * @return: {@link String}
+    **/
     String next(String ruleCode);
 
     /**
-     * 取一个号，指定业务时间（{@code bizTime} ISO-8601）。
-     */
+    * @description: 取一个号，业务时间由调用方指定（ISO-8601 Instant）
+    * @author: RH
+    * @date: 2026/8/16 13:21
+    * @param: [ruleCode, bizTime]
+    * @return: {@link String}
+    **/
     String next(String ruleCode, Instant bizTime);
 
     /**
-     * 批量取号（同一 periodKey 内、按顺序升序）。
-     *
-     * @param count 已由 Controller 限幅到 [1, code.generate.max-batch-count]
-     */
+    * @description: 批量取号，同一 periodKey 内按顺序升序；count 由 Controller 限幅
+    * @author: RH
+    * @date: 2026/8/16 13:21
+    * @param: [ruleCode, count]
+    * @return: {@link List}<{@link String}>
+    **/
     List<String> nextBatch(String ruleCode, int count);
 
     /**
-     * 取号 + 业务时间（批量）。
-     */
+    * @description: 批量取号，业务时间由调用方指定
+    * @author: RH
+    * @date: 2026/8/16 13:21
+    * @param: [ruleCode, count, bizTime]
+    * @return: {@link List}<{@link String}>
+    **/
     List<String> nextBatch(String ruleCode, int count, Instant bizTime);
 
     /**
-     * 试拼：基于当前 DB 水位 +1 渲染一段样例，<strong>不</strong>消费号。
-     */
+    * @description: 试拼样例，基于当前 DB 水位 +1 渲染一段示例，不消费号
+    * @author: RH
+    * @date: 2026/8/16 13:21
+    * @param: [ruleCode]
+    * @return: {@link String}
+    **/
     String preview(String ruleCode);
 
     /**
-     * 试拼：指定业务时间。
-     */
+    * @description: 试拼样例，业务时间由调用方指定
+    * @author: RH
+    * @date: 2026/8/16 13:21
+    * @param: [ruleCode, bizTime]
+    * @return: {@link String}
+    **/
     String preview(String ruleCode, Instant bizTime);
 }

@@ -3,18 +3,17 @@ package com.fifthtech.dto.role;
 import lombok.Data;
 
 /**
- * RoleDTO
- *
  * @author RH
- * @description 角色数据传输对象
- * @date 2026-03-22
- * @version 1.0
+ * @ClassName RoleDTO
+ * @description: 角色数据传输对象
+ * @date 2026年03月22日
+ * @version: 1.0
  */
 @Data
 public class RoleDTO {
 
     /**
-     * 角色ID
+     * 主键（edit 时必填）
      */
     private Long id;
 
@@ -34,7 +33,7 @@ public class RoleDTO {
     private String description;
 
     /**
-     * 状态（0：禁用，1：启用）
+     * 状态（1：启用 0：禁用）
      */
     private Integer status;
 

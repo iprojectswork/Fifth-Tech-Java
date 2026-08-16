@@ -1,4 +1,4 @@
--- C4 DDL: 组织单元 sys_org + 用户挂靠 sys_user_org (PostgreSQL)
+-- 组织单元 sys_org + 用户挂靠 sys_user_org (PostgreSQL)
 -- 可重复执行（IF NOT EXISTS）。
 -- 设计：单表树 parent_id=0 为根下第一层；path 不落库；org_type 存字典 org/type 的 code。
 

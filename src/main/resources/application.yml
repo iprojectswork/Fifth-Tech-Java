@@ -45,7 +45,7 @@ cache:
     max-scan-keys: 5000
     max-value-bytes: 262144
 
-# C2 业务编码 / 号段池
+# 业务编码 / 号段池
 code:
   generate:
     # 单次 generate API 最多取多少个号（含 count 字段上限）

@@ -8,55 +8,84 @@ import org.apache.ibatis.annotations.Param;
 import java.util.List;
 
 /**
- * UserOrgMapper
- *
- * <p>用户 ↔ 组织 成员关系 Mapper（C4 §4.2 / §4.8）。
- * 写操作均走 XML（{@code INSERT} / {@code DELETE} 带集合参数）。</p>
- *
  * @author RH
- * @description 用户组织挂靠 Mapper
- * @date 2026-08-09
+ * @ClassName UserOrgMapper
+ * @description: 用户组织挂靠Mapper接口
+ * @date 2026年08月09日
+ * @version: 1.0
  */
 @Mapper
 public interface UserOrgMapper extends BaseMapper<UserOrg> {
 
     /**
-     * 根据用户 ID 删除其全部成员关系（用户删除场景）
-     */
+    * @description: 根据用户id删除全部组织挂靠
+    * @author: RH
+    * @date: 2026/8/16 13:21
+    * @param: [userId]
+    * @return: void
+    **/
     void deleteByUserId(@Param("userId") Long userId);
 
     /**
-     * 删除用户对某组织的成员关系
-     */
+    * @description: 根据用户id和组织id删除挂靠
+    * @author: RH
+    * @date: 2026/8/16 13:21
+    * @param: [userId, orgId]
+    * @return: void
+    **/
     void deleteByUserIdAndOrgId(@Param("userId") Long userId, @Param("orgId") Long orgId);
 
     /**
-     * 批量插入成员关系（仅插入未存在的，避免唯一约束冲突）
-     */
+    * @description: 批量插入成员关系，唯一键冲突忽略（PG ON CONFLICT DO NOTHING）
+    * @author: RH
+    * @date: 2026/8/16 13:21
+    * @param: [userId, orgIds]
+    * @return: void
+    **/
     void batchInsertIgnore(@Param("userId") Long userId, @Param("orgIds") List<Long> orgIds);
 
     /**
-     * 查询用户当前全部成员组织 ID（用于收敛对比）
-     */
+    * @description: 根据用户id查询挂靠组织id
+    * @author: RH
+    * @date: 2026/8/16 13:21
+    * @param: [userId]
+    * @return: {@link List}<{@link Long}>
+    **/
     List<Long> selectOrgIdsByUserId(@Param("userId") Long userId);
 
     /**
-     * 查询某组织下的成员用户 ID 列表（用于「users-by-role」等关联查询的前置或辅助场景）
-     */
+    * @description: 根据组织id查询成员用户id
+    * @author: RH
+    * @date: 2026/8/16 13:21
+    * @param: [orgId]
+    * @return: {@link List}<{@link Long}>
+    **/
     List<Long> selectUserIdsByOrgId(@Param("orgId") Long orgId);
 
     /**
-     * 查询若干组织下的成员用户 ID（去重）
-     */
+    * @description: 根据组织id集合查询成员用户id
+    * @author: RH
+    * @date: 2026/8/16 13:21
+    * @param: [orgIds]
+    * @return: {@link List}<{@link Long}>
+    **/
     List<Long> selectUserIdsByOrgIds(@Param("orgIds") List<Long> orgIds);
 
     /**
-     * 删除用户在指定组织集合上的挂靠
-     */
+    * @description: 根据用户id和组织id集合删除挂靠
+    * @author: RH
+    * @date: 2026/8/16 13:21
+    * @param: [userId, orgIds]
+    * @return: void
+    **/
     void deleteByUserIdAndOrgIds(@Param("userId") Long userId, @Param("orgIds") List<Long> orgIds);
 
     /**
-     * 查询某用户的成员组织 ID 是否包含 orgId（{@code exists} 判定走 {@code EXISTS} 子查询）
-     */
+    * @description: 根据用户id和组织id判断是否挂靠
+    * @author: RH
+    * @date: 2026/8/16 13:21
+    * @param: [userId, orgId]
+    * @return: boolean
+    **/
     boolean existsUserOrg(@Param("userId") Long userId, @Param("orgId") Long orgId);
 }

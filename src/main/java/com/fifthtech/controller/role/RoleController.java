@@ -22,13 +22,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * RoleController
- *
- * <p>角色 API。角色是全局权限包，不挂组织。</p>
- *
  * @author RH
- * @description 角色控制器
- * @date 2026-03-22
+ * @ClassName RoleController
+ * @description: 角色控制器
+ * @date 2026年03月22日
+ * @version: 1.0
  */
 @RestController
 @RequestMapping("/role")
@@ -38,8 +36,12 @@ public class RoleController {
     private RoleService roleService;
 
     /**
-     * 角色分页列表
-     */
+    * @description: 分页查询角色列表
+    * @author: RH
+    * @date: 2026/8/16 13:21
+    * @param: [query]
+    * @return: {@link Result}<{@link Page}<{@link RoleVO}>>
+    **/
     @GetMapping("/list")
     public Result<Page<RoleVO>> list(RoleQueryDTO query) {
         Page<Role> entityPage = roleService.selectPage(query);
@@ -49,8 +51,12 @@ public class RoleController {
     }
 
     /**
-     * 获取角色详情
-     */
+    * @description: 根据id查询角色
+    * @author: RH
+    * @date: 2026/8/16 13:21
+    * @param: [id]
+    * @return: {@link Result}<{@link RoleVO}>
+    **/
     @GetMapping("/{id}")
     public Result<RoleVO> getById(@PathVariable Long id) {
         if (id == null) {
@@ -65,8 +71,12 @@ public class RoleController {
     }
 
     /**
-     * 创建角色
-     */
+    * @description: 新增角色
+    * @author: RH
+    * @date: 2026/8/16 13:21
+    * @param: [dto]
+    * @return: {@link Result}<{@link RoleVO}>
+    **/
     @PostMapping
     public Result<RoleVO> insert(@RequestBody RoleDTO dto) {
         try {
@@ -79,8 +89,12 @@ public class RoleController {
     }
 
     /**
-     * 更新角色
-     */
+    * @description: 根据id修改角色
+    * @author: RH
+    * @date: 2026/8/16 13:21
+    * @param: [dto]
+    * @return: {@link Result}<{@link RoleVO}>
+    **/
     @PutMapping
     public Result<RoleVO> update(@RequestBody RoleDTO dto) {
         if (dto == null || dto.getId() == null) {
@@ -99,8 +113,12 @@ public class RoleController {
     }
 
     /**
-     * 删除角色
-     */
+    * @description: 根据id删除角色
+    * @author: RH
+    * @date: 2026/8/16 13:21
+    * @param: [id]
+    * @return: {@link Result}<{@link Void}>
+    **/
     @DeleteMapping("/{id}")
     public Result<Void> delete(@PathVariable Long id) {
         if (id == null) {
@@ -115,8 +133,12 @@ public class RoleController {
     }
 
     /**
-     * 获取所有启用角色（下拉选择用）
-     */
+    * @description: 查询启用角色
+    * @author: RH
+    * @date: 2026/8/16 13:21
+    * @param: []
+    * @return: {@link Result}<{@link List}<{@link RoleVO}>>
+    **/
     @GetMapping("/all")
     public Result<List<RoleVO>> getAll() {
         List<Role> roles = roleService.selectAll();
@@ -125,8 +147,12 @@ public class RoleController {
     }
 
     /**
-     * 获取角色的权限ID列表
-     */
+    * @description: 根据角色id查询权限
+    * @author: RH
+    * @date: 2026/8/16 13:21
+    * @param: [id]
+    * @return: {@link Result}<{@link List}<{@link Long}>>
+    **/
     @GetMapping("/{id}/permissions")
     public Result<List<Long>> getPermissions(@PathVariable Long id) {
         if (id == null) {
@@ -137,8 +163,12 @@ public class RoleController {
     }
 
     /**
-     * 分配角色权限
-     */
+    * @description: 根据角色id分配权限
+    * @author: RH
+    * @date: 2026/8/16 13:21
+    * @param: [id, permissionIds]
+    * @return: {@link Result}<{@link Void}>
+    **/
     @PutMapping("/{id}/permissions")
     public Result<Void> assignPermissions(@PathVariable Long id, @RequestBody List<Long> permissionIds) {
         if (id == null) {

@@ -7,17 +7,18 @@ import java.io.Serializable;
 import java.util.List;
 
 /**
- * OrgMembersDTO
- *
- * <p>组织成员全量替换入参。</p>
- *
  * @author RH
- * @description 组织成员入参
- * @date 2026-08-15
+ * @ClassName OrgMembersDTO
+ * @description: 组织成员入参
+ * @date 2026年08月15日
+ * @version: 1.0
  */
 @Data
 public class OrgMembersDTO implements Serializable {
 
+    /**
+     * 序列化版本号
+     */
     private static final long serialVersionUID = 1L;
 
     /**

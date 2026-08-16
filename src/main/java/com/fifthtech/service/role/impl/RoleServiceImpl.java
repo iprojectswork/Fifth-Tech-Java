@@ -23,13 +23,11 @@ import java.util.List;
 import java.util.Set;
 
 /**
- * RoleServiceImpl
- *
- * <p>角色是全局权限包，不挂组织；{@code roleCode} 全局唯一。</p>
- *
  * @author RH
- * @description 角色服务实现
- * @date 2026-03-22
+ * @ClassName RoleServiceImpl
+ * @description: 角色服务实现
+ * @date 2026年03月22日
+ * @version: 1.0
  */
 @Service
 public class RoleServiceImpl extends ServiceImpl<RoleMapper, Role> implements RoleService {

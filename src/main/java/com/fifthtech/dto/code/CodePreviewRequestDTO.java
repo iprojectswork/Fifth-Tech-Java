@@ -5,17 +5,18 @@ import lombok.Data;
 import java.io.Serializable;
 
 /**
- * CodePreviewRequestDTO
- *
- * <p>试拼请求（不消费号）。</p>
- *
  * @author RH
- * @description 试拼请求
- * @date 2026-08-02
+ * @ClassName CodePreviewRequestDTO
+ * @description: 试拼请求
+ * @date 2026年08月02日
+ * @version: 1.0
  */
 @Data
 public class CodePreviewRequestDTO implements Serializable {
 
+    /**
+     * 序列化版本号
+     */
     private static final long serialVersionUID = 1L;
 
     /**

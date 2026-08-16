@@ -11,45 +11,67 @@ import org.apache.ibatis.annotations.Param;
 import java.util.List;
 
 /**
- * RoleMapper
- *
- * <p>角色 Mapper。{@code list} / {@code all} / 用户角色联查走 XML 手写 SQL（禁 {@code SELECT *}）。</p>
- *
  * @author RH
- * @description 角色 Mapper
- * @date 2026-03-22
+ * @ClassName RoleMapper
+ * @description: 角色Mapper接口
+ * @date 2026年03月22日
+ * @version: 1.0
  */
 @Mapper
 public interface RoleMapper extends BaseMapper<Role> {
 
     /**
-     * 鉴权用：按用户 ID 拉启用的角色列表。
-     */
+    * @description: 根据用户id查询启用角色
+    * @author: RH
+    * @date: 2026/8/16 13:21
+    * @param: [userId]
+    * @return: {@link List}<{@link Role}>
+    **/
     List<Role> selectByUserId(@Param("userId") Long userId);
 
     /**
-     * 用户详情：关联角色子表（含禁用）。
-     */
+    * @description: 根据用户id分页查询关联角色
+    * @author: RH
+    * @date: 2026/8/16 13:21
+    * @param: [page, userId]
+    * @return: {@link IPage}<{@link Role}>
+    **/
     IPage<Role> listRelatedByUserId(Page<Role> page, @Param("userId") Long userId);
 
     /**
-     * /role/list：可选 name/code 模糊。
-     */
+    * @description: 分页查询角色，按 roleName/roleCode 模糊过滤（按 sort/id 升序）
+    * @author: RH
+    * @date: 2026/8/16 13:21
+    * @param: [page, query]
+    * @return: {@link IPage}<{@link Role}>
+    **/
     IPage<Role> listPage(Page<Role> page, @Param("query") RoleQueryDTO query);
 
     /**
-     * /role/all：返回启用角色。
-     */
+    * @description: 查询全部启用角色（按 sort/id 升序）
+    * @author: RH
+    * @date: 2026/8/16 13:21
+    * @param: []
+    * @return: {@link List}<{@link Role}>
+    **/
     List<Role> selectAllEnabled();
 
     /**
-     * 根据角色ID查询权限ID列表
-     */
+    * @description: 根据角色id查询已绑定权限id
+    * @author: RH
+    * @date: 2026/8/16 13:21
+    * @param: [roleId]
+    * @return: {@link List}<{@link Long}>
+    **/
     List<Long> selectPermissionIdsByRoleId(@Param("roleId") Long roleId);
 
     /**
-     * 未删 roleCode 全局唯一性校验（{@code excludeId} 可选：edit 时排除自身）。
-     */
+    * @description: 根据角色编码统计未删角色数
+    * @author: RH
+    * @date: 2026/8/16 13:21
+    * @param: [roleCode, excludeId]
+    * @return: long
+    **/
     long countByRoleCode(@Param("roleCode") String roleCode,
                          @Param("excludeId") Long excludeId);
 }

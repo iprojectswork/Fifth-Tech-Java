@@ -7,25 +7,45 @@ import lombok.Data;
 import java.io.Serializable;
 
 /**
- * CodeSequenceVO
- *
- * <p>流水水位视图。雪花 id 序列化为字符串，避免 JS Number 精度丢失。</p>
- *
  * @author RH
- * @description 流水水位视图
- * @date 2026-08-02
+ * @ClassName CodeSequenceVO
+ * @description: 流水水位视图
+ * @date 2026年08月02日
+ * @version: 1.0
  */
 @Data
 public class CodeSequenceVO implements Serializable {
 
+    /**
+     * 序列化版本号
+     */
     private static final long serialVersionUID = 1L;
 
+    /**
+     * 主键
+     */
     @JsonSerialize(using = ToStringSerializer.class)
     private Long id;
+
+    /**
+     * 规则编码
+     */
     private String ruleCode;
+
+    /**
+     * 规则 ID
+     */
     @JsonSerialize(using = ToStringSerializer.class)
     private Long ruleId;
+
+    /**
+     * 周期键
+     */
     private String periodKey;
+
+    /**
+     * 已预支到的最大序号（含）
+     */
     @JsonSerialize(using = ToStringSerializer.class)
     private Long currentMax;
 }

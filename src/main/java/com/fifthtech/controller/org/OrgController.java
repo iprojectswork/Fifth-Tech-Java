@@ -23,14 +23,11 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.List;
 
 /**
- * OrgController
- *
- * <p>组织 API（C4 §7.2）。仅 Token 登录拦截，不做 L3 权限码校验。
- * 写操作（insert/edit/delete/move）业务校验与事务均在 Service 层。</p>
- *
  * @author RH
- * @description 组织控制器
- * @date 2026-08-09
+ * @ClassName OrgController
+ * @description: 组织控制器
+ * @date 2026年08月09日
+ * @version: 1.0
  */
 @RestController
 @RequestMapping("/org")
@@ -40,8 +37,12 @@ public class OrgController {
     private OrgService orgService;
 
     /**
-     * 懒加载 children：左树展开节点时调用
-     */
+    * @description: 根据父id查询子组织
+    * @author: RH
+    * @date: 2026/8/16 13:21
+    * @param: [query]
+    * @return: {@link Result}<{@link List}<{@link OrgVO}>>
+    **/
     @GetMapping("/children")
     public Result<List<OrgVO>> listChildren(OrgQueryDTO query) {
         if (query == null) {
@@ -54,8 +55,12 @@ public class OrgController {
     }
 
     /**
-     * 右栏 list（与 children 同数据源，方法别名）
-     */
+    * @description: 根据父id查询组织列表
+    * @author: RH
+    * @date: 2026/8/16 13:21
+    * @param: [query]
+    * @return: {@link Result}<{@link List}<{@link OrgVO}>>
+    **/
     @GetMapping("/list")
     public Result<List<OrgVO>> list(OrgQueryDTO query) {
         if (query == null) {
@@ -68,16 +73,24 @@ public class OrgController {
     }
 
     /**
-     * 全量树（含叶子与 path）
-     */
+    * @description: 查询组织树
+    * @author: RH
+    * @date: 2026/8/16 13:21
+    * @param: []
+    * @return: {@link Result}<{@link List}<{@link OrgTreeVO}>>
+    **/
     @GetMapping("/tree")
     public Result<List<OrgTreeVO>> tree() {
         return Result.success("查询成功", orgService.tree());
     }
 
     /**
-     * 详情
-     */
+    * @description: 根据id查询组织
+    * @author: RH
+    * @date: 2026/8/16 13:21
+    * @param: [id]
+    * @return: {@link Result}<{@link OrgVO}>
+    **/
     @GetMapping("/info-by-id/{id}")
     public Result<OrgVO> info(@PathVariable Long id) {
         OrgVO vo = orgService.info(id);
@@ -88,8 +101,12 @@ public class OrgController {
     }
 
     /**
-     * 新增组织
-     */
+    * @description: 新增组织
+    * @author: RH
+    * @date: 2026/8/16 13:21
+    * @param: [dto]
+    * @return: {@link Result}<{@link OrgVO}>
+    **/
     @PostMapping
     public Result<OrgVO> insert(@RequestBody OrgDTO dto) {
         if (dto == null) {
@@ -103,8 +120,12 @@ public class OrgController {
     }
 
     /**
-     * 修改组织（不允许通过本接口改 parent；改挂请走 /org/move）
-     */
+    * @description: 根据id修改组织
+    * @author: RH
+    * @date: 2026/8/16 13:21
+    * @param: [dto]
+    * @return: {@link Result}<{@link OrgVO}>
+    **/
     @PutMapping
     public Result<OrgVO> edit(@RequestBody OrgDTO dto) {
         if (dto == null || dto.getId() == null) {
@@ -118,8 +139,12 @@ public class OrgController {
     }
 
     /**
-     * 改挂父组织（整树可拖；服务端权威校验；防环 + 深度 ≤ 16）
-     */
+    * @description: 移动组织
+    * @author: RH
+    * @date: 2026/8/16 13:21
+    * @param: [dto]
+    * @return: {@link Result}<{@link Void}>
+    **/
     @PutMapping("/move")
     public Result<Void> move(@RequestBody OrgMoveDTO dto) {
         if (dto == null) {
@@ -134,8 +159,12 @@ public class OrgController {
     }
 
     /**
-     * 逻辑删除（有未删子 / 成员 → 后端拒绝）
-     */
+    * @description: 根据id删除组织
+    * @author: RH
+    * @date: 2026/8/16 13:21
+    * @param: [id]
+    * @return: {@link Result}<{@link Void}>
+    **/
     @DeleteMapping("/{id}")
     public Result<Void> delete(@PathVariable Long id) {
         if (id == null) {
@@ -150,16 +179,24 @@ public class OrgController {
     }
 
     /**
-     * 选择器：仅启用组织全量扁平列表（前端组装树用）
-     */
+    * @description: 查询组织选项
+    * @author: RH
+    * @date: 2026/8/16 13:21
+    * @param: []
+    * @return: {@link Result}<{@link List}<{@link OrgVO}>>
+    **/
     @GetMapping("/options")
     public Result<List<OrgVO>> options() {
         return Result.success("查询成功", orgService.options());
     }
 
     /**
-     * 查人：组织成员 ∩ 持有该全局角色的用户
-     */
+    * @description: 根据组织和角色查询用户
+    * @author: RH
+    * @date: 2026/8/16 13:21
+    * @param: [query]
+    * @return: {@link Result}<{@link List}<{@link User}>>
+    **/
     @GetMapping("/users-by-role")
     public Result<List<User>> usersByRole(OrgQueryDTO query) {
         try {
@@ -170,8 +207,12 @@ public class OrgController {
     }
 
     /**
-     * 本组织成员
-     */
+    * @description: 根据组织id查询成员
+    * @author: RH
+    * @date: 2026/8/16 13:21
+    * @param: [query]
+    * @return: {@link Result}<{@link List}<{@link OrgMemberVO}>>
+    **/
     @GetMapping("/members")
     public Result<List<OrgMemberVO>> listMembers(OrgQueryDTO query) {
         try {
@@ -182,8 +223,12 @@ public class OrgController {
     }
 
     /**
-     * 全量替换本组织成员
-     */
+    * @description: 根据组织id保存成员
+    * @author: RH
+    * @date: 2026/8/16 13:21
+    * @param: [dto]
+    * @return: {@link Result}<{@link Void}>
+    **/
     @PutMapping("/members")
     public Result<Void> replaceMembers(@RequestBody OrgMembersDTO dto) {
         if (dto == null || dto.getOrgId() == null) {

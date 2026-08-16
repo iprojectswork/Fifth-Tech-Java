@@ -24,13 +24,11 @@ import java.util.Collections;
 import java.util.List;
 
 /**
- * CodeRuleController
- *
- * <p>编码规则 CRUD；取号 / 试拼由 {@link CodeGenerateController} 提供，无业务权限码。</p>
- *
  * @author RH
- * @description 编码规则控制器
- * @date 2026-08-02
+ * @ClassName CodeRuleController
+ * @description: 编码规则控制器
+ * @date 2026年08月02日
+ * @version: 1.0
  */
 @RestController
 @RequestMapping("/code/rule")
@@ -42,8 +40,12 @@ public class CodeRuleController {
     private final ObjectMapper objectMapper = new ObjectMapper();
 
     /**
-     * 分页列表（手写 SQL）
-     */
+    * @description: 分页查询编码规则列表
+    * @author: RH
+    * @date: 2026/8/16 13:21
+    * @param: [query]
+    * @return: {@link Result}<{@link Page}<{@link CodeRuleVO}>>
+    **/
     @GetMapping("/list")
     public Result<Page<CodeRuleVO>> list(CodeRuleQueryDTO query) {
         Page<CodeRule> entityPage = codeRuleService.list(query);
@@ -53,8 +55,12 @@ public class CodeRuleController {
     }
 
     /**
-     * 详情（D3：info 用 MP）
-     */
+    * @description: 根据id查询编码规则
+    * @author: RH
+    * @date: 2026/8/16 13:21
+    * @param: [id]
+    * @return: {@link Result}<{@link CodeRuleVO}>
+    **/
     @GetMapping("/{id}")
     public Result<CodeRuleVO> info(@PathVariable Long id) {
         CodeRule rule = codeRuleService.info(id);
@@ -65,8 +71,12 @@ public class CodeRuleController {
     }
 
     /**
-     * 新增
-     */
+    * @description: 新增编码规则
+    * @author: RH
+    * @date: 2026/8/16 13:21
+    * @param: [dto]
+    * @return: {@link Result}<{@link CodeRuleVO}>
+    **/
     @PostMapping
     public Result<CodeRuleVO> insert(@RequestBody CodeRuleDTO dto) {
         if (dto == null) {
@@ -81,8 +91,12 @@ public class CodeRuleController {
     }
 
     /**
-     * 更新
-     */
+    * @description: 根据id修改编码规则
+    * @author: RH
+    * @date: 2026/8/16 13:21
+    * @param: [dto]
+    * @return: {@link Result}<{@link CodeRuleVO}>
+    **/
     @PutMapping
     public Result<CodeRuleVO> edit(@RequestBody CodeRuleDTO dto) {
         if (dto == null || dto.getId() == null) {
@@ -97,8 +111,12 @@ public class CodeRuleController {
     }
 
     /**
-     * 逻辑删除
-     */
+    * @description: 根据id删除编码规则
+    * @author: RH
+    * @date: 2026/8/16 13:21
+    * @param: [id]
+    * @return: {@link Result}<{@link Void}>
+    **/
     @DeleteMapping("/{id}")
     public Result<Void> delete(@PathVariable Long id) {
         if (id == null) {
@@ -108,6 +126,13 @@ public class CodeRuleController {
         return Result.success("删除成功", null);
     }
 
+    /**
+    * @description: 转换编码规则视图
+    * @author: RH
+    * @date: 2026/8/16 13:21
+    * @param: [rule]
+    * @return: {@link CodeRuleVO}
+    **/
     private CodeRuleVO toVO(CodeRule rule) {
         if (rule == null) {
             return null;
@@ -129,6 +154,13 @@ public class CodeRuleController {
         return vo;
     }
 
+    /**
+    * @description: 转换编码规则列表视图
+    * @author: RH
+    * @date: 2026/8/16 13:21
+    * @param: [list]
+    * @return: {@link List}<{@link CodeRuleVO}>
+    **/
     private List<CodeRuleVO> toVOList(List<CodeRule> list) {
         if (list == null || list.isEmpty()) {
             return Collections.emptyList();
@@ -140,6 +172,13 @@ public class CodeRuleController {
         return out;
     }
 
+    /**
+    * @description: 解析规则片段
+    * @author: RH
+    * @date: 2026/8/16 13:21
+    * @param: [json]
+    * @return: {@link List}<{@link CodeSegmentVO}>
+    **/
     private List<CodeSegmentVO> parseSegments(String json) {
         if (json == null || json.isEmpty()) {
             return Collections.emptyList();

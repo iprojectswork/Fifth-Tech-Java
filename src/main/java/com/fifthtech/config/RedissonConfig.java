@@ -8,19 +8,22 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 /**
- * RedissonConfig
- *
- * <p>显式构造 {@link RedissonClient} Bean，复用 {@code spring.data.redis.*} 配置；
- * starter 自带的 {@code RedissonAutoConfiguration} 因 {@code @ConditionalOnMissingBean(RedissonClient.class)}
- * 而跳过，与现有 {@code StringRedisTemplate} 共存同一 Redis 实例。</p>
- *
  * @author RH
- * @description C2 Redisson 客户端：与 Spring Data Redis 共享连接配置
- * @date 2026-08-02
+ * @ClassName RedissonConfig
+ * @description: Redisson配置
+ * @date 2026年08月02日
+ * @version: 1.0
  */
 @Configuration
 public class RedissonConfig {
 
+    /**
+    * @description: 显式构造 RedissonClient，复用 spring.data.redis 配置；与 StringRedisTemplate 共存同一 Redis 实例
+    * @author: RH
+    * @date: 2026/8/16 13:21
+    * @param: [properties]
+    * @return: {@link RedissonClient}
+    **/
     @Bean(destroyMethod = "shutdown")
     public RedissonClient redissonClient(RedisProperties properties) {
         Config config = new Config();

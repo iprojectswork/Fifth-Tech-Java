@@ -1,4 +1,4 @@
--- C3 增量种子：数据字典菜单 + 按钮 + 绑定 super_admin(role_id=1)
+-- 数据字典菜单 + 按钮 + 绑定 super_admin(role_id=1)
 -- 已初始化数据库可重复执行，不影响其它数据。
 -- PostgreSQL 语法（ON CONFLICT DO NOTHING）。
 -- 菜单/按钮 ID 与 cache/code_permission 段位推后：menu=7, buttons=601~604。

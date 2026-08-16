@@ -9,21 +9,18 @@ import lombok.Data;
 import java.time.LocalDateTime;
 
 /**
- * CodeSequence
- *
- * <p>流水账本：每个 {@code (rule_id, period_key)} 一行，记录该周期已分配到的最大序号
- * {@code current_max}。运行期补段时由 {@code CodeGenerateService} 在行锁内递增。</p>
- *
  * @author RH
- * @description 编码流水水位实体
- * @date 2026-08-02
+ * @ClassName CodeSequence
+ * @description: 编码流水水位实体
+ * @date 2026年08月02日
+ * @version: 1.0
  */
 @Data
 @TableName("sys_code_sequence")
 public class CodeSequence {
 
     /**
-     * 主键（雪花 ID）
+     * 主键
      */
     @TableId(type = IdType.ASSIGN_ID)
     @TableField("id")
@@ -36,7 +33,7 @@ public class CodeSequence {
     private String ruleCode;
 
     /**
-     * 关联 sys_code_rule.id
+     * 规则 ID
      */
     @TableField("rule_id")
     private Long ruleId;
@@ -48,7 +45,7 @@ public class CodeSequence {
     private String periodKey;
 
     /**
-     * 已预支到的最大序号（含）；下次预支从 current_max+1 起
+     * 已预支到的最大序号（含）
      */
     @TableField("current_max")
     private Long currentMax;

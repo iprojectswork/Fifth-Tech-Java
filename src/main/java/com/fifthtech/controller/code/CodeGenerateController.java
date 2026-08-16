@@ -19,14 +19,11 @@ import java.util.Collections;
 import java.util.List;
 
 /**
- * CodeGenerateController
- *
- * <p>取号 / 试拼接口。无业务权限码，只走全局 Token 拦截；调用方可以是本系统前端
- * 或其他后端 HTTP 客户端。</p>
- *
  * @author RH
- * @description 编码取号控制器
- * @date 2026-08-02
+ * @ClassName CodeGenerateController
+ * @description: 编码取号控制器
+ * @date 2026年08月02日
+ * @version: 1.0
  */
 @RestController
 @RequestMapping("/code")
@@ -39,8 +36,12 @@ public class CodeGenerateController {
     private int maxBatchCount;
 
     /**
-     * 取号
-     */
+    * @description: 生成编码
+    * @author: RH
+    * @date: 2026/8/16 13:21
+    * @param: [dto]
+    * @return: {@link Result}<{@link CodeGenerateResponseVO}>
+    **/
     @PostMapping("/generate")
     public Result<CodeGenerateResponseVO> generate(@RequestBody CodeGenerateRequestDTO dto) {
         if (dto == null || dto.getRuleCode() == null || dto.getRuleCode().isEmpty()) {
@@ -72,8 +73,12 @@ public class CodeGenerateController {
     }
 
     /**
-     * 试拼（不消费号）
-     */
+    * @description: 预览编码
+    * @author: RH
+    * @date: 2026/8/16 13:21
+    * @param: [dto]
+    * @return: {@link Result}<{@link CodePreviewResponseVO}>
+    **/
     @PostMapping("/preview")
     public Result<CodePreviewResponseVO> preview(@RequestBody CodePreviewRequestDTO dto) {
         if (dto == null || dto.getRuleCode() == null || dto.getRuleCode().isEmpty()) {
@@ -98,6 +103,13 @@ public class CodeGenerateController {
         }
     }
 
+    /**
+    * @description: 解析业务时间
+    * @author: RH
+    * @date: 2026/8/16 13:21
+    * @param: [bizTime]
+    * @return: {@link Instant}
+    **/
     private static Instant parseBizTime(String bizTime) {
         if (bizTime == null || bizTime.isEmpty()) {
             return null;

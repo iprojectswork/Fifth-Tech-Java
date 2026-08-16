@@ -1,5 +1,5 @@
--- B2 对齐：列表 component 逻辑 key + list/add/edit/view/delete 分码
--- C4：组织与角色解耦；需先有默认组织 HQ id=1（见 org.sql）
+-- 列表 component 用逻辑 key；按钮按 list/add/edit/view/delete 分码
+-- 组织与角色解耦；需先有默认组织 HQ id=1（见 org.sql）
 -- 清空表数据
 DELETE FROM sys_role_permission;
 DELETE FROM sys_user_role;
@@ -54,44 +54,44 @@ INSERT INTO sys_permission (id, permission_name, permission_code, permission_typ
 (303, '权限查看', 'system:permission:view', 2, 4, NULL, NULL, NULL, 3, 1),
 (304, '权限删除', 'system:permission:delete', 2, 4, NULL, NULL, NULL, 4, 1);
 
--- C1 缓存管理菜单（parent_id=1 系统管理）
+-- 缓存管理菜单（parent_id=1 系统管理）
 INSERT INTO sys_permission (id, permission_name, permission_code, permission_type, parent_id, path, component, icon, sort, status) VALUES
 (5, '缓存管理', 'system:cache:list', 1, 1, '/system/cache/list', 'system/cache/list', 'Coin', 4, 1);
 
--- C1 缓存管理按钮（parent_id=5）
+-- 缓存管理按钮（parent_id=5）
 INSERT INTO sys_permission (id, permission_name, permission_code, permission_type, parent_id, path, component, icon, sort, status) VALUES
 (401, '缓存新增', 'system:cache:add', 2, 5, NULL, NULL, NULL, 1, 1),
 (402, '缓存编辑', 'system:cache:edit', 2, 5, NULL, NULL, NULL, 2, 1),
 (403, '缓存查看', 'system:cache:view', 2, 5, NULL, NULL, NULL, 3, 1),
 (404, '缓存删除', 'system:cache:delete', 2, 5, NULL, NULL, NULL, 4, 1);
 
--- C2 编码管理菜单（parent_id=1 系统管理）
+-- 编码管理菜单（parent_id=1 系统管理）
 INSERT INTO sys_permission (id, permission_name, permission_code, permission_type, parent_id, path, component, icon, sort, status) VALUES
 (6, '编码管理', 'system:code:list', 1, 1, '/system/code/list', 'system/code/list', 'PriceTag', 5, 1);
 
--- C2 编码管理按钮（parent_id=6）
+-- 编码管理按钮（parent_id=6）
 INSERT INTO sys_permission (id, permission_name, permission_code, permission_type, parent_id, path, component, icon, sort, status) VALUES
 (501, '编码新增', 'system:code:add', 2, 6, NULL, NULL, NULL, 1, 1),
 (502, '编码编辑', 'system:code:edit', 2, 6, NULL, NULL, NULL, 2, 1),
 (503, '编码查看', 'system:code:view', 2, 6, NULL, NULL, NULL, 3, 1),
 (504, '编码删除', 'system:code:delete', 2, 6, NULL, NULL, NULL, 4, 1);
 
--- C3 数据字典菜单（parent_id=1 系统管理）
+-- 数据字典菜单（parent_id=1 系统管理）
 INSERT INTO sys_permission (id, permission_name, permission_code, permission_type, parent_id, path, component, icon, sort, status) VALUES
 (7, '数据字典', 'system:dict:list', 1, 1, '/system/dict/list', 'system/dict/list', 'Notebook', 6, 1);
 
--- C3 数据字典按钮（parent_id=7）
+-- 数据字典按钮（parent_id=7）
 INSERT INTO sys_permission (id, permission_name, permission_code, permission_type, parent_id, path, component, icon, sort, status) VALUES
 (601, '字典新增', 'system:dict:add', 2, 7, NULL, NULL, NULL, 1, 1),
 (602, '字典编辑', 'system:dict:edit', 2, 7, NULL, NULL, NULL, 2, 1),
 (603, '字典查看', 'system:dict:view', 2, 7, NULL, NULL, NULL, 3, 1),
 (604, '字典删除', 'system:dict:delete', 2, 7, NULL, NULL, NULL, 4, 1);
 
--- C4 组织管理菜单（parent_id=1 系统管理）
+-- 组织管理菜单（parent_id=1 系统管理）
 INSERT INTO sys_permission (id, permission_name, permission_code, permission_type, parent_id, path, component, icon, sort, status) VALUES
 (8, '组织管理', 'system:org:list', 1, 1, '/system/org/list', 'system/org/list', 'OfficeBuilding', 7, 1);
 
--- C4 组织管理按钮（parent_id=8）
+-- 组织管理按钮（parent_id=8）
 INSERT INTO sys_permission (id, permission_name, permission_code, permission_type, parent_id, path, component, icon, sort, status) VALUES
 (701, '组织新增', 'system:org:add',    2, 8, NULL, NULL, NULL, 1, 1),
 (702, '组织编辑', 'system:org:edit',   2, 8, NULL, NULL, NULL, 2, 1),

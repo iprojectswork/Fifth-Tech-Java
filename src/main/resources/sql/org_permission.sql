@@ -1,4 +1,4 @@
--- C4 增量种子：组织管理菜单 + 按钮 + 绑定 super_admin(role_id=1)
+-- 组织管理菜单 + 按钮 + 绑定 super_admin(role_id=1)
 -- PostgreSQL（ON CONFLICT DO NOTHING）。
 -- 菜单 id=8，按钮 701~704。
 

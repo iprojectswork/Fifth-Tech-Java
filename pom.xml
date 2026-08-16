@@ -39,7 +39,7 @@
             <artifactId>spring-boot-starter-data-redis</artifactId>
         </dependency>
 
-        <!-- C2: 仅用 redisson 核心做分布式锁；不用 starter，避免劫持 Spring Data RedisConnectionFactory 导致 expire 栈溢出 -->
+        <!-- 仅用 redisson 核心做分布式锁；不用 starter，避免劫持 Spring Data RedisConnectionFactory 导致 expire 栈溢出 -->
         <dependency>
             <groupId>org.redisson</groupId>
             <artifactId>redisson</artifactId>

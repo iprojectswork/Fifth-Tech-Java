@@ -6,26 +6,29 @@ import com.fifthtech.dto.code.CodeSegmentDTO;
 import java.util.List;
 
 /**
- * CodeSequenceService
- *
- * <p>专做号段预支（{@code REQUIRES_NEW} 事务，独立提交）。与
- * {@link CodeGenerateServiceImpl} 解耦，避免 Spring AOP 自调用问题。</p>
- *
  * @author RH
- * @description 流水水位内部服务（事务边界）
- * @date 2026-08-02
+ * @ClassName CodeSequenceService
+ * @description: 流水水位内部服务（事务边界）接口
+ * @date 2026年08月02日
+ * @version: 1.0
  */
 public interface CodeSequenceService {
 
     /**
-     * 在独立事务内为 (rule, periodKey) 预支一个批次。
-     *
-     * @return 批次内的连续序号（升序）
-     */
+    * @description: 在独立事务（REQUIRES_NEW）内为 (rule, periodKey) 预支一个号段批次
+    * @author: RH
+    * @date: 2026/8/16 13:21
+    * @param: [rule, sequenceSegment, periodKey]
+    * @return: {@link List}<{@link Long}>
+    **/
     List<Long> allocateBatch(CodeRule rule, CodeSegmentDTO sequenceSegment, String periodKey);
 
     /**
-     * 只读查询水位 current_max；不存在返回 null。
-     */
+    * @description: 只读查询 (ruleId, periodKey) 对应的水位 currentMax，不存在返回 null
+    * @author: RH
+    * @date: 2026/8/16 13:21
+    * @param: [ruleId, periodKey]
+    * @return: {@link Long}
+    **/
     Long findCurrentMax(Long ruleId, String periodKey);
 }

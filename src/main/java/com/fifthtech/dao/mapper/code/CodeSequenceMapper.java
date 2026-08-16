@@ -6,28 +6,32 @@ import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
 /**
- * CodeSequenceMapper
- *
- * <p>号段池分配用事务 SQL（{@code SELECT ... FOR UPDATE} + {@code UPDATE current_max}）。</p>
- *
  * @author RH
- * @description 编码流水水位 Mapper
- * @date 2026-08-02
+ * @ClassName CodeSequenceMapper
+ * @description: 编码流水水位Mapper接口
+ * @date 2026年08月02日
+ * @version: 1.0
  */
 @Mapper
 public interface CodeSequenceMapper extends BaseMapper<CodeSequence> {
 
     /**
-     * 行锁选择；找不到返回 null（由调用方决定 insert 或重新 select）
-     */
+    * @description: 根据规则id和周期键行锁查询水位
+    * @author: RH
+    * @date: 2026/8/16 13:21
+    * @param: [ruleId, periodKey]
+    * @return: {@link CodeSequence}
+    **/
     CodeSequence selectForUpdate(@Param("ruleId") Long ruleId,
                                  @Param("periodKey") String periodKey);
 
     /**
-     * 首次分配（start-1 落入 current_max）；唯一键冲突时由调用方处理
-     *
-     * @return 受影响行数（0 = 已存在被并发抢占，1 = 插入成功）
-     */
+    * @description: 首次写入水位行（currentMax = start - 1）；唯一键冲突时返回 0
+    * @author: RH
+    * @date: 2026/8/16 13:21
+    * @param: [id, ruleId, ruleCode, periodKey, initialMax]
+    * @return: int
+    **/
     int insertInitial(@Param("id") Long id,
                       @Param("ruleId") Long ruleId,
                       @Param("ruleCode") String ruleCode,
@@ -35,10 +39,12 @@ public interface CodeSequenceMapper extends BaseMapper<CodeSequence> {
                       @Param("initialMax") Long initialMax);
 
     /**
-     * 预支号段：在行锁事务内将 current_max 增加 {@code increment}。
-     *
-     * @return 受影响行数
-     */
+    * @description: 根据规则id和周期键自增水位
+    * @author: RH
+    * @date: 2026/8/16 13:21
+    * @param: [ruleId, periodKey, increment]
+    * @return: int
+    **/
     int incrementCurrentMax(@Param("ruleId") Long ruleId,
                             @Param("periodKey") String periodKey,
                             @Param("increment") Long increment);

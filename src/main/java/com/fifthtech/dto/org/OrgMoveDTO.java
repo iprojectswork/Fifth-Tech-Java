@@ -6,19 +6,18 @@ import lombok.Data;
 import java.io.Serializable;
 
 /**
- * OrgMoveDTO
- *
- * <p>组织 move（改挂父组织）入参（C4 §4.5 / §5.1 / D15）。
- * 服务端权威校验：源存在且未删、源有未删子时拒绝、目标存在或为 0、非自己、
- * 新父下 code 不冲突、深度 ≤ 16、目标不能在源子树内（防环）。</p>
- *
  * @author RH
- * @description 组织 move 入参
- * @date 2026-08-09
+ * @ClassName OrgMoveDTO
+ * @description: 组织 move 入参
+ * @date 2026年08月09日
+ * @version: 1.0
  */
 @Data
 public class OrgMoveDTO implements Serializable {
 
+    /**
+     * 序列化版本号
+     */
     private static final long serialVersionUID = 1L;
 
     /**

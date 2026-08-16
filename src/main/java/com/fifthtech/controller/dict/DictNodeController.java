@@ -20,14 +20,11 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.List;
 
 /**
- * DictNodeController
- *
- * <p>数据字典节点 API（C3 §7.2）。仅 Token 登录拦截，不做 L3 权限码校验。
- * 写操作（insert/edit/delete/move）业务校验与事务均在 Service 层。</p>
- *
  * @author RH
- * @description 数据字典节点控制器
- * @date 2026-08-02
+ * @ClassName DictNodeController
+ * @description: 数据字典节点控制器
+ * @date 2026年08月02日
+ * @version: 1.0
  */
 @RestController
 @RequestMapping("/dict")
@@ -37,8 +34,12 @@ public class DictNodeController {
     private DictNodeService dictNodeService;
 
     /**
-     * 懒加载 children：左树展开节点时调用
-     */
+    * @description: 根据父id查询子字典
+    * @author: RH
+    * @date: 2026/8/16 13:21
+    * @param: [query]
+    * @return: {@link Result}<{@link List}<{@link DictNodeVO}>>
+    **/
     @GetMapping("/node/children")
     public Result<List<DictNodeVO>> listChildren(DictNodeQueryDTO query) {
         if (query == null) {
@@ -51,8 +52,12 @@ public class DictNodeController {
     }
 
     /**
-     * 右栏 list（与 children 同数据源，方法别名）
-     */
+    * @description: 根据父id查询字典列表
+    * @author: RH
+    * @date: 2026/8/16 13:21
+    * @param: [query]
+    * @return: {@link Result}<{@link List}<{@link DictNodeVO}>>
+    **/
     @GetMapping("/node/list")
     public Result<List<DictNodeVO>> list(DictNodeQueryDTO query) {
         if (query == null) {
@@ -65,16 +70,24 @@ public class DictNodeController {
     }
 
     /**
-     * 全量树（含叶子与 path）
-     */
+    * @description: 查询字典树
+    * @author: RH
+    * @date: 2026/8/16 13:21
+    * @param: []
+    * @return: {@link Result}<{@link List}<{@link DictNodeTreeVO}>>
+    **/
     @GetMapping("/node/tree")
     public Result<List<DictNodeTreeVO>> tree() {
         return Result.success("查询成功", dictNodeService.tree());
     }
 
     /**
-     * 详情
-     */
+    * @description: 根据id查询字典节点
+    * @author: RH
+    * @date: 2026/8/16 13:21
+    * @param: [id]
+    * @return: {@link Result}<{@link DictNodeVO}>
+    **/
     @GetMapping("/node/info-by-id/{id}")
     public Result<DictNodeVO> info(@PathVariable Long id) {
         DictNodeVO vo = dictNodeService.info(id);
@@ -85,8 +98,12 @@ public class DictNodeController {
     }
 
     /**
-     * 新增节点
-     */
+    * @description: 新增字典节点
+    * @author: RH
+    * @date: 2026/8/16 13:21
+    * @param: [dto]
+    * @return: {@link Result}<{@link DictNodeVO}>
+    **/
     @PostMapping("/node")
     public Result<DictNodeVO> insert(@RequestBody DictNodeDTO dto) {
         if (dto == null) {
@@ -100,8 +117,12 @@ public class DictNodeController {
     }
 
     /**
-     * 修改节点（不允许通过本接口改 parent；改挂请走 /dict/node/move）
-     */
+    * @description: 根据id修改字典节点
+    * @author: RH
+    * @date: 2026/8/16 13:21
+    * @param: [dto]
+    * @return: {@link Result}<{@link DictNodeVO}>
+    **/
     @PutMapping("/node")
     public Result<DictNodeVO> edit(@RequestBody DictNodeDTO dto) {
         if (dto == null || dto.getId() == null) {
@@ -115,8 +136,12 @@ public class DictNodeController {
     }
 
     /**
-     * 改挂父节点（仅无未删子节点可拖；服务端权威校验）
-     */
+    * @description: 移动字典
+    * @author: RH
+    * @date: 2026/8/16 13:21
+    * @param: [dto]
+    * @return: {@link Result}<{@link Void}>
+    **/
     @PutMapping("/node/move")
     public Result<Void> move(@RequestBody DictNodeMoveDTO dto) {
         if (dto == null) {
@@ -131,8 +156,12 @@ public class DictNodeController {
     }
 
     /**
-     * 逻辑删除（有未删子则后端拒绝）
-     */
+    * @description: 根据id删除字典节点
+    * @author: RH
+    * @date: 2026/8/16 13:21
+    * @param: [id]
+    * @return: {@link Result}<{@link Void}>
+    **/
     @DeleteMapping("/node/{id}")
     public Result<Void> delete(@PathVariable Long id) {
         if (id == null) {
@@ -147,8 +176,12 @@ public class DictNodeController {
     }
 
     /**
-     * 业务只读：按 pathCode 取该节点下启用直接子（不存在 → 业务错误）
-     */
+    * @description: 根据pathCode查询字典数据
+    * @author: RH
+    * @date: 2026/8/16 13:21
+    * @param: [query]
+    * @return: {@link Result}<{@link List}<{@link DictNodeVO}>>
+    **/
     @GetMapping("/data")
     public Result<List<DictNodeVO>> data(DictNodeQueryDTO query) {
         try {

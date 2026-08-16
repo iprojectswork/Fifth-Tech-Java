@@ -18,7 +18,7 @@
         ON CONFLICT (user_id, role_id) DO NOTHING
     </insert>
 
-    <!-- 用户撤掉组织成员 → 级联删该组织下任职（C4 §4.8） -->
+    <!-- 用户撤掉组织成员后，级联删除该组织下的任职 -->
     <delete id="deleteByUserIdAndOrgIds">
         DELETE FROM sys_user_role sysUserRole
         WHERE sysUserRole.user_id = #{userId}

@@ -27,12 +27,11 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
- * PermissionServiceImpl
- *
  * @author RH
- * @description 权限服务实现类
- * @date 2026-03-22
- * @version 1.0
+ * @ClassName PermissionServiceImpl
+ * @description: 权限服务实现
+ * @date 2026年03月22日
+ * @version: 1.0
  */
 @Service
 public class PermissionServiceImpl extends ServiceImpl<PermissionMapper, Permission> implements com.fifthtech.service.permission.PermissionService {
@@ -90,13 +89,6 @@ public class PermissionServiceImpl extends ServiceImpl<PermissionMapper, Permiss
         return vos;
     }
 
-    /**
-     * 构建权限树
-     *
-     * @param permissions 权限列表
-     * @param parentId    父级ID
-     * @return 权限树
-     */
     private List<PermissionTreeVO> buildTree(List<PermissionTreeVO> permissions, Long parentId) {
         List<PermissionTreeVO> tree = new ArrayList<>();
         for (PermissionTreeVO permission : permissions) {

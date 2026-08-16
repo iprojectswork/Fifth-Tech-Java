@@ -10,21 +10,18 @@ import lombok.Data;
 import java.time.LocalDateTime;
 
 /**
- * DictNode
- *
- * <p>数据字典节点（单表树）。{@code parent_id=0} 表示根下第一层；path 不落库，
- * 由接口运行时按链拼接。同 parent 下未删 code 唯一（部分唯一索引）。</p>
- *
  * @author RH
- * @description 数据字典节点实体
- * @date 2026-08-02
+ * @ClassName DictNode
+ * @description: 数据字典节点实体
+ * @date 2026年08月02日
+ * @version: 1.0
  */
 @Data
 @TableName("sys_dict_node")
 public class DictNode {
 
     /**
-     * 主键（雪花 ID）
+     * 主键
      */
     @TableId(type = IdType.ASSIGN_ID)
     @TableField("id")
@@ -37,7 +34,7 @@ public class DictNode {
     private Long parentId;
 
     /**
-     * 节点编码（同 parent 下唯一；不可含 /；trim 后非空）
+     * 节点编码（同 parent 下唯一）
      */
     @TableField("code")
     private String code;
@@ -49,13 +46,13 @@ public class DictNode {
     private String name;
 
     /**
-     * 排序（同父内；默认 0；列表/树子节点顺序 sort ASC, code ASC, id ASC）
+     * 排序（同父内）
      */
     @TableField("sort")
     private Integer sort;
 
     /**
-     * 状态（1 启用 / 0 禁用；默认 1）
+     * 状态（1：启用 0：禁用）
      */
     @TableField("status")
     private Integer status;
@@ -103,7 +100,7 @@ public class DictNode {
     private LocalDateTime updateTime;
 
     /**
-     * 逻辑删除（0 未删 / 1 已删）
+     * 是否删除（0：否 1：是）
      */
     @TableLogic
     @TableField("deleted")

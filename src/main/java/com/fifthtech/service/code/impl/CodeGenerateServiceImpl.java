@@ -27,20 +27,11 @@ import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
 /**
- * CodeGenerateServiceImpl
- *
- * <p>号段池（DB 预支 + Redis List + Redisson 锁）实现：</p>
- * <ol>
- *   <li>先 LPOP 池：命中即取号，无锁。</li>
- *   <li>空池则 Redisson 按 (rule, period) 加锁；锁内双检 LPOP。</li>
- *   <li>仍空则事务内行锁 SELECT FOR UPDATE → UPDATE current_max → RPUSH 段 → LPOP → 解锁。</li>
- * </ol>
- *
- * <p>详见 {@code docs/C2-CODE-RULE.md} §6。</p>
- *
  * @author RH
- * @description 编码取号服务实现
- * @date 2026-08-02
+ * @ClassName CodeGenerateServiceImpl
+ * @description: 编码取号服务实现
+ * @date 2026年08月02日
+ * @version: 1.0
  */
 @Service
 public class CodeGenerateServiceImpl implements CodeGenerateService {
