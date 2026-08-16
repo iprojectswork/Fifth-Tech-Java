@@ -62,7 +62,14 @@ public class AuthServiceImpl implements AuthService {
         if (permissions == null) {
             permissions = Collections.emptyList();
         }
-        return new UserInfoVO(user.getId(), user.getUsername(), user.getNickname(), permissions);
+        return new UserInfoVO(
+                user.getId(),
+                user.getUsername(),
+                user.getNickname(),
+                user.getEmail(),
+                user.getPhone(),
+                permissions
+        );
     }
 
     @Override

@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.extension.service.IService;
 import com.fifthtech.dao.entity.permission.Permission;
 import com.fifthtech.dao.entity.role.Role;
 import com.fifthtech.dao.entity.user.User;
+import com.fifthtech.dto.user.ProfileDTO;
 import com.fifthtech.dto.user.UserDTO;
 import com.fifthtech.dto.user.UserQueryDTO;
 import com.fifthtech.vo.user.UserVO;
@@ -136,4 +137,13 @@ public interface UserService extends IService<User> {
     * @return: {@link Page}<{@link Permission}>
     **/
     Page<Permission> listPermissions(UserQueryDTO query);
+
+    /**
+    * @description: 修改当前登录用户的昵称、邮箱、手机号，不改用户名、密码、角色与组织
+    * @author: RH
+    * @date: 2026/8/16 16:20
+    * @param: [dto]
+    * @return: {@link User}
+    **/
+    User editProfile(ProfileDTO dto);
 }

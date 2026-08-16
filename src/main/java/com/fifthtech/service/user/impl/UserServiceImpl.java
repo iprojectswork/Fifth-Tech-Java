@@ -16,8 +16,10 @@ import com.fifthtech.dao.mapper.permission.PermissionMapper;
 import com.fifthtech.dao.mapper.role.RoleMapper;
 import com.fifthtech.dao.mapper.user.UserMapper;
 import com.fifthtech.dao.mapper.user.UserRoleMapper;
+import com.fifthtech.dto.user.ProfileDTO;
 import com.fifthtech.dto.user.UserDTO;
 import com.fifthtech.dto.user.UserQueryDTO;
+import com.fifthtech.security.UserContext;
 import com.fifthtech.service.org.OrgService;
 import com.fifthtech.service.user.UserService;
 import com.fifthtech.vo.user.UserOrgSummaryVO;
@@ -343,6 +345,28 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
             return page;
         }
         return (Page<Permission>) permissionMapper.listRelatedByUserId(page, query.getUserId());
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public User editProfile(ProfileDTO dto) {
+        Long userId = UserContext.getCurrentUserId();
+        if (userId == null) {
+            return null;
+        }
+        User existUser = selectById(userId);
+        if (existUser == null) {
+            return null;
+        }
+        User patch = new User();
+        patch.setId(userId);
+        patch.setNickname(dto.getNickname().trim());
+        patch.setEmail(dto.getEmail().trim());
+        patch.setPhone(dto.getPhone().trim());
+        if (!edit(patch)) {
+            throw new IllegalArgumentException("保存失败");
+        }
+        return selectById(userId);
     }
 
     private Map<Long, Role> validateAndLoadRoles(List<Long> roleIds) {

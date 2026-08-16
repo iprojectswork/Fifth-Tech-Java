@@ -6,8 +6,10 @@ import com.fifthtech.common.utils.ConvertUtils;
 import com.fifthtech.dao.entity.permission.Permission;
 import com.fifthtech.dao.entity.role.Role;
 import com.fifthtech.dao.entity.user.User;
+import com.fifthtech.dto.user.ProfileDTO;
 import com.fifthtech.dto.user.UserDTO;
 import com.fifthtech.dto.user.UserQueryDTO;
+import jakarta.validation.Valid;
 import com.fifthtech.service.user.UserService;
 import com.fifthtech.vo.permission.PermissionVO;
 import com.fifthtech.vo.role.RoleVO;
@@ -196,6 +198,26 @@ public class UserController {
         }
         voPage.setRecords(records);
         return Result.success("查询成功", voPage);
+    }
+
+    /**
+    * @description: 修改当前登录用户的个人信息
+    * @author: RH
+    * @date: 2026/8/16 16:20
+    * @param: [dto]
+    * @return: {@link Result}<{@link UserVO}>
+    **/
+    @PutMapping("/profile")
+    public Result<UserVO> editProfile(@Valid @RequestBody ProfileDTO dto) {
+        try {
+            User saved = userService.editProfile(dto);
+            if (saved == null) {
+                return Result.error(401, "未登录或用户不存在");
+            }
+            return Result.success("保存成功", ConvertUtils.toVO(saved, UserVO.class));
+        } catch (IllegalArgumentException ex) {
+            return Result.error(ex.getMessage());
+        }
     }
 
     /**

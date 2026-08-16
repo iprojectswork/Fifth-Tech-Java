@@ -34,6 +34,16 @@ public class UserInfoVO {
     private String nickname;
 
     /**
+     * 邮箱
+     */
+    private String email;
+
+    /**
+     * 联系电话
+     */
+    private String phone;
+
+    /**
      * 权限编码列表
      */
     private List<String> permissions;
