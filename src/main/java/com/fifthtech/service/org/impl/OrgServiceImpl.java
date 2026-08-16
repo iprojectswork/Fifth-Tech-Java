@@ -3,6 +3,7 @@ package com.fifthtech.service.org.impl;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.fifthtech.common.BizConstants;
+import com.fifthtech.common.utils.ConvertUtils;
 import com.fifthtech.dao.entity.org.Org;
 import com.fifthtech.dao.entity.org.UserOrg;
 import com.fifthtech.dao.entity.role.Role;
@@ -108,7 +109,8 @@ public class OrgServiceImpl extends ServiceImpl<OrgMapper, Org> implements OrgSe
 
         List<OrgVO> vos = new ArrayList<>(children.size());
         for (Org child : children) {
-            OrgVO vo = toFlatVO(child);
+            OrgVO vo = ConvertUtils.toVO(child, OrgVO.class);
+            vo.setOrgTypeLabel(orgTypeLabel(child.getOrgType()));
             String pathCode = parentPath[0];
             String pathName = parentPath[1];
             vo.setPathCode(pathCode.isEmpty() ? child.getOrgCode() : pathCode + "/" + child.getOrgCode());
@@ -142,8 +144,8 @@ public class OrgServiceImpl extends ServiceImpl<OrgMapper, Org> implements OrgSe
                                     String parentPathCode,
                                     String parentPathName,
                                     Map<Long, List<Org>> childrenByParent) {
-        OrgTreeVO vo = new OrgTreeVO();
-        copyFlatFields(node, vo);
+        OrgTreeVO vo = ConvertUtils.toVO(node, OrgTreeVO.class);
+        vo.setOrgTypeLabel(orgTypeLabel(node.getOrgType()));
         String pathCode = parentPathCode.isEmpty() ? node.getOrgCode() : parentPathCode + "/" + node.getOrgCode();
         String pathName = parentPathName.isEmpty() ? node.getOrgName() : parentPathName + "/" + node.getOrgName();
         vo.setPathCode(pathCode);
@@ -165,7 +167,8 @@ public class OrgServiceImpl extends ServiceImpl<OrgMapper, Org> implements OrgSe
         if (node == null) {
             return null;
         }
-        OrgVO vo = toFlatVO(node);
+        OrgVO vo = ConvertUtils.toVO(node, OrgVO.class);
+        vo.setOrgTypeLabel(orgTypeLabel(node.getOrgType()));
         String[] path = computePathById(id);
         if (path != null) {
             vo.setPathCode(path[0]);
@@ -418,7 +421,8 @@ public class OrgServiceImpl extends ServiceImpl<OrgMapper, Org> implements OrgSe
                                String pathName,
                                Map<Long, String[]> pathById,
                                Map<Long, List<Org>> childrenByParent) {
-        OrgVO vo = toFlatVO(node);
+        OrgVO vo = ConvertUtils.toVO(node, OrgVO.class);
+        vo.setOrgTypeLabel(orgTypeLabel(node.getOrgType()));
         vo.setPathCode(pathCode);
         vo.setPathName(pathName);
         List<Org> childNodes = childrenByParent.getOrDefault(node.getId(), Collections.emptyList());
@@ -504,12 +508,7 @@ public class OrgServiceImpl extends ServiceImpl<OrgMapper, Org> implements OrgSe
             return result;
         }
         for (User user : users) {
-            OrgMemberVO vo = new OrgMemberVO();
-            vo.setId(user.getId());
-            vo.setUsername(user.getUsername());
-            vo.setNickname(user.getNickname());
-            vo.setStatus(user.getStatus());
-            result.add(vo);
+            result.add(ConvertUtils.toVO(user, OrgMemberVO.class));
         }
         return result;
     }
@@ -740,30 +739,6 @@ public class OrgServiceImpl extends ServiceImpl<OrgMapper, Org> implements OrgSe
             throw new IllegalArgumentException("orgName 长度不能超过 128");
         }
         return name;
-    }
-
-    private OrgVO toFlatVO(Org n) {
-        OrgVO vo = new OrgVO();
-        copyFlatFields(n, vo);
-        return vo;
-    }
-
-    private void copyFlatFields(Org n, OrgVO vo) {
-        vo.setId(n.getId());
-        vo.setParentId(n.getParentId());
-        vo.setOrgCode(n.getOrgCode());
-        vo.setOrgName(n.getOrgName());
-        vo.setOrgType(n.getOrgType());
-        vo.setOrgTypeLabel(orgTypeLabel(n.getOrgType()));
-        vo.setSort(n.getSort());
-        vo.setStatus(n.getStatus());
-        vo.setRemark(n.getRemark());
-        vo.setCreateId(n.getCreateId());
-        vo.setCreateName(n.getCreateName());
-        vo.setCreateTime(n.getCreateTime());
-        vo.setUpdateId(n.getUpdateId());
-        vo.setUpdateName(n.getUpdateName());
-        vo.setUpdateTime(n.getUpdateTime());
     }
 
     private String requireOrgType(String raw) {

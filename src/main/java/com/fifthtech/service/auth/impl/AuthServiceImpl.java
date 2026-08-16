@@ -1,5 +1,6 @@
 package com.fifthtech.service.auth.impl;
 
+import com.fifthtech.common.utils.ConvertUtils;
 import com.fifthtech.dto.auth.LoginRequestDTO;
 import com.fifthtech.vo.auth.LoginResponseVO;
 import com.fifthtech.vo.user.UserInfoVO;
@@ -62,14 +63,10 @@ public class AuthServiceImpl implements AuthService {
         if (permissions == null) {
             permissions = Collections.emptyList();
         }
-        return new UserInfoVO(
-                user.getId(),
-                user.getUsername(),
-                user.getNickname(),
-                user.getEmail(),
-                user.getPhone(),
-                permissions
-        );
+        UserInfoVO vo = ConvertUtils.toVO(user, UserInfoVO.class);
+        vo.setUserId(user.getId());
+        vo.setPermissions(permissions);
+        return vo;
     }
 
     @Override

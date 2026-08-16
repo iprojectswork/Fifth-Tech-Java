@@ -2,6 +2,7 @@ package com.fifthtech.controller.code;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.fifthtech.common.Result;
+import com.fifthtech.common.utils.ConvertUtils;
 import com.fifthtech.dao.entity.code.CodeRule;
 import com.fifthtech.dto.code.CodeRuleDTO;
 import com.fifthtech.dto.code.CodeRuleQueryDTO;
@@ -137,19 +138,7 @@ public class CodeRuleController {
         if (rule == null) {
             return null;
         }
-        CodeRuleVO vo = new CodeRuleVO();
-        vo.setId(rule.getId());
-        vo.setRuleCode(rule.getRuleCode());
-        vo.setRuleName(rule.getRuleName());
-        vo.setBatchSize(rule.getBatchSize());
-        vo.setStatus(rule.getStatus());
-        vo.setRemark(rule.getRemark());
-        vo.setCreateId(rule.getCreateId());
-        vo.setCreateName(rule.getCreateName());
-        vo.setCreateTime(rule.getCreateTime());
-        vo.setUpdateId(rule.getUpdateId());
-        vo.setUpdateName(rule.getUpdateName());
-        vo.setUpdateTime(rule.getUpdateTime());
+        CodeRuleVO vo = ConvertUtils.toVO(rule, CodeRuleVO.class);
         vo.setSegments(parseSegments(rule.getSegmentsJson()));
         return vo;
     }

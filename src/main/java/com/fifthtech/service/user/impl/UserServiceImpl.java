@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.fifthtech.common.BizConstants;
+import com.fifthtech.common.utils.ConvertUtils;
 import com.fifthtech.dao.entity.org.Org;
 import com.fifthtech.dao.entity.permission.Permission;
 import com.fifthtech.dao.entity.role.Role;
@@ -109,17 +110,15 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         if (sameName > 0) {
             throw new IllegalArgumentException("用户名已存在");
         }
-        User user = new User();
+        User user = ConvertUtils.toEntity(dto, User.class);
+        user.setId(null);
         user.setUsername(dto.getUsername().trim());
-        if (dto.getPassword() != null && !dto.getPassword().isEmpty()) {
-            user.setPassword(dto.getPassword());
-        } else {
-            user.setPassword(""); // 不强制；后续可改成必填
+        if (dto.getPassword() == null || dto.getPassword().isEmpty()) {
+            user.setPassword("");
         }
-        user.setNickname(dto.getNickname());
-        user.setEmail(dto.getEmail());
-        user.setPhone(dto.getPhone());
-        user.setStatus(dto.getStatus() == null ? BizConstants.STATUS_ENABLED : dto.getStatus());
+        if (dto.getStatus() == null) {
+            user.setStatus(BizConstants.STATUS_ENABLED);
+        }
         user.setCreateTime(LocalDateTime.now());
         user.setUpdateTime(LocalDateTime.now());
         save(user);
@@ -199,15 +198,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         if (user == null) {
             return null;
         }
-        UserVO vo = new UserVO();
-        vo.setId(user.getId());
-        vo.setUsername(user.getUsername());
-        vo.setNickname(user.getNickname());
-        vo.setEmail(user.getEmail());
-        vo.setPhone(user.getPhone());
-        vo.setStatus(user.getStatus());
-        vo.setCreateTime(user.getCreateTime());
-        vo.setUpdateTime(user.getUpdateTime());
+        UserVO vo = ConvertUtils.toVO(user, UserVO.class);
 
         // orgs
         List<Long> orgIds = userOrgMapper.selectOrgIdsByUserId(id);
@@ -235,10 +226,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
                 if (pathName == null || pathName.isEmpty()) {
                     pathName = org.getOrgName();
                 }
-                UserOrgSummaryVO summary = new UserOrgSummaryVO();
-                summary.setId(org.getId());
-                summary.setOrgCode(org.getOrgCode());
-                summary.setOrgName(org.getOrgName());
+                UserOrgSummaryVO summary = ConvertUtils.toVO(org, UserOrgSummaryVO.class);
                 summary.setPathName(pathName);
                 summaries.add(summary);
                 if (nameSb.length() > 0) {
@@ -260,11 +248,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
             List<Role> roles = roleMapper.selectList(roleWrapper);
             List<UserRoleSummaryVO> roleSummaries = new ArrayList<>();
             for (Role role : roles) {
-                UserRoleSummaryVO summary = new UserRoleSummaryVO();
-                summary.setId(role.getId());
-                summary.setRoleCode(role.getRoleCode());
-                summary.setRoleName(role.getRoleName());
-                roleSummaries.add(summary);
+                roleSummaries.add(ConvertUtils.toVO(role, UserRoleSummaryVO.class));
             }
             vo.setRoles(roleSummaries);
         }

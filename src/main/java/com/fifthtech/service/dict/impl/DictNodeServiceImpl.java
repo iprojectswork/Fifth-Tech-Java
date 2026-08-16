@@ -3,6 +3,7 @@ package com.fifthtech.service.dict.impl;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.fifthtech.common.BizConstants;
+import com.fifthtech.common.utils.ConvertUtils;
 import com.fifthtech.dao.entity.dict.DictNode;
 import com.fifthtech.dao.mapper.dict.DictNodeMapper;
 import com.fifthtech.dto.dict.DictNodeDTO;
@@ -75,7 +76,7 @@ public class DictNodeServiceImpl extends ServiceImpl<DictNodeMapper, DictNode> i
 
         List<DictNodeVO> vos = new ArrayList<>(children.size());
         for (DictNode child : children) {
-            DictNodeVO vo = toFlatVO(child);
+            DictNodeVO vo = ConvertUtils.toVO(child, DictNodeVO.class);
             String pathCode = parentPath[0];
             String pathName = parentPath[1];
             vo.setPathCode(pathCode.isEmpty() ? child.getCode() : pathCode + "/" + child.getCode());
@@ -109,8 +110,7 @@ public class DictNodeServiceImpl extends ServiceImpl<DictNodeMapper, DictNode> i
                                          String parentPathCode,
                                          String parentPathName,
                                          Map<Long, List<DictNode>> childrenByParent) {
-        DictNodeTreeVO vo = new DictNodeTreeVO();
-        copyFlatFields(node, vo);
+        DictNodeTreeVO vo = ConvertUtils.toVO(node, DictNodeTreeVO.class);
         String pathCode = parentPathCode.isEmpty() ? node.getCode() : parentPathCode + "/" + node.getCode();
         String pathName = parentPathName.isEmpty() ? node.getName() : parentPathName + "/" + node.getName();
         vo.setPathCode(pathCode);
@@ -132,7 +132,7 @@ public class DictNodeServiceImpl extends ServiceImpl<DictNodeMapper, DictNode> i
         if (node == null) {
             return null;
         }
-        DictNodeVO vo = toFlatVO(node);
+        DictNodeVO vo = ConvertUtils.toVO(node, DictNodeVO.class);
         String[] path = computePathById(id);
         if (path != null) {
             vo.setPathCode(path[0]);
@@ -372,7 +372,7 @@ public class DictNodeServiceImpl extends ServiceImpl<DictNodeMapper, DictNode> i
             if (child.getStatus() == null || child.getStatus() != BizConstants.STATUS_ENABLED) {
                 continue;
             }
-            DictNodeVO vo = toFlatVO(child);
+            DictNodeVO vo = ConvertUtils.toVO(child, DictNodeVO.class);
             vo.setPathCode(parentPathCode.toString() + "/" + child.getCode());
             vo.setPathName(parentPathName.toString() + "/" + child.getName());
             childIds.add(child.getId());
@@ -491,28 +491,6 @@ public class DictNodeServiceImpl extends ServiceImpl<DictNodeMapper, DictNode> i
             throw new IllegalArgumentException("name 长度不能超过 128");
         }
         return name;
-    }
-
-    private DictNodeVO toFlatVO(DictNode n) {
-        DictNodeVO vo = new DictNodeVO();
-        copyFlatFields(n, vo);
-        return vo;
-    }
-
-    private void copyFlatFields(DictNode n, DictNodeVO vo) {
-        vo.setId(n.getId());
-        vo.setParentId(n.getParentId());
-        vo.setCode(n.getCode());
-        vo.setName(n.getName());
-        vo.setSort(n.getSort());
-        vo.setStatus(n.getStatus());
-        vo.setRemark(n.getRemark());
-        vo.setCreateId(n.getCreateId());
-        vo.setCreateName(n.getCreateName());
-        vo.setCreateTime(n.getCreateTime());
-        vo.setUpdateId(n.getUpdateId());
-        vo.setUpdateName(n.getUpdateName());
-        vo.setUpdateTime(n.getUpdateTime());
     }
 
     private Long currentUserIdOrNull() {
